@@ -10,8 +10,6 @@ from mojang import API
 
 VERSION = "1.0.0"
 
-SESSION_SERVER_URL = "https://sessionserver.mojang.com/session/minecraft/profile/"
-
 # ----- No variables below this line
 
 # Flask initialization
