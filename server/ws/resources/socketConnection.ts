@@ -18,12 +18,12 @@ export default class WebsocketConnection {
   };
   public username?: string;
   public uuid: string;
-  public connectionId: number;
+  public connectionId: string;
 
   constructor(socket: WebSocket, uuid: string) {
     this.socket = socket;
     this.uuid = uuid;
-    this.connectionId = socketServer.connectionManager.connections.size;
+    this.connectionId = Math.random().toString(36).substring(7);
 
     this.loadData();
 

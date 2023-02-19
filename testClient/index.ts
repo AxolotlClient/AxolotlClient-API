@@ -3,7 +3,7 @@ import path from "path";
 // @ts-expect-error
 import fzf from "node-fzf"; 
 
-export const url = "ws://localhost:5000/api/ws";
+export const url = "wss://axo.gart.sh/api/ws";
 
 const tests = fs.readdirSync(path.resolve(__dirname, "tests")).filter((file) => file.endsWith(".js"));
 

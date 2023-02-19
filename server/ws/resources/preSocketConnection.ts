@@ -36,7 +36,17 @@ export default class PreSocketConnection {
 
         if (msg.type === "handshake") {
             this.uuid = msg.data.uuid;
-            socketServer.connectionManager.createConnection(this);
+            const newConnection = socketServer.connectionManager.createConnection(this);
+
+            newConnection.send({
+                id: msg.id,
+                type: "handshake",
+                data: {
+                    uuid: newConnection.uuid,
+                    connectionId: newConnection.connectionId
+                },
+                timestamp: Date.now()
+            })
         }
 
 

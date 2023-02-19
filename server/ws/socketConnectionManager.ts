@@ -57,7 +57,8 @@ export default class SocketConnectionManager {
   public createConnection(preConnectionInstance: PreSocketConnection): WebsocketConnection {
     const connection = new WebsocketConnection(preConnectionInstance.socket, preConnectionInstance.uuid!);
     this.connections.set(connection.uuid, connection);
-
+    socketServer.preConnectionInstances.delete(preConnectionInstance.id);
+    
     Logger.debug(
       "SocketConnectionManager",
       `Created connection for ${connection.uuid}, ID: ${connection.connectionId}`
