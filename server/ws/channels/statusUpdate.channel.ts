@@ -17,8 +17,6 @@ export default class StatusUpdateChannel extends WebsocketChannel<StatusUpdateSe
   public onMessage(socket: WebsocketConnection, message: StatusUpdateClientToServer): void {
     switch (message.data.updateType) {
     case "online":
-
-
     
     break;
     case "offline":

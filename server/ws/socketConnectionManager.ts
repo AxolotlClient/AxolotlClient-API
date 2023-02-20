@@ -13,6 +13,7 @@ export default class SocketConnectionManager {
 
   public addChannel(name: string, channel: WebsocketChannel<any, any>): void {
     this.channels.set(name, channel);
+    Logger.debug("SocketConnectionManager", `Added channel ${name}`);
   }
 
   public getChannel(name: string): WebsocketChannel<any, any> {
