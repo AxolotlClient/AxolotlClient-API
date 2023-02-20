@@ -20,9 +20,13 @@ export interface FriendsServerToClient extends BaseChannelType {
     | {
         method: "getRequests";
         requests: {
-          uuid: string;
-          username: string;
-        }[];
+          incoming: {
+            uuid: string;
+          }[];
+          outgoing: {
+            uuid: string;
+          }[];
+        };
       }
     | {
         method: "getBlocked";
@@ -38,18 +42,27 @@ export interface FriendsServerToClient extends BaseChannelType {
       }
     | {
         method: "add";
-        uuid: string;
-        message: string;
+        success: true;
+      }
+    | {
+        method: "add";
+        from: string;
       }
     | {
         method: "accept";
-        uuid: string;
-        message: string;
+        success: true;
+      }
+    | {
+        method: "accept";
+        from: string;
       }
     | {
         method: "decline";
-        uuid: string;
-        message: string;
+        success: true;
+      }
+    | {
+        method: "decline";
+        from: string;
       }
     | {
         method: "block";
@@ -153,32 +166,32 @@ export interface StatusUpdateClientToServer extends BaseChannelType {
 }
 
 export interface ErrorServerToClient extends BaseChannelType {
-    type: "error";
-    data: {
-        message: string;
-    };
+  type: "error";
+  data: {
+    message: string;
+  };
 }
 
 export interface ErrorClientToServer extends BaseChannelType {
-    type: "error";
-    data: {
-        message: string;
-    };
+  type: "error";
+  data: {
+    message: string;
+  };
 }
 
 export interface ChannelTypes {
-    friends: {
-        clientToServer: FriendsClientToServer;
-        serverToClient: FriendsServerToClient;
-    };
-    statusUpdate: {
-        clientToServer: StatusUpdateClientToServer;
-        serverToClient: StatusUpdateServerToClient;
-    };
-    error: {
-        clientToServer: ErrorClientToServer;
-        serverToClient: ErrorServerToClient;
-    };
+  friends: {
+    clientToServer: FriendsClientToServer;
+    serverToClient: FriendsServerToClient;
+  };
+  statusUpdate: {
+    clientToServer: StatusUpdateClientToServer;
+    serverToClient: StatusUpdateServerToClient;
+  };
+  error: {
+    clientToServer: ErrorClientToServer;
+    serverToClient: ErrorServerToClient;
+  };
 }
 
 export type ClientToServerChannelTypes = ChannelTypes[keyof ChannelTypes]["clientToServer"];

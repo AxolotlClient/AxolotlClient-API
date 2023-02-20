@@ -5,7 +5,7 @@ console.log("Running tests...");
 const client = new Client();
 
 client.addMessageListener((message) => {
-  console.log("Received message: ", message);
+  console.log("Received message: ", message.toString());
 });
 
 client.socket.once("open", () => {

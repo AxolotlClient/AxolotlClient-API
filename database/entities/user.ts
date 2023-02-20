@@ -12,7 +12,7 @@ export class User {
   friends: string[] = [];
 
   @Property()
-  blcoked: string[] = [];
+  blocked: string[] = [];
 
   @Property()
   createdAt = new Date();
