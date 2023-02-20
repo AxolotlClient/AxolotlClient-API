@@ -38,7 +38,6 @@ export interface FriendsServerToClient extends BaseChannelType {
     | {
         method: "remove";
         uuid: string;
-        message: string;
       }
     | {
         method: "add";
@@ -67,12 +66,10 @@ export interface FriendsServerToClient extends BaseChannelType {
     | {
         method: "block";
         uuid: string;
-        message: string;
       }
     | {
         method: "unblock";
         uuid: string;
-        message: string;
       }
     | {
         method: "error";
@@ -120,9 +117,7 @@ export interface FriendsClientToServer extends BaseChannelType {
 
 export interface StatusUpdateServerToClient extends BaseChannelType {
   type: "statusUpdate";
-  data: Status & {
-    uuid: string;
-  };
+  data: Status
 }
 
 export interface StatusUpdateClientToServer extends BaseChannelType {
@@ -149,7 +144,7 @@ export interface StatusUpdateClientToServer extends BaseChannelType {
           map: string;
           players: number;
           maxPlayers: number;
-          elapsed: number;
+          startedAt: number;
         };
       }
     | {
@@ -160,7 +155,7 @@ export interface StatusUpdateClientToServer extends BaseChannelType {
           worldType: string;
           worldName: string;
           gamemode: string;
-          elapsed: number;
+          startedAt: number;
         };
       };
 }
@@ -203,4 +198,5 @@ export interface Status {
   title: string;
   description: string;
   text: string;
+  startedAt?: number;
 }
