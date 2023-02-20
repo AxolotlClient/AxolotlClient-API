@@ -44,9 +44,11 @@ export default class WebsocketConnection {
         newUser.uuid = this.uuid;
         newUser.username = this.username;
         await db.getEntityManager().persistAndFlush(newUser);
+
+        Logger.debug("WS", `Created new user ${this.username} (${this.uuid})`);
+
         return;
       }
-
       
       user.username = this.username;
       await db.getEntityManager().persistAndFlush(user);
