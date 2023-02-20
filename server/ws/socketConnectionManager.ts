@@ -43,7 +43,7 @@ export default class SocketConnectionManager {
 
     Logger.debug(
       "SocketConnectionManager",
-      `Received message from ${connection.uuid}, ID: ${connection.connectionId}, channel: ${msg.type}\n${message}`
+      `Received message from ${connection.uuid}, ID: ${connection.connectionId}, channel: ${msg.type}\n${JSON.stringify(msg.data)}`
     );
 
     if (!this.channels.has(msg.type)) {
@@ -64,7 +64,7 @@ export default class SocketConnectionManager {
 
       return
     }
-    this.channels.get(msg.type)!.onMessage(connection, msg.data);
+    this.channels.get(msg.type)!.onMessage(connection, msg);
 
     Logger.debug(
         "SocketConnectionManager",
