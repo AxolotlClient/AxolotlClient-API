@@ -2,7 +2,7 @@ import { WebSocket } from "ws";
 import WebsocketServer from ".";
 import { socketServer } from "..";
 import Logger from "../../util/logger";
-import { ClientToServerChannelTypes } from "../types";
+import { ClientToServerChannelTypes, ErrorServerToClient } from "../types";
 import PreSocketConnection from "./resources/preSocketConnection";
 import WebsocketConnection from "./resources/socketConnection";
 import WebsocketChannel from "./resources/websocketChannel";
@@ -42,7 +42,24 @@ export default class SocketConnectionManager {
 
     const msg = JSON.parse(message) as ClientToServerChannelTypes;
 
-    if (!this.channels.has(msg.type)) throw new Error(`Channel ${msg.type} does not exist!`);
+    if (!this.channels.has(msg.type)) {
+
+      Logger.error(
+        "SocketConnectionManager",
+        `Received message from ${connection.uuid}, ID: ${connection.connectionId}, but channel ${msg.type} does not exist!`
+      );
+
+      connection.send<ErrorServerToClient>({
+        type: "error",
+        data: {
+          message: `Channel ${msg.type} does not exist!`
+        },
+        timestamp: Date.now(),
+        id: msg.id
+      })
+
+      return
+    }
     this.channels.get(msg.type)!.onMessage(connection, msg.data);
 
     Logger.debug(
