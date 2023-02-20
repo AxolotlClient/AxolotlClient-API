@@ -22,7 +22,6 @@ export default class SocketConnectionManager {
   }
 
   public onMessage(server: WebsocketServer, socket: WebSocket, message: string): void {
-
     if (
       Array.from(socketServer.preConnectionInstances.values())
         .map((preConnection) => preConnection.socket)
@@ -41,6 +40,11 @@ export default class SocketConnectionManager {
     if (!connection) throw new Error("Connection not found!");
 
     const msg = JSON.parse(message) as ClientToServerChannelTypes;
+
+    Logger.debug(
+      "SocketConnectionManager",
+      `Received message from ${connection.uuid}, ID: ${connection.connectionId}, channel: ${msg.type}\n${message}`
+    );
 
     if (!this.channels.has(msg.type)) {
 

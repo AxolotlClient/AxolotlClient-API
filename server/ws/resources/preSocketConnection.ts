@@ -1,5 +1,6 @@
 import { WebSocket } from "ws";
 import { socketServer } from "../..";
+import Logger from "../../../util/logger";
 
 export default class PreSocketConnection {
 
@@ -33,6 +34,8 @@ export default class PreSocketConnection {
             },
             timestamp: number
         }
+
+        Logger.debug("PreSocketConnection", `Received message from ${this.id}, ID: ${msg.id}, type: ${msg.type}\n${JSON.stringify(msg.data, null, 2)}`);
 
         if (msg.type === "handshake") {
             this.uuid = msg.data.uuid;

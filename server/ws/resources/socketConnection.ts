@@ -54,6 +54,7 @@ export default class WebsocketConnection {
   }
 
   public send<T = ServerToClientChannelTypes>(message: T): void {
+    Logger.debug("WS", `Sending message to ${this.username} (${this.uuid})\n${JSON.stringify(message, null, 2)}`);
     this.socket.send(JSON.stringify(message));
   }
 
