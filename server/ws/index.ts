@@ -1,6 +1,8 @@
 import http from 'http';
 import WebSocket from 'ws';
 import Logger from '../../util/logger';
+import FriendsChannel from './channels/friends.channel';
+import StatusUpdateChannel from './channels/statusUpdate.channel';
 import PreSocketConnection from './resources/preSocketConnection';
 import SocketConnectionManager from './socketConnectionManager';
 
@@ -24,6 +26,10 @@ export default class WebsocketServer {
             console.error(error);
         })
 
+        // load channels 
+        new FriendsChannel()
+        new StatusUpdateChannel()
+        
     }
 
 }
