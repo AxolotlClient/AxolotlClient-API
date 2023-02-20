@@ -6,6 +6,7 @@ export default class Client {
     public socket: WebSocket;
     public uuid?: string;
     public messageQueue: string[] = [];
+    public requests: Map<string, (message: string) => void> = new Map();
 
     constructor() {
         this.socket = new WebSocket(url);
