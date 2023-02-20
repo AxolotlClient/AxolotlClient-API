@@ -1,0 +1,19 @@
+on:
+  push:
+    branches:
+    - main
+    - release/*
+jobs:
+ setup:
+    name: Check Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.6.0
+        with:
+          node-version: '18.x'
+      
+      - name: 'build'
+        run: |
+          npm install
+          tsc
