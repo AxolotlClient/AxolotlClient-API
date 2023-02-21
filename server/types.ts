@@ -3,7 +3,7 @@
  */
 
 export interface BaseChannelType {
-  id: string;
+  id: string | null;
   timestamp: number;
 }
 
@@ -131,10 +131,6 @@ export interface StatusUpdateClientToServer extends BaseChannelType {
         };
       }
     | {
-        updateType: "offline";
-        uuid: string;
-      }
-    | {
         updateType: "inGame";
         uuid: string;
         update: {
@@ -194,9 +190,9 @@ export type ServerToClientChannelTypes = ChannelTypes[keyof ChannelTypes]["serve
 
 export interface Status {
   online: boolean;
-  icon: string;
+  icon?: string;
   title: string;
   description: string;
-  text: string;
+  text?: string;
   startedAt?: number;
 }

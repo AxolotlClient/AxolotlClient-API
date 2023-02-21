@@ -34,9 +34,6 @@ export default class StatusUpdateChannel extends WebsocketChannel<StatusUpdateSe
     case "online":
     
     break;
-    case "offline":
-
-    break;
     case "inGame":
     
     break;

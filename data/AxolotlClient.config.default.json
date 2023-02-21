@@ -1,0 +1,2151 @@
+{
+  "general": {
+    "loadingBgColor": {
+      "color": "#FFEF323D",
+      "chroma": false
+    },
+    "nightMode": false,
+    "showQuickToggles": true,
+    "showOptionTooltips": true,
+    "showCategoryTooltips": false,
+    "customWindowTitle": true,
+    "Credits": "",
+    "debugLogOutput": false,
+    "searchFilters": {
+      "searchIgnoreCase": true,
+      "searchForOptions": false,
+      "searchSort": true,
+      "searchSortOrder": "ASCENDING"
+    },
+    "screenshotUtils": {
+      "enabled": false,
+      "autoExec": "off",
+      "shareUrl": "https://bin.gart.sh",
+      "imageViewer": ""
+    },
+    "auth": {
+      "auth.showButton": false,
+      "viewAccounts": ""
+    }
+  },
+  "nametagOptions": {
+    "showOwnNametag": false,
+    "useShadows": false,
+    "nametagBackground": true,
+    "showBadges": true,
+    "customBadge": false,
+    "badgeText": ""
+  },
+  "rendering": {
+    "customSky": true,
+    "showSunMoon": true,
+    "chromaSpeed": 5,
+    "dynamicFov": true,
+    "fullBright": false,
+    "lowFire": false,
+    "lowShield": false,
+    "hitColor": {
+      "color": "#4DFF0000",
+      "chroma": false
+    },
+    "minimalViewBob": false,
+    "flatItems": false,
+    "noRain": false,
+    "blockOutlines": {
+      "enabled": false,
+      "color": {
+        "color": "#DD000000",
+        "chroma": false
+      },
+      "chroma": false,
+      "outlineWidth": 1.0
+    },
+    "timeChanger": {
+      "enabled": false,
+      "time": 0
+    },
+    "zoom": {
+      "zoomDivisor": 4.0,
+      "zoomSpeed": 7.5,
+      "zoomScrolling": false,
+      "decreaseSensitivity": true,
+      "smoothCamera": false,
+      "key.zoom": "key.keyboard.c"
+    },
+    "motionBlur": {
+      "enabled": false,
+      "strength": 50.0,
+      "inGuis": false
+    },
+    "menublur": {
+      "enabled": false,
+      "strength": 8,
+      "fadeTime": 1,
+      "bgcolor": {
+        "color": "#64000000",
+        "chroma": false
+      }
+    },
+    "scrollableTooltips": {
+      "enabled": false,
+      "shiftHorizontalScroll": true,
+      "scrollAmount": 5,
+      "inverse": false
+    },
+    "tnttime": {
+      "enabled": false,
+      "decimalplaces": 2
+    },
+    "particles": {
+      "enabled": false,
+      "Ambient Entity Effect": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Angry Villager": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Ash": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Block": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Block Marker": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Bubble": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Bubble Column Up": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Bubble Pop": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Campfire Cosy Smoke": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Campfire Signal Smoke": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Cloud": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Composter": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Crimson Spore": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Crit": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        },
+        "alwaysCrit": false
+      },
+      "Current Down": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Damage Indicator": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Dolphin": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Dragon Breath": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Dripping Dripstone Lava": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Dripping Dripstone Water": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Dripping Honey": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Dripping Lava": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Dripping Obsidian Tear": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Dripping Water": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Dust": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Dust Color Transition": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Effect": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Elder Guardian": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Electric Spark": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Enchant": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Enchanted Hit": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        },
+        "alwaysCrit": false
+      },
+      "End Rod": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Entity Effect": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Explosion": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Explosion Emitter": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Falling Dripstone Lava": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Falling Dripstone Water": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Falling Dust": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Falling Honey": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Falling Lava": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Falling Nectar": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Falling Obsidian Tear": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Falling Spore Blossom": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Falling Water": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Firework": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Fishing": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Flame": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Flash": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Glow": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Glow Squid Ink": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Happy Villager": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Heart": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Instant Effect": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Item": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Item Slime": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Item Snowball": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Landing Honey": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Landing Lava": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Landing Obsidian Tear": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Large Smoke": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Lava": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Mycelium": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Nautilus": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Note": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Poof": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Portal": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Rain": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Reverse Portal": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Scrape": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Sculk Charge": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Sculk Charge Pop": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Sculk Soul": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Shriek": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Small Flame": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Smoke": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Sneeze": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Snowflake": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Sonic Boom": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Soul": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Soul Fire Flame": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Spit": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Splash": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Spore Blossom Air": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Squid Ink": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Sweep Attack": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Totem Of Undying": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Underwater": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Vibration": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Warped Spore": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Wax Off": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Wax On": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "White Ash": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      },
+      "Witch": {
+        "showParticle": true,
+        "count": 1,
+        "customColor": false,
+        "color": {
+          "color": "#FFFFFFFF",
+          "chroma": false
+        }
+      }
+    },
+    "beams": {
+      "showBeaconBeams": true,
+      "showEndGatewayBeams": true
+    },
+    "tablist": {
+      "numericalPing": false,
+      "showPlayerHeads": true,
+      "shadow": true,
+      "showHeader": true,
+      "showFooter": true,
+      "alwaysShowHeadLayer": false,
+      "pingColor0": {
+        "color": "#FF00FFFF",
+        "chroma": false
+      },
+      "pingColor1": {
+        "color": "#FF00FF00",
+        "chroma": false
+      },
+      "pingColor2": {
+        "color": "#FF008800",
+        "chroma": false
+      },
+      "pingColor3": {
+        "color": "#FFFFFF00",
+        "chroma": false
+      },
+      "pingColor4": {
+        "color": "#FFFF8800",
+        "chroma": false
+      },
+      "pingColor5": {
+        "color": "#FFFF0000",
+        "chroma": false
+      }
+    }
+  },
+  "hud": {
+    "key.openHud": "key.keyboard.right.shift",
+    "pinghud": {
+      "enabled": false,
+      "scale": 1.0,
+      "background": true,
+      "bgcolor": {
+        "color": "#64000000",
+        "chroma": false
+      },
+      "outline": false,
+      "outlinecolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "textcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "shadow": true,
+      "justification": "CENTER",
+      "anchorpoint": "TOP_LEFT",
+      "minwidth": 53,
+      "refreshTime": 4,
+      "x": 0.0,
+      "y": 0.0
+    },
+    "fpshud": {
+      "enabled": false,
+      "scale": 1.0,
+      "background": true,
+      "bgcolor": {
+        "color": "#64000000",
+        "chroma": false
+      },
+      "outline": false,
+      "outlinecolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "textcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "shadow": true,
+      "justification": "CENTER",
+      "anchorpoint": "TOP_LEFT",
+      "minwidth": 53,
+      "x": 0.0,
+      "y": 0.0
+    },
+    "cpshud": {
+      "enabled": false,
+      "scale": 1.0,
+      "background": true,
+      "bgcolor": {
+        "color": "#64000000",
+        "chroma": false
+      },
+      "outline": false,
+      "outlinecolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "textcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "shadow": true,
+      "justification": "CENTER",
+      "anchorpoint": "TOP_LEFT",
+      "minwidth": 53,
+      "cpskeybind": false,
+      "rightcps": false,
+      "x": 0.0,
+      "y": 0.0
+    },
+    "armorhud": {
+      "enabled": false,
+      "scale": 1.0,
+      "background": true,
+      "bgcolor": {
+        "color": "#64000000",
+        "chroma": false
+      },
+      "outline": false,
+      "outlinecolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "textcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "shadow": true,
+      "showProtectionLevel": false,
+      "x": 0.0,
+      "y": 0.0
+    },
+    "potionshud": {
+      "enabled": false,
+      "scale": 1.0,
+      "textcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "shadow": true,
+      "anchorpoint": "TOP_LEFT",
+      "cardinalorder": "TOP_DOWN",
+      "iconsonly": false,
+      "x": 0.0,
+      "y": 0.0
+    },
+    "keystrokehud": {
+      "enabled": false,
+      "scale": 1.0,
+      "mousemovement": false,
+      "mouseMovementIndicator": {
+        "data": [
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            -1,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "hint": true
+      },
+      "mouseMovementIndicatorOuter": {
+        "data": [
+          [
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1
+          ],
+          [
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            -1
+          ],
+          [
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        ],
+        "hint": true
+      },
+      "textcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "heldtextcolor": {
+        "color": "#FF000000",
+        "chroma": false
+      },
+      "shadow": false,
+      "background": true,
+      "bgcolor": {
+        "color": "#64000000",
+        "chroma": false
+      },
+      "heldbackgroundcolor": {
+        "color": "#64FFFFFF",
+        "chroma": false
+      },
+      "outline": false,
+      "outlinecolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "heldoutlinecolor": {
+        "color": "#FF000000",
+        "chroma": false
+      },
+      "x": 0.0,
+      "y": 0.0
+    },
+    "togglesprint": {
+      "enabled": false,
+      "scale": 1.0,
+      "textcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "shadow": true,
+      "justification": "CENTER",
+      "anchorpoint": "TOP_LEFT",
+      "minwidth": 100,
+      "toggleSprint": false,
+      "key.toggleSprint": "key.keyboard.k",
+      "toggleSneak": false,
+      "key.toggleSneak": "key.keyboard.i",
+      "randomPlaceholder": false,
+      "placeholder": "No keys pressed",
+      "x": 0.0,
+      "y": 0.0,
+      "sprintToggled": false,
+      "sneakToggled": false
+    },
+    "iphud": {
+      "enabled": false,
+      "scale": 1.0,
+      "background": true,
+      "bgcolor": {
+        "color": "#64000000",
+        "chroma": false
+      },
+      "outline": false,
+      "outlinecolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "textcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "shadow": true,
+      "justification": "CENTER",
+      "anchorpoint": "TOP_LEFT",
+      "minwidth": 115,
+      "x": 0.0,
+      "y": 0.0
+    },
+    "iconhud": {
+      "enabled": false,
+      "scale": 1.0,
+      "x": 0.0,
+      "y": 0.0
+    },
+    "speedhud": {
+      "enabled": false,
+      "scale": 1.0,
+      "background": true,
+      "bgcolor": {
+        "color": "#64000000",
+        "chroma": false
+      },
+      "outline": false,
+      "outlinecolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "textcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "shadow": true,
+      "justification": "CENTER",
+      "anchorpoint": "TOP_LEFT",
+      "minwidth": 53,
+      "horizontal": true,
+      "x": 0.0,
+      "y": 0.0
+    },
+    "scoreboardhud": {
+      "enabled": false,
+      "scale": 1.0,
+      "background": true,
+      "backgroundcolor": {
+        "color": "#4C000000",
+        "chroma": false
+      },
+      "outline": false,
+      "outlinecolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "shadow": true,
+      "topbackgroundcolor": {
+        "color": "#66000000",
+        "chroma": false
+      },
+      "scores": true,
+      "scorecolor": {
+        "color": "#FFFF5555",
+        "chroma": false
+      },
+      "anchorpoint": "MIDDLE_RIGHT",
+      "toppadding": 0,
+      "x": 0.0,
+      "y": 0.0
+    },
+    "crosshairhud": {
+      "enabled": false,
+      "scale": 1.0,
+      "crosshair_type": "CROSS",
+      "customTextureGraphics": {
+        "data": [
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            -1,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        ],
+        "hint": true
+      },
+      "showInF5": false,
+      "overrideF3": false,
+      "applyBlend": true,
+      "defaultcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "entitycolor": {
+        "color": "#FFBF2222",
+        "chroma": false
+      },
+      "blockcolor": {
+        "color": "#FF3399FF",
+        "chroma": false
+      },
+      "attackindicatorbg": {
+        "color": "#FF141414",
+        "chroma": false
+      },
+      "attackindicatorfg": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "x": 0.5,
+      "y": 0.5
+    },
+    "coordshud": {
+      "enabled": false,
+      "scale": 1.0,
+      "background": true,
+      "bgcolor": {
+        "color": "#64000000",
+        "chroma": false
+      },
+      "outline": false,
+      "outlinecolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "textcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "shadow": true,
+      "firsttextcolor": {
+        "color": "#FF3399FF",
+        "chroma": false
+      },
+      "secondtextcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "decimalplaces": 0,
+      "minimal": false,
+      "x": 0.0,
+      "y": 0.0
+    },
+    "actionbarhud": {
+      "enabled": false,
+      "scale": 1.0,
+      "textcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "shadow": true,
+      "timeshown": 60,
+      "customtextcolor": false,
+      "x": 0.0,
+      "y": 0.0
+    },
+    "bossbarhud": {
+      "enabled": false,
+      "scale": 1.0,
+      "textcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "shadow": true,
+      "text": true,
+      "bar": true,
+      "anchorpoint": "TOP_LEFT",
+      "x": 0.0,
+      "y": 0.0
+    },
+    "arrowhud": {
+      "enabled": false,
+      "scale": 1.0,
+      "background": true,
+      "bgcolor": {
+        "color": "#64000000",
+        "chroma": false
+      },
+      "outline": false,
+      "outlinecolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "textcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "shadow": true,
+      "dynamic": false,
+      "allArrowTypes": false,
+      "x": 0.0,
+      "y": 0.0
+    },
+    "itemupdatehud": {
+      "enabled": false,
+      "scale": 1.0,
+      "background": true,
+      "bgcolor": {
+        "color": "#64000000",
+        "chroma": false
+      },
+      "outline": false,
+      "outlinecolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "textcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "shadow": true,
+      "timeout": 6,
+      "x": 0.0,
+      "y": 0.0
+    },
+    "packdisplayhud": {
+      "enabled": false,
+      "scale": 1.0,
+      "background": true,
+      "bgcolor": {
+        "color": "#64000000",
+        "chroma": false
+      },
+      "outline": false,
+      "outlinecolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "textcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "shadow": true,
+      "iconsonly": false,
+      "x": 0.0,
+      "y": 0.0
+    },
+    "irltimehud": {
+      "enabled": false,
+      "scale": 1.0,
+      "background": true,
+      "bgcolor": {
+        "color": "#64000000",
+        "chroma": false
+      },
+      "outline": false,
+      "outlinecolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "textcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "shadow": true,
+      "justification": "CENTER",
+      "anchorpoint": "TOP_LEFT",
+      "minwidth": 53,
+      "dateformat": "HH:mm:ss",
+      "x": 0.0,
+      "y": 0.0
+    },
+    "reachhud": {
+      "enabled": false,
+      "scale": 1.0,
+      "background": true,
+      "bgcolor": {
+        "color": "#64000000",
+        "chroma": false
+      },
+      "outline": false,
+      "outlinecolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "textcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "shadow": true,
+      "justification": "CENTER",
+      "anchorpoint": "TOP_LEFT",
+      "minwidth": 53,
+      "decimalplaces": 0,
+      "x": 0.0,
+      "y": 0.0
+    },
+    "hotbarhud": {
+      "enabled": false,
+      "x": 0.0,
+      "y": 0.0
+    },
+    "memoryhud": {
+      "enabled": false,
+      "scale": 1.0,
+      "background": true,
+      "bgcolor": {
+        "color": "#64000000",
+        "chroma": false
+      },
+      "outline": false,
+      "outlinecolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "textcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "shadow": true,
+      "justification": "CENTER",
+      "anchorpoint": "TOP_LEFT",
+      "showGraph": true,
+      "graphUsedColor": {
+        "color": "#FFBF2222",
+        "chroma": false
+      },
+      "graphFreeColor": {
+        "color": "#FF35DB67",
+        "chroma": false
+      },
+      "showText": false,
+      "showAllocated": false,
+      "x": 0.0,
+      "y": 0.0
+    },
+    "playercounthud": {
+      "enabled": false,
+      "scale": 1.0,
+      "background": true,
+      "bgcolor": {
+        "color": "#64000000",
+        "chroma": false
+      },
+      "outline": false,
+      "outlinecolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "textcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "shadow": true,
+      "justification": "CENTER",
+      "anchorpoint": "TOP_LEFT",
+      "minwidth": 53,
+      "x": 0.0,
+      "y": 0.0
+    },
+    "compasshud": {
+      "enabled": false,
+      "scale": 1.0,
+      "textcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "shadow": true,
+      "width": 240,
+      "showdegrees": true,
+      "invert_direction": false,
+      "lookingbox": {
+        "color": "#80000000",
+        "chroma": false
+      },
+      "degreescolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "cardinalcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "semicardinalcolor": {
+        "color": "#FFAAAAAA",
+        "chroma": false
+      },
+      "majorindicator": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "minorindicator": {
+        "color": "#CCFFFFFF",
+        "chroma": false
+      },
+      "x": 0.0,
+      "y": 0.0
+    },
+    "tpshud": {
+      "enabled": false,
+      "scale": 1.0,
+      "background": true,
+      "bgcolor": {
+        "color": "#64000000",
+        "chroma": false
+      },
+      "outline": false,
+      "outlinecolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "textcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "shadow": true,
+      "justification": "CENTER",
+      "anchorpoint": "TOP_LEFT",
+      "minwidth": 53,
+      "x": 0.0,
+      "y": 0.0
+    },
+    "combohud": {
+      "enabled": false,
+      "scale": 1.0,
+      "background": true,
+      "bgcolor": {
+        "color": "#64000000",
+        "chroma": false
+      },
+      "outline": false,
+      "outlinecolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "textcolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "shadow": true,
+      "justification": "CENTER",
+      "anchorpoint": "TOP_LEFT",
+      "minwidth": 53,
+      "x": 0.0,
+      "y": 0.0
+    },
+    "playerhud": {
+      "enabled": false,
+      "scale": 1.0,
+      "background": true,
+      "bgcolor": {
+        "color": "#64000000",
+        "chroma": false
+      },
+      "outline": false,
+      "outlinecolor": {
+        "color": "#FFFFFFFF",
+        "chroma": false
+      },
+      "dynamicrotation": true,
+      "rotation": 0.0,
+      "autoHide": false,
+      "x": 0.0,
+      "y": 0.0
+    }
+  },
+  "hypixel-mods": {
+    "hypixel_api_key": "",
+    "cache_mode": "ON_CLIENT_DISCONNECT",
+    "levelhead": {
+      "enabled": false,
+      "textColor": {
+        "color": "#FFB8860B",
+        "chroma": false
+      },
+      "background": false,
+      "levelHeadMode": "NETWORK"
+    },
+    "autogg": {
+      "printGG": false,
+      "ggString": "gg",
+      "printGF": false,
+      "gfString": "gf",
+      "printGLHF": false,
+      "glhfString": "glhf",
+      "onHypixel": false,
+      "onBWP": false,
+      "onPVPL": false,
+      "onMMC": false
+    },
+    "autotip": {
+      "enabled": false,
+      "hideTipMessages": false
+    },
+    "nickhider": {
+      "hiddenNameSelf": "You",
+      "hiddenNameOthers": "Player",
+      "hideOwnName": false,
+      "hideOtherNames": false,
+      "hideOwnSkin": false,
+      "hideOtherSkins": false
+    },
+    "autoBoop": {
+      "enabled": false
+    },
+    "skyblock": {
+      "rotationLocked": false,
+      "lockRotation": "key.keyboard.p"
+    }
+  },
+  "rpc": {
+    "enabled": false,
+    "showTime": true,
+    "showActivity": true,
+    "showServerNameMode": "off"
+  },
+  "freelook": {
+    "enabled": false,
+    "key.freelook": "key.keyboard.v",
+    "mode": "freelook",
+    "perspective": "THIRD_PERSON_BACK",
+    "invert": false,
+    "toggle": false
+  },
+  "api.category": {
+    "enabled": true,
+    "friendRequestsEnabled": true,
+    "detailedLogging": false,
+    "viewFriends": ""
+  },
+  "storedOptions": {
+    "defNoSecret": false,
+    "creditsBGM": true,
+    "hudEditScreen": {
+      "snapping": true
+    }
+  }
+}
