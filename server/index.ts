@@ -8,6 +8,7 @@ import WebsocketServer from "./ws";
 import expressWs from "express-ws";
 import { WebSocket } from "ws";
 import PreSocketConnection from "./ws/resources/preSocketConnection";
+import path from "path";
 
 export const userManager = new UserManager();
 
@@ -18,7 +19,26 @@ const app = ews.app;
 
 app.use(express.json());
 
+app.use((req, res, next) => {
+
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  next();
+
+})
+
 app.use("/api/v1", v1);
+app.use("/assets", express.static(path.resolve("./data/client")))
+
+app.get("/", (req, res) => {
+  res.sendFile(path.resolve("./data/client/pages/index.html"))
+})
+
+app.get("/bg", (req, res) => {
+  res.sendFile(path.resolve("./data/client/pages/bgtest.html"))
+})
 
 export const socketServer = new WebsocketServer(ews.getWss());
 socketServer.register();

@@ -1,0 +1,160 @@
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    position:relative;
+    height:500px;
+    margin-top: 50px;
+    font-family: 'Fira Sans', sans-serif;
+    text-align:center;
+    background-color: #35353f
+}
+
+.content .links {
+    margin-top:90px;
+}
+
+a {
+    text-decoration: none;
+    color: white;
+    transition-duration:0.4s;
+}
+
+a:hover {
+    color: #ff00aa;
+}
+
+.logo {
+    position: relative;
+    bottom: 180px;
+    color: #ff007f;
+    text-decoration: none;
+}
+
+.content {
+    position: relative;
+    bottom: 130px;
+    color:#00aaff
+}
+
+.content .subtitle {
+    display:flex;
+    position:absolute;
+    top:32px;
+    left:calc(50% - 90px);
+    color: #aaaaaa;
+}
+
+.content .about {
+    margin-top:150px;
+}
+
+.content .why {
+    margin-top:150px;
+    display:table;
+    position: relative;
+    left: calc(50% - 475px);
+    text-align:center;
+}
+
+.content .why .reason {
+    text-align:center;
+    position:relative;
+    float: left;
+    width: 250px;
+    height: 270px;
+    border:2px solid;
+    border-color:#22ff88;
+    background-color: #38384f;
+    border-radius:10px;
+/*     width: 200px; */
+    margin-right: 10px;
+    margin-left: 10px;
+    margin-bottom:20px;
+    padding: 20px;
+    transition-duration:0.5s;
+    font-size:16px;
+
+}
+
+.content .why .reason:hover {
+    border-color:#ff95d6;
+    color: #ff95d6;
+    font-size: 17.6px;
+    height: 280px;
+    width: 270px;
+    margin-left:0px;
+    margin-right: 0px;
+    margin-bottom:10px;
+}
+
+.content .shots {
+    display: block;
+    text-align:center;
+    position:relative;
+}
+
+.content .shots .desc {
+    color: #ff95d6;
+}
+
+.links button {
+    width: 185px;
+    margin-right:8px;
+    margin-left:8px;
+}
+
+.footer {
+    color: #ff95d6;
+}
+
+button {
+    margin-bottom:10px;
+    height: 50px;
+    width:250px;
+    background-color: #aa00ff;
+    cursor:pointer;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    margin-right: 10px;
+    margin-left: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 10px;
+    transition-duration: 0.4s;
+}
+
+button:hover {
+    background-color: #ff00aa;
+    color: white;
+}
+
+@media screen and (max-width: 700px) {
+    .content, .content .why, .content .links{
+      width:100%;
+    }
+
+    .content .why {
+        left: calc(50% - 45vw);
+    }
+
+    .logo {
+        bottom: 15vh;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .content .subtitle {
+        top: 50px;
+    }
+
+    .content .start_buttons {
+        margin-top:10px;
+    }
+}

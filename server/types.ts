@@ -10,7 +10,7 @@ export interface BaseChannelType {
 export interface FriendsServerToClient extends BaseChannelType {
   type: "friends";
   data:
-    | {
+     {
         method: "get";
         friends: {
           uuid: string;
@@ -80,7 +80,7 @@ export interface FriendsServerToClient extends BaseChannelType {
 export interface FriendsClientToServer extends BaseChannelType {
   type: "friends";
   data:
-    | {
+     {
         method: "get";
       }
     | {
@@ -123,7 +123,7 @@ export interface StatusUpdateServerToClient extends BaseChannelType {
 export interface StatusUpdateClientToServer extends BaseChannelType {
   type: "statusUpdate";
   data:
-    | {
+     {
         updateType: "online";
         uuid: string;
         update: {
@@ -156,6 +156,25 @@ export interface StatusUpdateClientToServer extends BaseChannelType {
       };
 }
 
+export interface UserServerToClient extends BaseChannelType {
+  type: "user";
+  data: {
+    method: "get";
+    users: {
+      uuid: string;
+      online: boolean;
+    }[]
+  };
+}
+
+export interface UserClientToServer extends BaseChannelType {
+  type: "user";
+  data: {
+    method: "get";
+    users: string[]
+  };
+}
+
 export interface ErrorServerToClient extends BaseChannelType {
   type: "error";
   data: {
@@ -178,6 +197,10 @@ export interface ChannelTypes {
   statusUpdate: {
     clientToServer: StatusUpdateClientToServer;
     serverToClient: StatusUpdateServerToClient;
+  };
+  user: {
+    clientToServer: UserClientToServer;
+    serverToClient: UserServerToClient;
   };
   error: {
     clientToServer: ErrorClientToServer;
