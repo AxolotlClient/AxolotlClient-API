@@ -117,7 +117,9 @@ export interface FriendsClientToServer extends BaseChannelType {
 
 export interface StatusUpdateServerToClient extends BaseChannelType {
   type: "statusUpdate";
-  data: Status
+  data: Status & {
+    uuid: string;
+  }
 }
 
 export interface StatusUpdateClientToServer extends BaseChannelType {
