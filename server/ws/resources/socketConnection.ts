@@ -135,14 +135,12 @@ export default class WebsocketConnection {
   }
 
   public broadcastToFriends<T = ServerToClientChannelTypes>(message: T): void {
-    const onlineFriends = this.getOnlineFriends();
-
-    onlineFriends.forEach((friend) => {
+    this.onlineFriends.forEach((friend) => {
       friend.send(message);
     });
   }
 
-  public getOnlineFriends(): WebsocketConnection[] {
+  public get onlineFriends(): WebsocketConnection[] {
     return Array.from(socketServer.connectionManager.connections.values()).filter(
       (connection) =>
         connection.uuid !== this.uuid && connection.status.online && this.friends.includes(connection.uuid)
