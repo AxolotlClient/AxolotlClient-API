@@ -127,6 +127,7 @@ export default class WebsocketConnection {
         data: {
           ... this.status,
           uuid: this.uuid,
+          updateType: "online"
         },
         timestamp: Date.now()
       }

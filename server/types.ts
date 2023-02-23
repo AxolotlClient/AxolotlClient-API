@@ -118,6 +118,7 @@ export interface FriendsClientToServer extends BaseChannelType {
 export interface StatusUpdateServerToClient extends BaseChannelType {
   type: "statusUpdate";
   data: Status & {
+    updateType: "online" | "inGame" | "inGameUnknown";
     uuid: string;
   }
 }

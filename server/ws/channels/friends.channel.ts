@@ -110,14 +110,16 @@ export default class FriendsChannel extends WebsocketChannel<FriendsServerToClie
             },
           });
 
-        const blocked = await db.getEntityManager().find(User, { uuid: socket.uuid });
+        const blocked = await db.getEntityManager().find(User, {
+          uuid: socket.blocked
+        })
 
         socket.send({
           type: "friends",
           id,
           data: {
             method: "getBlocked",
-            blocked,
+            blocked: blocked.map((b) => b.uuid),
           },
         });
 
