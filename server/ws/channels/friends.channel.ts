@@ -1,5 +1,3 @@
-import { WebSocket } from "ws";
-import WebsocketServer from "..";
 import { socketServer } from "../..";
 import { db } from "../../..";
 import { FriendInvite } from "../../../database/entities/friendInvite";
