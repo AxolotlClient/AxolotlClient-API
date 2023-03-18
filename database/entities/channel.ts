@@ -16,6 +16,6 @@ export class Channel {
         mappedBy: user => user.channels,
         owner: true
     })
-    members = new Collection<User>(this);
+    users = new Collection<User>(this);
 
 }

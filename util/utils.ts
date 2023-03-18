@@ -25,4 +25,9 @@ export default class Utils {
     }
     return key;
   }
+
+  // return only values of array that are in whitelist
+  public static onlyAllowWhitelistedArrayValues<T, V extends T>(array: T[], whitelist: V[] ): V[] {
+    return array.filter((value) => whitelist.includes(value as V)) as V[];
+  }
 }

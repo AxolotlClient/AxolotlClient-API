@@ -178,16 +178,16 @@ export interface UserClientToServer extends BaseChannelType {
   };
 }
 
-export interface ChannelServerToClient extends BaseChannelType {
+export interface ChannelsServerToClient extends BaseChannelType {
   type: "channel";
   data: {
     method: "get"; // gets channel by id
     channel: Channel<"dm" | "group", "user" | "user.status" | "messages">;
   } | {
-    method: "get"; // gets channels that the user is in, intended for channel list
+    method: "getList"; // gets channels that the user is in, intended for channel list
     channels: Channel<"dm" | "group", "user" | "user.status" | "messages">[];
   } | {
-    method: "get"; // gets channels that contain all users
+    method: "getUsers"; // gets channels that contain all users
     channels: Channel<"dm" | "group", "user" | "user.status" | "messages">[];
   } | {
     method: "getDM"; // gets DM channel between the sender and another user
@@ -204,7 +204,7 @@ export interface ChannelServerToClient extends BaseChannelType {
   };
 }
 
-export interface ChannelClientToServer extends BaseChannelType {
+export interface ChannelsClientToServer extends BaseChannelType {
   type: "channel";
   data:
     | {
@@ -213,13 +213,13 @@ export interface ChannelClientToServer extends BaseChannelType {
         include?: ("users" | "users.status" | "messages")[]; // optional, defaults to []
       }
     | {
-        method: "get"; // gets channels that the user is in, intended for channel list
+        method: "getList"; // gets channels that the user is in, intended for channel list
         user: string;
         sortBy?: "alphabetical" | "lastMessage"; // optional, defaults to "lastMessage"
         include?: ("users" | "users.status" | "messages")[]; // optional, defaults to []
       }
     | {
-        method: "get"; // gets channels that contain all users
+        method: "getUsers"; // gets channels that contain all users
         users: string[];
         sortBy: "alphabetical" | "lastMessage";
         include?: ("users" | "users.status" | "messages")[]; // optional, defaults to []
@@ -263,6 +263,8 @@ export interface ChatServerToClient extends BaseChannelType {
   type: "chat";
   data: {
     method: "message";
+    channel: Channel<"dm" | "group", "user.status">;
+    message: Message<"user.status">
   };
 }
 
@@ -271,7 +273,7 @@ export interface ChatClientToServer extends BaseChannelType {
   data: {
     method: "message";
     channel: string;
-    message: string;
+    message: string
   };
 }
 
