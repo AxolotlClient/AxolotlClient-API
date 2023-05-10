@@ -58,24 +58,24 @@ Sent by server to client in response to [Get Friend | Client to Server](../clien
     </tr>
     <tr>
         <td>0x1A</td>
-        <td>32</td>
+        <td>64</td>
         <td>Status Title</td>
         <td>string</td>
         <td>Padded at end with null bytes <code>0x00</code></td>
     </tr>
     <tr>
-        <td>0x3A</td>
+        <td>0x5A</td>
         <td>64</td>
         <td>Status Description</td>
         <td>string</td>
-        <td>Padded at end with null bytes <code>0x00</code></td>
+        <td>Padded at end with null bytes <code>0x00</code> |  Uses the <a href="../../../formats/keywords.md">Keywords</a> format</td>
     </tr>
     <tr>
-        <td>0x7A</td>
+        <td>0x9A</td>
         <td>32</td>
         <td>Status Icon Path</td>
         <td>string</td>
-        <td>Padded at end with null bytes <code>0x00</code></td>
+        <td>Padded at end with null bytes <code>0x00</code> | Uses the <a href="../../../formats/keywords.md">Keywords</a> format</td></td>
     </tr>
     </tbody>
 </table>
