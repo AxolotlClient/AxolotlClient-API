@@ -1,8 +1,4 @@
-# Friends List | Server To Client
-
-## ID 0x03
-
-Sent by server to client in response to [Friends List | Client to Server](../clientToServer/0x03_friend_list.md).
+# Error | Server to Client
 
 <table>
     <thead>
@@ -27,7 +23,7 @@ Sent by server to client in response to [Friends List | Client to Server](../cli
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x03</code></td>
+        <td>Must be <code>0xFF</code></td>
     </tr>
     <tr>
         <td>0x04</td>
@@ -46,22 +42,8 @@ Sent by server to client in response to [Friends List | Client to Server](../cli
     <tr>
         <td>0x09</td>
         <td>4</td>
-        <td>Online Friends</td>
+        <td>Error code</td>
         <td>uint32</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>0x0A</td>
-        <td>4</td>
-        <td>Friend Count <code>[f]</code</td>
-        <td>uint32</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>0x0E</td>
-        <td>16 * <code>f</code></td>
-        <td>Friend UUIDs</td>
-        <td>uuid</td>
         <td></td>
     </tr>
     </tbody>
