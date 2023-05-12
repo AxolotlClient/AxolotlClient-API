@@ -34,12 +34,14 @@ Sent by server to client in response to [Get Friend | Client to Server](../clien
         <td>1</td>
         <td>Protocol Version</td>
         <td>uint8</td>
+        <td></td>
     </tr>
     <tr>
         <td>0x05</td>
         <td>4</td>
         <td>Packet Identifier</td>
         <td>uint32</td>
+        <td></td>
     </tr>
     <tr>
         <td>0x0A</td>

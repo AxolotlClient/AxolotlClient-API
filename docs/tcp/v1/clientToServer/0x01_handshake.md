@@ -34,12 +34,14 @@ Sent by client to server to initiate handshake. Server will respond with [Handsh
         <td>1</td>
         <td>Protocol Version</td>
         <td>uint8</td>
+        <td></td>
     </tr>
     <tr>
         <td>0x05</td>
         <td>4</td>
         <td>Packet Identifier</td>
         <td>uint32</td>
+        <td></td>
     </tr>
     <tr>
         <td>0x09</td>
