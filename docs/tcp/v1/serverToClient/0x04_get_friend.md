@@ -37,41 +37,47 @@ Sent by server to client in response to [Get Friend | Client to Server](../clien
     </tr>
     <tr>
         <td>0x05</td>
+        <td>4</td>
+        <td>Packet Identifier</td>
+        <td>uint32</td>
+    </tr>
+    <tr>
+        <td>0x0A</td>
         <td>16</td>
         <td>Player Name</td>
         <td>string</td>
         <td>Padded at end with null bytes <code>0x00</code></td>
     </tr>
     <tr>
-        <td>0x15</td>
+        <td>0x19</td>
         <td>4</td>
         <td>Last Seen</td>
         <td>uint64</td>
         <td>Last login time, in epoch seconds</td>
     </tr>
     <tr>
-        <td>0x19</td>
+        <td>0x1D</td>
         <td>1</td>
         <td>Online</td>
         <td>uint8</td>
         <td>1 if online, 0 if offline</td>
     </tr>
     <tr>
-        <td>0x1A</td>
+        <td>0x1E</td>
         <td>64</td>
         <td>Status Title</td>
         <td>string</td>
         <td>Padded at end with null bytes <code>0x00</code></td>
     </tr>
     <tr>
-        <td>0x5A</td>
+        <td>0x5E</td>
         <td>64</td>
         <td>Status Description</td>
         <td>string</td>
         <td>Padded at end with null bytes <code>0x00</code> |  Uses the <a href="../../../formats/keywords.md">Keywords</a> format</td>
     </tr>
     <tr>
-        <td>0x9A</td>
+        <td>0x9E</td>
         <td>32</td>
         <td>Status Icon Path</td>
         <td>string</td>

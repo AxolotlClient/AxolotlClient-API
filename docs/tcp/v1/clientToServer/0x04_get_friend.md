@@ -37,6 +37,12 @@ Sent by client to server to request friend information. Server will respond with
     </tr>
     <tr>
         <td>0x05</td>
+        <td>4</td>
+        <td>Packet Identifier</td>
+        <td>uint32</td>
+    </tr>
+    <tr>
+        <td>0x09</td>
         <td>16</td>
         <td>Friend UUID</td>
         <td>uuid</td>

@@ -35,22 +35,28 @@ Sent by server to client in response to [Friends List | Client to Server](../cli
         <td>Protocol Version</td>
         <td>uint8</td>
     </tr>
-        <tr>
+    <tr>
         <td>0x05</td>
+        <td>4</td>
+        <td>Packet Identifier</td>
+        <td>uint32</td>
+    </tr>
+    <tr>
+        <td>0x09</td>
         <td>4</td>
         <td>Online Friends</td>
         <td>uint64</td>
         <td></td>
     </tr>
     <tr>
-        <td>0x05</td>
+        <td>0x0A</td>
         <td>4</td>
         <td>Friend Count <code>[f]</code</td>
         <td>uint64</td>
         <td></td>
     </tr>
     <tr>
-        <td>0x09</td>
+        <td>0x0E</td>
         <td>16 * <code>f</code></td>
         <td>Friend UUIDs</td>
         <td>uuid</td>

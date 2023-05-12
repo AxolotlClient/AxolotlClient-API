@@ -37,6 +37,12 @@ Sent after client sends handshake. See [Handshake | Client to Server](../clientT
     </tr>
     <tr>
         <td>0x05</td>
+        <td>4</td>
+        <td>Packet Identifier</td>
+        <td>uint32</td>
+    </tr>
+    <tr>
+        <td>0x09</td>
         <td>1</td>
         <td>Handshake Status</td>
         <td>uint8</td>

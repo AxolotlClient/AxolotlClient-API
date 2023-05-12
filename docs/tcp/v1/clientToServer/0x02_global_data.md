@@ -35,5 +35,11 @@ Request global data from server. Server will respond with [Global Data | Server 
         <td>Protocol Version</td>
         <td>uint8</td>
     </tr>
+    <tr>
+        <td>0x05</td>
+        <td>4</td>
+        <td>Packet Identifier</td>
+        <td>uint32</td>
+    </tr>
     </tbody>
 </table>

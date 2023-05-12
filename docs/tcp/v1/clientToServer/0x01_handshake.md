@@ -37,6 +37,12 @@ Sent by client to server to initiate handshake. Server will respond with [Handsh
     </tr>
     <tr>
         <td>0x05</td>
+        <td>4</td>
+        <td>Packet Identifier</td>
+        <td>uint32</td>
+    </tr>
+    <tr>
+        <td>0x09</td>
         <td>16</td>
         <td>Player UUID</td>
         <td>uuid</td>
