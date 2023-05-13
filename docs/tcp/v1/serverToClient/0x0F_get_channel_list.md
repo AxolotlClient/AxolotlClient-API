@@ -1,6 +1,8 @@
-# Get Channel List | Client To Server
+# Get Channel List | Server To Client
 
 ## ID 0x0F
+
+Sent in response to [Get Channel List | Client To Server](../clientToServer/0x0F_get_channel_list.md)
 
 <table>
     <thead>
@@ -39,6 +41,20 @@
         <td>4</td>
         <td>Packet Identifier</td>
         <td>uint32</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>0x09</td>
+        <td>4</td>
+        <td>Channel Count <code>[f]</code></td>
+        <td>uint32</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>0x0D</td>
+        <td>5 * <code>[f]</code></td>
+        <td>Channel IDs</td>
+        <td>string</td>
         <td></td>
     </tr>
     </tbody>

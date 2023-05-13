@@ -69,6 +69,70 @@
         <td>uuid</td>
         <td>The Players who take part in this chat (excluding this one)</td>
     </tr>
+    <tr>
+        <td>0x09 + 16 * <code>[f]</code></td>
+        <td>1</td>
+        <td>Count of Messages <code>[g]</code></td>
+        <td>uint8</td>
+        <td>The count of Messages</td>
+    </tr>
+    <tr>
+        <td>0x0A + 16 * <code>[f]</code></td>
+        <td>variable</td>
+        <td>Messages</td>
+        <td>multiple</td>
+        <td>See below for the message format</td>
+    </tr>
+    </tbody>
+</table>
+
+## Message Format
+<table>
+    <thead>
+        <tr>
+            <th>Offset</th>
+            <th>Size</th>
+            <th>Field Name</th>
+            <th>Field Type</th>
+            <th>Notes</th>
+        </tr>
+    </thead>   
+    <tr>
+        <td>0x00</td>
+        <td>16</td>
+        <td>Message ID</td>
+        <td>uuid</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>0x10</td>
+        <td>8</td>
+        <td>Message Timestamp</td>
+        <td>uint64</td>
+        <td>Timestamp in UNIX epoch seconds</td>
+    </tr>
+    <tr>
+        <td>0x18</td>
+        <td>1</td>
+        <td>Message Flags</td>
+        <td>uint8</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>0x19</td>
+        <td>4</td>
+        <td>Content length <code>[f]</code></td>
+        <td>uint32</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>0x1D</td>
+        <td><code>[f]</code></td>
+        <td>Message Content</td>
+        <td>string</td>
+        <td></td>
+    </tr>
+    <tbody>
     </tbody>
 </table>
 

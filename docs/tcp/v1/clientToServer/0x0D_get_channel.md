@@ -54,5 +54,6 @@
         <td>Player UUIDs</td>
         <td>uuid</td>
         <td>The Players who take part in this chat (excluding this one)</td>
+    </tr>
     </tbody>
 </table>
