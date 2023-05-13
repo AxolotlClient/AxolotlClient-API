@@ -1,8 +1,8 @@
-# Get Messages | Client To Server
+# Get Messages | Server To Client
 
 ## ID 0x0E
 
-Sent to the server when loading .
+Sent in response to [Get Messages | Client To Server](../clientToServer/0x0E_get_messages.md)
 
 <table>
     <thead>
@@ -27,7 +27,7 @@ Sent to the server when loading .
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x0E</code></td>
+        <td>Must be <code>0x0D</code></td>
     </tr>
     <tr>
         <td>0x04</td>
@@ -46,30 +46,23 @@ Sent to the server when loading .
     <tr>
         <td>0x09</td>
         <td>5</td>
-        <td>Channel ID</td>
+        <td>Channel Id</td>
         <td>string</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>0x0D</td>
-        <td>1</td>
-        <td>Count of Messages <code>[f]</code></td>
-        <td>uint8</td>
-        <td>The count of Messages to load from the server</td>
+        <td>Random string uniquely identifying this channel</td>
     </tr>
     <tr>
         <td>0x0E</td>
         <td>8</td>
-        <td>Timestamp to load</td>
+        <td>Count of Messages <code>[f]</code></td>
         <td>uint64</td>
-        <td></td>
+        <td>The count of Messages</td>
     </tr>
     <tr>
-        <td>0x17</td>
-        <td>1</td>
-        <td>Load mode</td>
-        <td>uint8</td>
-        <td><code>0x00</code> to load messages *before* the timestamp, <code>0x01</code> to load messages *after* the timestamp</td>
+        <td>0x16</td>
+        <td>variable</td>
+        <td>Messages</td>
+        <td>multiple</td>
+        <td>See below for the message format</td>
     </tr>
     </tbody>
 </table>
@@ -90,7 +83,7 @@ Sent to the server when loading .
         <td>16</td>
         <td>Sender UUID</td>
         <td>uuid</td>
-        <td></td>
+        <td>The UUID of the player who sent this message</td>
     </tr>
     <tr>
         <td>0x10</td>
@@ -102,7 +95,7 @@ Sent to the server when loading .
     <tr>
         <td>0x18</td>
         <td>1</td>
-        <td>Message Flags</td>
+        <td>Message Type</td>
         <td>uint8</td>
         <td></td>
     </tr>
