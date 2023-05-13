@@ -1,4 +1,8 @@
-# Error | Server to Client
+# Remove Friend | Client to Server
+
+## ID 0x09
+
+Sent by client to server to remove a friend connection between two users. Server will respond with [Remove Friend | Server to Client](../serverToClient/0x09_remove_friend.md).
 
 <table>
     <thead>
@@ -23,7 +27,7 @@
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0xFF</code></td>
+        <td>Must be <code>0x09</code></td>
     </tr>
     <tr>
         <td>0x04</td>
@@ -37,14 +41,15 @@
         <td>4</td>
         <td>Packet Identifier</td>
         <td>uint32</td>
-        <td>Must be <code>0</code></td>
+        <td></td>
     </tr>
     <tr>
         <td>0x09</td>
-        <td>4</td>
-        <td>Error code</td>
-        <td>uint32</td>
-        <td></td>
+        <td>16</td>
+        <td>User UUID</td>
+        <td>uuid</td>
+        <td>The Friend to cut ties with</td>
     </tr>
     </tbody>
 </table>
+

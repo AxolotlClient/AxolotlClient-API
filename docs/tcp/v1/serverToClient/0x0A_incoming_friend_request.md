@@ -1,4 +1,8 @@
-# Error | Server to Client
+# Incoming Friend Request | Server To Client
+
+## ID 0x0A
+
+Sent to the target user of a Friend Request, if they are currently online. The client usually would respond to this with a [Friend Request Reaction | Client To Server](../clientToServer/0x07_friend_request_reaction.md) request, but not necessarily as an immediate action.
 
 <table>
     <thead>
@@ -23,7 +27,7 @@
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0xFF</code></td>
+        <td>Must be <code>0x06</code></td>
     </tr>
     <tr>
         <td>0x04</td>
@@ -37,14 +41,14 @@
         <td>4</td>
         <td>Packet Identifier</td>
         <td>uint32</td>
-        <td>Must be <code>0</code></td>
+        <td></td>
     </tr>
     <tr>
         <td>0x09</td>
-        <td>4</td>
-        <td>Error code</td>
-        <td>uint32</td>
-        <td></td>
+        <td>16</td>
+        <td>User UUID</td>
+        <td>uuid</td>
+        <td>The user who sent the friend request</td>
     </tr>
     </tbody>
 </table>

@@ -1,4 +1,8 @@
-# Error | Server to Client
+# Get User | Client to Server
+
+## ID 0x05
+
+Sent by client to server to request user information. Server will respond with [Get User | Server to Client](../serverToClient/0x05_get_user.md).
 
 <table>
     <thead>
@@ -23,7 +27,7 @@
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0xFF</code></td>
+        <td>Must be <code>0x04</code></td>
     </tr>
     <tr>
         <td>0x04</td>
@@ -37,13 +41,13 @@
         <td>4</td>
         <td>Packet Identifier</td>
         <td>uint32</td>
-        <td>Must be <code>0</code></td>
+        <td></td>
     </tr>
     <tr>
         <td>0x09</td>
-        <td>4</td>
-        <td>Error code</td>
-        <td>uint32</td>
+        <td>16</td>
+        <td>User UUID</td>
+        <td>uuid</td>
         <td></td>
     </tr>
     </tbody>

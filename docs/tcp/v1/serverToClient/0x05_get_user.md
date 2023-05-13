@@ -1,4 +1,8 @@
-# Error | Server to Client
+# Get User | Server to Client
+
+## ID 0x05
+
+Sent by server to client in response to [Get User | Client to Server](../clientToServer/0x05_get_friend.md).
 
 <table>
     <thead>
@@ -23,7 +27,7 @@
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0xFF</code></td>
+        <td>Must be <code>0x04</code></td>
     </tr>
     <tr>
         <td>0x04</td>
@@ -37,14 +41,14 @@
         <td>4</td>
         <td>Packet Identifier</td>
         <td>uint32</td>
-        <td>Must be <code>0</code></td>
+        <td></td>
     </tr>
     <tr>
         <td>0x09</td>
-        <td>4</td>
-        <td>Error code</td>
-        <td>uint32</td>
-        <td></td>
+        <td>1</td>
+        <td>Online</td>
+        <td>uint8</td>
+        <td>1 if online, 0 if offline</td>
     </tr>
     </tbody>
 </table>

@@ -1,4 +1,8 @@
-# Error | Server to Client
+# Create Friend Request | Client to Server
+
+## ID 0x06
+
+Sent by client to server to create a friend request. Server will respond with [Create Friend Request | Server to Client](../serverToClient/0x06_create_friend.md).
 
 <table>
     <thead>
@@ -23,7 +27,7 @@
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0xFF</code></td>
+        <td>Must be <code>0x06</code></td>
     </tr>
     <tr>
         <td>0x04</td>
@@ -37,14 +41,16 @@
         <td>4</td>
         <td>Packet Identifier</td>
         <td>uint32</td>
-        <td>Must be <code>0</code></td>
+        <td></td>
     </tr>
     <tr>
         <td>0x09</td>
-        <td>4</td>
-        <td>Error code</td>
-        <td>uint32</td>
-        <td></td>
+        <td>16</td>
+        <td>User UUID</td>
+        <td>uuid</td>
+        <td>The User to send the friend request to</td>
     </tr>
     </tbody>
 </table>
+
+ 

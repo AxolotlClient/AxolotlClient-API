@@ -1,0 +1,7 @@
+# UUID format
+
+123e4567-e89b-12d3-a456-426614174000 :x:
+
+123e4567e89b12d3a456426614174000 :checkmark:
+
+(no hyphens)

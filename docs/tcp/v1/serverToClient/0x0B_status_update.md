@@ -1,4 +1,8 @@
-# Error | Server to Client
+# Status Update | Server To Client
+
+## ID 0x0B
+
+Sent by the server to indicate to the client that a friend's status has changed.
 
 <table>
     <thead>
@@ -23,7 +27,7 @@
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0xFF</code></td>
+        <td>Must be <code>0x01</code></td>
     </tr>
     <tr>
         <td>0x04</td>
@@ -41,10 +45,24 @@
     </tr>
     <tr>
         <td>0x09</td>
-        <td>4</td>
-        <td>Error code</td>
-        <td>uint32</td>
-        <td></td>
+        <td>16</td>
+        <td>Player UUID</td>
+        <td>uuid</td>
+        <td>The UUID of the player whose status has changed</td>
+    </tr>
+    <tr>
+        <td>0x19</td>
+        <td>1</td>
+        <td>Status Update Type</td>
+        <td>uint8</td>
+        <td>See below for more info</td>
     </tr>
     </tbody>
 </table>
+
+## Status Update types
+
+0x1 - online\
+0x2 - offline\
+0x3 - in game\
+0x4 - in game (unknown game)

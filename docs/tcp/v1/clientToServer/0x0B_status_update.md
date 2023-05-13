@@ -1,8 +1,8 @@
-# Friends List | Server To Client
+# Status Update | Client to Server
 
-## ID 0x03
+## ID 0x0B
 
-Sent by server to client in response to [Friends List | Client to Server](../clientToServer/0x03_friend_list.md).
+Sent by client to server to update the status of the user and as a heartbeat. No server response.
 
 <table>
     <thead>
@@ -27,7 +27,7 @@ Sent by server to client in response to [Friends List | Client to Server](../cli
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x03</code></td>
+        <td>Must be <code>0x01</code></td>
     </tr>
     <tr>
         <td>0x04</td>
@@ -45,24 +45,24 @@ Sent by server to client in response to [Friends List | Client to Server](../cli
     </tr>
     <tr>
         <td>0x09</td>
-        <td>4</td>
-        <td>Online Friends</td>
-        <td>uint32</td>
-        <td></td>
+        <td>64</td>
+        <td>Status Title</td>
+        <td>string</td>
+        <td>Padded at end with null bytes <code>0x00</code></td>
     </tr>
     <tr>
-        <td>0x0A</td>
-        <td>4</td>
-        <td>Friend Count <code>[f]</code></td>
-        <td>uint32</td>
-        <td></td>
+        <td>0x49</td>
+        <td>64</td>
+        <td>Status Description</td>
+        <td>string</td>
+        <td>Padded at end with null bytes <code>0x00</code> |  Uses the <a href="../../../formats/keywords.md">Keywords</a> format</td>
     </tr>
     <tr>
-        <td>0x0E</td>
-        <td>16 * <code>f</code></td>
-        <td>Friend UUIDs</td>
-        <td>uuid</td>
-        <td></td>
+        <td>0x89</td>
+        <td>32</td>
+        <td>Status Icon Path</td>
+        <td>string</td>
+        <td>Padded at end with null bytes <code>0x00</code> | Uses the <a href="../../../formats/keywords.md">Keywords</a> format</td></td>
     </tr>
     </tbody>
 </table>

@@ -1,8 +1,8 @@
-# Friends List | Server To Client
+# Get Friend Requests | Server to Client
 
-## ID 0x03
+## ID 0x08
 
-Sent by server to client in response to [Friends List | Client to Server](../clientToServer/0x03_friend_list.md).
+Sent after client requests global data. See [Global Data | Client to Server](../clientToServer/0x08_get_friend_requests.md) for more info.
 
 <table>
     <thead>
@@ -27,7 +27,7 @@ Sent by server to client in response to [Friends List | Client to Server](../cli
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x03</code></td>
+        <td>Must be <code>0x08</code></td>
     </tr>
     <tr>
         <td>0x04</td>
@@ -44,25 +44,32 @@ Sent by server to client in response to [Friends List | Client to Server](../cli
         <td></td>
     </tr>
     <tr>
-        <td>0x09</td>
-        <td>4</td>
-        <td>Online Friends</td>
-        <td>uint32</td>
-        <td></td>
-    </tr>
-    <tr>
         <td>0x0A</td>
         <td>4</td>
-        <td>Friend Count <code>[f]</code></td>
+        <td>Incoming Friend Request Count <code>[f]</code></td>
         <td>uint32</td>
         <td></td>
     </tr>
     <tr>
         <td>0x0E</td>
         <td>16 * <code>f</code></td>
-        <td>Friend UUIDs</td>
+        <td>Incoming Friend Request UUIDs</td>
         <td>uuid</td>
+        <td>The UUIDs of the users sending friend requests</td>
+    </tr>
+    <tr>
+        <td>0x1E + 16 * <code>f</code></td>
+        <td>4</td>
+        <td>Outgoing Friend Request Count <code>[g]</code></td>
+        <td>uint32</td>
         <td></td>
+    </tr>
+    <tr>
+        <td>0x23 + 16 * <code>f</code></td>
+        <td>16 * <code>g</code></td>
+        <td>Outgoing Friend Request UUIDs</td>
+        <td>uuid</td>
+        <td>The UUIDs of the users this user sent friend requests to</td>
     </tr>
     </tbody>
 </table>
