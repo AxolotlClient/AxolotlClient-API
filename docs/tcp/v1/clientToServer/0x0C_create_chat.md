@@ -1,8 +1,6 @@
-# Status Update | Client to Server
+# Create Chat | Client To Server
 
-## ID 0x0B
-
-Sent by client to server to update the status of the user and as a heartbeat. No server response.
+## ID 0x0C
 
 <table>
     <thead>
@@ -27,7 +25,7 @@ Sent by client to server to update the status of the user and as a heartbeat. No
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x0B</code></td>
+        <td>Must be <code>0x0C</code></td>
     </tr>
     <tr>
         <td>0x04</td>
@@ -45,24 +43,19 @@ Sent by client to server to update the status of the user and as a heartbeat. No
     </tr>
     <tr>
         <td>0x09</td>
-        <td>64</td>
-        <td>Status Title</td>
-        <td>string</td>
-        <td>Padded at end with null bytes <code>0x00</code></td>
+        <td>1</td>
+        <td>Count of UUIDs <code>[f]</code></td>
+        <td>uint8</td>
+        <td>The count of UUIDs in the next field</td>
     </tr>
     <tr>
-        <td>0x49</td>
-        <td>64</td>
-        <td>Status Description</td>
-        <td>string</td>
-        <td>Padded at end with null bytes <code>0x00</code> |  Uses the <a href="../../../formats/keywords.md">Keywords</a> format</td>
-    </tr>
-    <tr>
-        <td>0x89</td>
-        <td>32</td>
-        <td>Status Icon Path</td>
-        <td>string</td>
-        <td>Padded at end with null bytes <code>0x00</code> | Uses the <a href="../../../formats/keywords.md">Keywords</a> format</td></td>
+        <td>0x0A</td>
+        <td>16 * <code>[f]</code></td>
+        <td>Player UUIDs</td>
+        <td>uuid</td>
+        <td>The Players who take part in this chat (excluding this one)</td>
     </tr>
     </tbody>
 </table>
+
+Additional Note: DMs are groups with only one recipient.

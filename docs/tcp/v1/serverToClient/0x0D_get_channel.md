@@ -1,8 +1,6 @@
-# Get Friend Requests | Server to Client
+# Get Channel | Server To Client
 
-## ID 0x08
-
-Sent after client requests global data. See [Global Data | Client to Server](../clientToServer/0x08_get_friend_requests.md) for more info.
+## ID 0x0D
 
 <table>
     <thead>
@@ -27,7 +25,7 @@ Sent after client requests global data. See [Global Data | Client to Server](../
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x08</code></td>
+        <td>Must be <code>0x0D</code></td>
     </tr>
     <tr>
         <td>0x04</td>
@@ -44,32 +42,34 @@ Sent after client requests global data. See [Global Data | Client to Server](../
         <td></td>
     </tr>
     <tr>
-        <td>0x0A</td>
-        <td>4</td>
-        <td>Incoming Friend Request Count <code>[f]</code></td>
-        <td>uint32</td>
-        <td></td>
+        <td>0x09</td>
+        <td>5</td>
+        <td>Channel Id</td>
+        <td>string</td>
+        <td>Random string uniquely identifying this channel</td>
     </tr>
     <tr>
         <td>0x0E</td>
-        <td>16 * <code>f</code></td>
-        <td>Incoming Friend Request UUIDs</td>
-        <td>uuid</td>
-        <td>The UUIDs of the users sending friend requests</td>
+        <td>64</td>
+        <td>Channel Name</td>
+        <td>string</td>
+        <td>The name of this channel. See below for more information.</td>
     </tr>
     <tr>
-        <td>0x0E + 16 * <code>f</code></td>
+        <td>0x4E</td>
         <td>4</td>
-        <td>Outgoing Friend Request Count <code>[g]</code></td>
+        <td>Count of UUIDs <code>[f]</code></td>
         <td>uint32</td>
-        <td></td>
+        <td>The count of UUIDs in the next field</td>
     </tr>
     <tr>
-        <td>0x13 + 16 * <code>f</code></td>
-        <td>16 * <code>g</code></td>
-        <td>Outgoing Friend Request UUIDs</td>
+        <td>0x53</td>
+        <td>16 * <code>[f]</code></td>
+        <td>Player UUIDs</td>
         <td>uuid</td>
-        <td>The UUIDs of the users this user sent friend requests to</td>
+        <td>The Players who take part in this chat (excluding this one)</td>
     </tr>
     </tbody>
 </table>
+
+Channel Name: The name of the group, or, in case of a DM, the name of the receiving user. Padded at the end with `0x00`
