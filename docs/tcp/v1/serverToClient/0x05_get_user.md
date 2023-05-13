@@ -50,5 +50,26 @@ Sent by server to client in response to [Get User | Client to Server](../clientT
         <td>uint8</td>
         <td>1 if online, 0 if offline</td>
     </tr>
+    <tr>
+        <td>0x0A</td>
+        <td>64</td>
+        <td>Status Title</td>
+        <td>string</td>
+        <td>Padded at end with null bytes <code>0x00</code></td>
+    </tr>
+    <tr>
+        <td>0x4A</td>
+        <td>64</td>
+        <td>Status Description</td>
+        <td>string</td>
+        <td>Padded at end with null bytes <code>0x00</code> |  Uses the <a href="../../../formats/keywords.md">Keywords</a> format</td>
+    </tr>
+    <tr>
+        <td>0x8A</td>
+        <td>32</td>
+        <td>Status Icon Path</td>
+        <td>string</td>
+        <td>Padded at end with null bytes <code>0x00</code> | Uses the <a href="../../../formats/keywords.md">Keywords</a> format</td></td>
+    </tr>
     </tbody>
 </table>

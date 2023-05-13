@@ -70,14 +70,14 @@
         <td>The Players who take part in this chat (excluding this one)</td>
     </tr>
     <tr>
-        <td>0x09 + 16 * <code>[f]</code></td>
-        <td>1</td>
+        <td>0x53 + 16 * <code>[f]</code></td>
+        <td>8</td>
         <td>Count of Messages <code>[g]</code></td>
-        <td>uint8</td>
+        <td>uint64</td>
         <td>The count of Messages</td>
     </tr>
     <tr>
-        <td>0x0A + 16 * <code>[f]</code></td>
+        <td>0x5B + 16 * <code>[f]</code></td>
         <td>variable</td>
         <td>Messages</td>
         <td>multiple</td>
@@ -100,9 +100,9 @@
     <tr>
         <td>0x00</td>
         <td>16</td>
-        <td>Message ID</td>
+        <td>Sender UUID</td>
         <td>uuid</td>
-        <td></td>
+        <td>The UUID of the player who sent this message</td>
     </tr>
     <tr>
         <td>0x10</td>
@@ -114,7 +114,7 @@
     <tr>
         <td>0x18</td>
         <td>1</td>
-        <td>Message Flags</td>
+        <td>Message Type</td>
         <td>uint8</td>
         <td></td>
     </tr>

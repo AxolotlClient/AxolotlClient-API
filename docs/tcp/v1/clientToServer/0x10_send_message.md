@@ -2,7 +2,7 @@
 
 ## ID 0x10
 
-Sent to the server after sending a message from a chat window. No server response.
+Sent to the server after sending a message from a chat window. The server should send the message to all online members of this channel.
 
 <table>
     <thead>
