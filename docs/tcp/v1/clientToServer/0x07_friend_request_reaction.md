@@ -1,8 +1,8 @@
-# Create Friend Request | Client to Server
+# Friend Request Reaction | Client to Server
 
-## ID 0x06
+## ID 0x07
 
-Sent by client to server to create a friend request. Server will respond with [Create Friend Request | Server to Client](../serverToClient/0x06_create_friend.md).
+Sent by client to server to create a friend request. Server will respond with [Friend Request Reaction | Server to Client](../serverToClient/0x07_friend_request_reaction.md).
 
 <table>
     <thead>
@@ -48,7 +48,14 @@ Sent by client to server to create a friend request. Server will respond with [C
         <td>16</td>
         <td>User UUID</td>
         <td>uuid</td>
-        <td>The User to send the friend request to</td>
+        <td>The User who sent the friend request</td>
+    </tr>
+    <tr>
+        <td>0x19</td>
+        <td>1</td>
+        <td>Reaction indicator</td>
+        <td>uint8</td>
+        <td><code>0x00</code> for denying the request, <code>0x01</code> for accepting it</td>
     </tr>
     </tbody>
 </table>

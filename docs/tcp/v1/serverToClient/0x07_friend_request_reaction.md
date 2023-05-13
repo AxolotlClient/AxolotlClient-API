@@ -45,6 +45,13 @@ Sent to the recipient after a client reacts to a friend request (from the recipi
     </tr>
     <tr>
         <td>0x09</td>
+        <td>16</td>
+        <td>Player UUID</td>
+        <td>uuid</td>
+        <td>The user who accepted the request</td>
+    </tr>
+    <tr>
+        <td>0x19</td>
         <td>1</td>
         <td>Friend Status</td>
         <td>uint8</td>
