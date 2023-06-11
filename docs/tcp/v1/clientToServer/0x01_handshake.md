@@ -50,5 +50,19 @@ Sent by client to server to initiate handshake. Server will respond with [Handsh
         <td>uuid</td>
         <td></td>
     </tr>
+    <tr>
+        <td>0x19</td>
+        <td>40</td>
+        <td>serverId/hash</td>
+        <td>string</td>
+        <td>https://wiki.vg/Protocol_Encryption </td>
+    </tr>
+    <tr>
+        <td>0x41</td>
+        <td>variable, rest of readable bytes</td>
+        <td>Player Name</td>
+        <td>string</td>
+        <td></td>
+    </tr>
     </tbody>
 </table>
