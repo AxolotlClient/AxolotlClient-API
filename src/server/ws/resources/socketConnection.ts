@@ -1,6 +1,6 @@
 import { WebSocket } from "ws";
 import { socketServer } from "../..";
-import { db } from "../../..";
+import { db } from "../../../..";
 import { User } from "../../../database/entities/user";
 import Logger from "../../../util/logger";
 import MojangAPI from "../../../util/mojangApi";

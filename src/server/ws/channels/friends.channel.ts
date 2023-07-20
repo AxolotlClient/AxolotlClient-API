@@ -1,5 +1,5 @@
 import { socketServer } from "../..";
-import { db } from "../../..";
+import { db } from "../../../..";
 import { FriendInvite } from "../../../database/entities/friendInvite";
 import { User } from "../../../database/entities/user";
 import TimeUtils from "../../../util/timeUtils";

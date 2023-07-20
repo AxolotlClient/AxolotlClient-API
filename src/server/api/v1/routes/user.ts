@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { userManager } from "../../..";
-import { db } from "../../../..";
+import { db } from "../../../../..";
 import { User } from "../../../../database/entities/user";
 const router = Router();
 

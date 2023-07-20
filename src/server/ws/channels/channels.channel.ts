@@ -1,4 +1,4 @@
-import { db } from "../../..";
+import { db } from "../../../..";
 import { Channel } from "../../../database/entities/channel";
 import Logger from "../../../util/logger";
 import Utils from "../../../util/utils";
@@ -19,7 +19,7 @@ export default class ChannelsChannel extends WebsocketChannel<ChannelsServerToCl
         super("channels");
     }
 
-    public onMessage(socket: WebsocketConnection, message: ChannelsClientToServer): void {
+    public async onMessage(socket: WebsocketConnection, message: ChannelsClientToServer): Promise<void> {
         if (!message.data.hasOwnProperty("method")) {
             Logger.error("ChannelsChannel", `Received message from ${socket.uuid}, ID: ${socket.connectionId}, but message does not have property "method"!`);
             
@@ -61,16 +61,10 @@ export default class ChannelsChannel extends WebsocketChannel<ChannelsServerToCl
                 return;
             }
 
-            const channelDataIncludeUserStatus = channel.users.map((user) => {
-                return {
-                    ...user,
-                    
-                }
-            }
-
+           
           }
 
             break;
     }
-
+    }
 }

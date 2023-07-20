@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import Logger from "./util/logger";
+import Logger from "./src/util/logger";
 import { config as dotenv } from "dotenv";
 
 // check for env file
@@ -20,7 +20,7 @@ Logger.init();
 
 // load modules
 
-import database from "./database";
-import "./server";
+import database from "./src/database";
+import "./src/server";
 
 export const db = new database();
