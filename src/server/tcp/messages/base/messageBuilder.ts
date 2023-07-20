@@ -1,7 +1,14 @@
-import Uint16MessagePart from "./parts/advanced/uint16MessagePart";
-import Uint32MessagePart from "./parts/advanced/uint32MessagePart";
-import Uint8MessagePart from "./parts/advanced/uint8MessagePart";
-import MessagePart from "./parts/messagePart";
+import BuiltPart from "./parts/builtPart";
+import {
+  BufferMessagePart,
+  MessagePart,
+  StringMessagePart,
+  UUIDMessagePart,
+  Uint16MessagePart,
+  Uint32MessagePart,
+  Uint64MessagePart,
+  Uint8MessagePart,
+} from "./parts/messageParts";
 
 export default class MessageBuilder<Message = {}> {
   private message: Message;
@@ -12,56 +19,104 @@ export default class MessageBuilder<Message = {}> {
     this.message = message;
   }
 
-  public parse(data: Buffer): Message {
-    
-    let offset = 0;
-
-    for (const part of this.parts) {
-        part.data = data.slice(offset, offset + part.length) as any;
-        offset += part.length;
-        }
-        return this.message;
+  public build(): Message {
+    return this.message;
   }
 
   // Message Parts
 
-  private addPart<T extends string, DataType>(
-    name: T,
+  private addPart<Name extends string, DataType extends MessagePart<any, false>>(
+    name: Name,
     part: MessagePart<DataType>
-  ): MessageBuilder<Message & { [K in T]: DataType }> {
-    const newBuilder = new MessageBuilder<Message & { [K in T]: DataType }>({
+  ): MessageBuilder<
+    {
+      [K in Name]: BuiltPart<Name, DataType>;
+    } & Message
+  > {
+    const newBuilder = new MessageBuilder<{ [K in Name]: BuiltPart<Name, DataType> } & Message>({
       ...this.message,
-      [name]: {
-        type: part.type,
-        length: part.length,
-        index: this.index++,
-      },
-    } as Message & { [K in T]: DataType });
+      [name]: new BuiltPart(name, part, this.index++),
+    } as Message & { [K in Name]: BuiltPart<Name, DataType> });
 
     newBuilder.parts = [...this.parts, part];
     return newBuilder;
   }
 
-  public uint8<T extends string>(name: T): MessageBuilder<Message & { [K in T]: number }> {
+  public uint8<T extends string>(
+    name: T
+  ):MessageBuilder<
+  {
+    [K in T]: BuiltPart<T, Uint8MessagePart<false>>;
+  } & Message
+> {
     return this.addPart(name, new Uint8MessagePart(void 0));
   }
 
-  public uint16<T extends string>(name: T): MessageBuilder<Message & { [K in T]: number }> {
+  public uint16<T extends string>(
+    name: T
+  ): MessageBuilder<
+  {
+    [K in T]: BuiltPart<T, Uint16MessagePart<false>>;
+  } & Message> {
     return this.addPart(name, new Uint16MessagePart(void 0));
   }
 
-  public uint32<T extends string>(name: T): MessageBuilder<Message & { [K in T]: number }> {
+  public uint32<T extends string>(
+    name: T
+  ):  MessageBuilder<
+  {
+    [K in T]: BuiltPart<T, Uint32MessagePart<false>>;
+  } & Message> {
     return this.addPart(name, new Uint32MessagePart(void 0));
   }
 
-  public uint64<T extends string>(name: T): MessageBuilder<Message & { [K in T]: number }> {
-    return this.addPart(name, new Uint32MessagePart(void 0));
+  public uint64<T extends string>(
+    name: T
+  ): MessageBuilder<
+  {
+    [K in T]: BuiltPart<T, Uint64MessagePart<false>>;
+  } & Message> {
+    return this.addPart(name, new Uint64MessagePart(void 0));
+  }
+
+  public buffer<T extends string>(
+    name: T,
+    length: number
+  ):  MessageBuilder<
+  {
+    [K in T]: BuiltPart<T, BufferMessagePart<false>>;
+  } & Message> {
+    return this.addPart(name, new BufferMessagePart(length, void 0));
+  }
+
+  public string<T extends string>(
+    name: T,
+    length: number
+  ):  MessageBuilder<
+  {
+    [K in T]: BuiltPart<T, StringMessagePart<false>>;
+  } & Message> {
+    return this.addPart(name, new BufferMessagePart(length, void 0));
+  }
+
+  public uuid<T extends string>(
+    name: T
+  ):  MessageBuilder<
+  {
+    [K in T]: BuiltPart<T, UUIDMessagePart<false>>;
+  } & Message> {
+    return this.addPart(name, new BufferMessagePart(16, void 0));
   }
 }
 
-
 const test = new MessageBuilder()
-    .uint8("type")
-    .uint16("length")
-    .uint32("data")
+  .uint8("type")
+  .uint16("length")
+  .uint32("data")
+  .uuid("uuid")
+  .buffer("buffer", 16)
+  .string("string", 16)
+  .uint64("uint64")
+  .build();
 
+  
