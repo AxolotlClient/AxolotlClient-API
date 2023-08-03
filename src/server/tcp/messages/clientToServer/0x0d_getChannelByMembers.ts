@@ -3,9 +3,9 @@ import UUID from "../../../../util/uuid";
 import Message, { MessageType } from "../base/message";
 
 /**
- * Sent by client to server to create a channel.
+ * Sent by client to server to get a channel by members.
  */
-export default class C_CreateChannel extends Message<
+export default class C_GetChannelByMembers extends Message<
   MessageType.ClientToServer,
   {
     userCount: number;
@@ -13,10 +13,10 @@ export default class C_CreateChannel extends Message<
   }
 > {
   constructor() {
-    super(MessageType.ClientToServer, "C_CreateChannel", 0x0c);
+    super(MessageType.ClientToServer, "C_GetChannelByMembers", 0x0d);
   }
 
-  public parse(data: Buffer): C_CreateChannel {
+  public parse(data: Buffer): C_GetChannelByMembers {
     data = this.getHeaderData(data);
 
     const userCount = data.readInt8(0);
