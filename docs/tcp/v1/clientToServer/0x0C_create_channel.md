@@ -1,4 +1,4 @@
-# Create Chat | Client To Server
+# Create Channel | Client To Server
 
 ## ID 0x0C
 
