@@ -69,7 +69,7 @@ Sent to the server when loading .
         <td>1</td>
         <td>Load mode</td>
         <td>uint8</td>
-        <td><code>0x00</code> to load messages *before* the timestamp, <code>0x01</code> to load messages *after* the timestamp</td>
+        <td><code>0x00</code> to load messages <strong>before</strong> the timestamp, <code>0x01</code> to load messages <strong>after</strong> the timestamp</td>
     </tr>
     </tbody>
 </table>
