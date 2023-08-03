@@ -1,5 +1,5 @@
 /**
- * Custon UUID class to make it easier to work with UUIDs.
+ * Custom UUID class to make it easier to work with UUIDs.
  */
 export default class UUID extends String {
   constructor(uuid: string) {
