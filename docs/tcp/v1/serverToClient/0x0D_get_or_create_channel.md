@@ -1,4 +1,4 @@
-# Get Channel | Server To Client
+# Get or create Channel | Server To Client
 
 ## ID 0x0D
 
