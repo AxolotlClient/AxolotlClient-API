@@ -1,8 +1,8 @@
-# Friends List | Client to Server
+# Report User | Client To Server
 
-## ID 0x03
+## ID 0x19
 
-Sent by client to server to request friends list. Server will respond with [Friends List | Server to Client](../serverToClient/0x03_friends_list.md).
+Sent to the server to report a User. No server response.
 
 <table>
     <thead>
@@ -27,7 +27,7 @@ Sent by client to server to request friends list. Server will respond with [Frie
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x03</code></td>
+        <td>Must be <code>0x0D</code></td>
     </tr>
     <tr>
         <td>0x04</td>
@@ -43,5 +43,12 @@ Sent by client to server to request friends list. Server will respond with [Frie
         <td>uint32</td>
         <td></td>
     </tr>
-    </tbody>
+    <tr>
+        <td>0x09</td>
+        <td>16</td>
+        <td>Sender UUID</td>
+        <td>uuid</td>
+        <td>The UUID of the reported player</td>
+    </tr>
 </table>
+

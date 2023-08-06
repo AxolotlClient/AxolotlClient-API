@@ -1,8 +1,8 @@
-# Friends List | Client to Server
+# Upload Screenshot | Server to Client
 
-## ID 0x03
+## ID 0x17
 
-Sent by client to server to request friends list. Server will respond with [Friends List | Server to Client](../serverToClient/0x03_friends_list.md).
+Sent by server to client in response to [Upload Screenshot | Client to Server](../clientToServer/0x17_upload_screenshot.md).
 
 <table>
     <thead>
@@ -27,7 +27,7 @@ Sent by client to server to request friends list. Server will respond with [Frie
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x03</code></td>
+        <td>Must be <code>0x04</code></td>
     </tr>
     <tr>
         <td>0x04</td>
@@ -43,5 +43,14 @@ Sent by client to server to request friends list. Server will respond with [Frie
         <td>uint32</td>
         <td></td>
     </tr>
+    <tr>
+        <td>0x09</td>
+        <td>rest of the readable bytes of this packet</td>
+        <td>The URL under which this screenshot is now available</td>
+        <td>string</td>
+        <td></td>
+    </tr>
     </tbody>
 </table>
+
+

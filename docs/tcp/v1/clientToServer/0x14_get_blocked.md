@@ -1,8 +1,9 @@
-# Friends List | Client to Server
+ 
+# Get Blocked | Client to Server
 
-## ID 0x03
+## ID 0x14
 
-Sent by client to server to request friends list. Server will respond with [Friends List | Server to Client](../serverToClient/0x03_friends_list.md).
+Sent by client to server to request blocked users. Server will respond with [Get Blocked | Server to Client](../serverToClient/0x14_get_blocked.md).
 
 <table>
     <thead>

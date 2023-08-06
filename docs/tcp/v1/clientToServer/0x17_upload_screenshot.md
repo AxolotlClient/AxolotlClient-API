@@ -1,8 +1,8 @@
-# Friends List | Client to Server
+# Upload Screenshot | Client To Server
 
-## ID 0x03
+## ID 0x17
 
-Sent by client to server to request friends list. Server will respond with [Friends List | Server to Client](../serverToClient/0x03_friends_list.md).
+Sent to the server after triggering a screenshot upload. The Server should respond with [Upload Screenshot | Server to Client](../serverToClient/0x17_upload_screenshot.md).
 
 <table>
     <thead>
@@ -27,7 +27,7 @@ Sent by client to server to request friends list. Server will respond with [Frie
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x03</code></td>
+        <td>Must be <code>0x0D</code></td>
     </tr>
     <tr>
         <td>0x04</td>
@@ -41,6 +41,27 @@ Sent by client to server to request friends list. Server will respond with [Frie
         <td>4</td>
         <td>Packet Identifier</td>
         <td>uint32</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>0x09</td>
+        <td>4</td>
+        <td>Screenshot Name length <code>[f]</code></td>
+        <td>uint32</td>
+        <td>the length of the screenshot name</td>
+    </tr>
+    <tr>
+        <td>0x0C</td>
+        <td><code>[f]</code></td>
+        <td>Screenshot name</td>
+        <td>string</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>0x18</td>
+        <td>rest of readable bytes</td>
+        <td>Screenshot Image Data</td>
+        <td>string</td>
         <td></td>
     </tr>
     </tbody>

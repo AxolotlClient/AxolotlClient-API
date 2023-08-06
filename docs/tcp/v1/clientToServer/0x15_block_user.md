@@ -1,8 +1,8 @@
-# Friends List | Client to Server
+# Block User | Client to Server
 
-## ID 0x03
+## ID 0x15
 
-Sent by client to server to request friends list. Server will respond with [Friends List | Server to Client](../serverToClient/0x03_friends_list.md).
+Sent by client to server to block a user. The server will respond with [Block User | Server to Client](../serverToClient/0x15_block_user.md) or with an Error if applicable.
 
 <table>
     <thead>
@@ -27,7 +27,7 @@ Sent by client to server to request friends list. Server will respond with [Frie
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x03</code></td>
+        <td>Must be <code>0x09</code></td>
     </tr>
     <tr>
         <td>0x04</td>
@@ -42,6 +42,13 @@ Sent by client to server to request friends list. Server will respond with [Frie
         <td>Packet Identifier</td>
         <td>uint32</td>
         <td></td>
+    </tr>
+    <tr>
+        <td>0x09</td>
+        <td>16</td>
+        <td>User UUID</td>
+        <td>uuid</td>
+        <td>The User to block</td>
     </tr>
     </tbody>
 </table>
