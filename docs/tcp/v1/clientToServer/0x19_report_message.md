@@ -1,8 +1,8 @@
-# Report User | Client To Server
+# Report Message | Client To Server
 
 ## ID 0x19
 
-Sent to the server to report a User. No server response.
+Sent to the server to report a message. No server response.
 
 <table>
     <thead>
@@ -48,7 +48,28 @@ Sent to the server to report a User. No server response.
         <td>16</td>
         <td>Sender UUID</td>
         <td>uuid</td>
-        <td>The UUID of the reported player</td>
+        <td>The UUID of the player who sent this message</td>
     </tr>
+    <tr>
+        <td>0x19</td>
+        <td>8</td>
+        <td>Message Timestamp</td>
+        <td>uint64</td>
+        <td>Timestamp in UNIX epoch seconds</td>
+    </tr>
+    <tr>
+        <td>0x22</td>
+        <td>4</td>
+        <td>Content length <code>[f]</code></td>
+        <td>uint32</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>0x26</td>
+        <td><code>[f]</code></td>
+        <td>Message Content</td>
+        <td>string</td>
+        <td></td>
+    </tr>
+    </tbody>
 </table>
-
