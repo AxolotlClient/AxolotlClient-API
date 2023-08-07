@@ -1,8 +1,8 @@
-# Get Hypixel API Key | Client to Server
+# Get Hypixel API Data | Server to Client
 
 ## ID 0x13
 
-Sent by client to server to request AxolotlClient's Hypixel API key. Server will respond with [Get Hypixel API Key | Server to Client](../serverToClient/0x13_get_hypixel_api_key.md).
+Sent by server to client in response to [Get Hypixel API Data | Client to Server](../clientToServer/0x13_get_hypixel_api_data.md).
 
 <table>
     <thead>
@@ -41,6 +41,13 @@ Sent by client to server to request AxolotlClient's Hypixel API key. Server will
         <td>4</td>
         <td>Packet Identifier</td>
         <td>uint32</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>0x09</td>
+        <td>rest of readable bytes</td>
+        <td>The requested Data</td>
+        <td></td>
         <td></td>
     </tr>
     </tbody>
