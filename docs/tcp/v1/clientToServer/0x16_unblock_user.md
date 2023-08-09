@@ -27,7 +27,7 @@ Sent by client to server to unblock a user. The server will respond with [Unbloc
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x09</code></td>
+        <td>Must be <code>0x16</code></td>
     </tr>
     <tr>
         <td>0x04</td>

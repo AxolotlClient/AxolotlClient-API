@@ -27,7 +27,7 @@ Sent in response to [Download Screenshot | Client to Server](../clientToServer/0
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x0D</code></td>
+        <td>Must be <code>0x18</code></td>
     </tr>
     <tr>
         <td>0x04</td>

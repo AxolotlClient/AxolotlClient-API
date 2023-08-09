@@ -27,7 +27,7 @@ Sent by client to server to request the server's public key. Server will respond
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x04</code></td>
+        <td>Must be <code>0x12</code></td>
     </tr>
     <tr>
         <td>0x04</td>

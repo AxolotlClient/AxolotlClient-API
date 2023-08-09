@@ -25,7 +25,7 @@
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x03</code></td>
+        <td>Must be <code>0x0F</code></td>
     </tr>
     <tr>
         <td>0x04</td>

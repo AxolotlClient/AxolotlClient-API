@@ -27,7 +27,7 @@ Sent by server to client in response to [Get Public Key | Client to Server](../c
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x04</code></td>
+        <td>Must be <code>0x12</code></td>
     </tr>
     <tr>
         <td>0x04</td>

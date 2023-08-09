@@ -27,7 +27,7 @@ Sent by the client to the server to request Data from the Hypixel API. Server wi
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x04</code></td>
+        <td>Must be <code>0x13</code></td>
     </tr>
     <tr>
         <td>0x04</td>

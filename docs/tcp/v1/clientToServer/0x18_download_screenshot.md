@@ -27,7 +27,7 @@ Sent to the server after triggering a screenshot download. The Server should res
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x0D</code></td>
+        <td>Must be <code>0x18</code></td>
     </tr>
     <tr>
         <td>0x04</td>

@@ -27,7 +27,7 @@ Sent in response to [Get Messages | Client To Server](../clientToServer/0x0E_get
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x0D</code></td>
+        <td>Must be <code>0x0E</code></td>
     </tr>
     <tr>
         <td>0x04</td>

@@ -28,7 +28,7 @@ Sent by client to server to request blocked users. Server will respond with [Get
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x03</code></td>
+        <td>Must be <code>0x14</code></td>
     </tr>
     <tr>
         <td>0x04</td>

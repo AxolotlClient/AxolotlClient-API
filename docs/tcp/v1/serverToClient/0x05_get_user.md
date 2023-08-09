@@ -27,7 +27,7 @@ Sent by server to client in response to [Get User | Client to Server](../clientT
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x04</code></td>
+        <td>Must be <code>0x05</code></td>
     </tr>
     <tr>
         <td>0x04</td>

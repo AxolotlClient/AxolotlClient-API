@@ -27,7 +27,7 @@ Sent by the server to indicate to the client that a friend's status has changed.
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x01</code></td>
+        <td>Must be <code>0x0B</code></td>
     </tr>
     <tr>
         <td>0x04</td>

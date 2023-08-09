@@ -27,7 +27,7 @@ Sent by client to server to create a friend request. Server will respond with [F
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x06</code></td>
+        <td>Must be <code>0x07</code></td>
     </tr>
     <tr>
         <td>0x04</td>

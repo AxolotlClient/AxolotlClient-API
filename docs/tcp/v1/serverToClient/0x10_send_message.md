@@ -27,7 +27,7 @@ Sent to all online participants of the channel someone sent a message to, except
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x0D</code></td>
+        <td>Must be <code>0x10</code></td>
     </tr>
     <tr>
         <td>0x04</td>
