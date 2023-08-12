@@ -2,6 +2,8 @@
  * CHANNEL TYPES
  */
 
+import Status from "./resources/status";
+
 export interface BaseChannelType {
   id: string | null;
   timestamp: number;
@@ -304,10 +306,6 @@ export interface ChannelTypes {
     clientToServer: UserClientToServer;
     serverToClient: UserServerToClient;
   };
-  channel: {
-    clientToServer: ChannelClientToServer;
-    serverToClient: ChannelServerToClient;
-  };
   chat: {
     clientToServer: ChatClientToServer;
     serverToClient: ChatServerToClient;
@@ -320,16 +318,6 @@ export interface ChannelTypes {
 
 export type ClientToServerChannelTypes = ChannelTypes[keyof ChannelTypes]["clientToServer"];
 export type ServerToClientChannelTypes = ChannelTypes[keyof ChannelTypes]["serverToClient"];
-
-// Other types
-export interface Status {
-  online: boolean;
-  icon?: string;
-  title: string;
-  description: string;
-  text?: string;
-  startedAt?: number;
-}
 
 // User Type
 // IncludeStatus is a boolean that determines whether or not to include the status in the user object

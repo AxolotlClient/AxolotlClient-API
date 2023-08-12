@@ -1,8 +1,6 @@
 import { Socket } from "net";
-import { db } from "../../..";
-import { User } from "../../database/entities/user";
-import OnlineUser from "../resources/onlineUser";
-import TempUser from "../resources/tempUser";
+import OnlineUser from "../resources/user/onlineUser";
+import TempUser from "../resources/user/tempUser";
 import Logger from "../../util/logger";
 
 export default class UserManager {
@@ -19,8 +17,16 @@ export default class UserManager {
     const tempUser = new TempUser(socket);
     this.tempUsers.push(tempUser);
 
-    Logger.info("UserManager", `Created temp user with ID ${tempUser.uuid}`);
+    Logger.info("UserManager", `Created temp user ${tempUser.socket.remoteAddress}:${tempUser.socket.remotePort}`);
 
+  }
+
+  public getCount(): number {
+    return this.onlineUsers.length;
+  }
+
+  public isOnline(uuid: string): boolean {
+    return this.onlineUsers.some((user) => user.uuid === uuid);
   }
  
 }

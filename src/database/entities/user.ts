@@ -1,4 +1,4 @@
-import { Collection, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryKey, Property } from "@mikro-orm/core";
+import { Collection, Entity, ManyToMany, PrimaryKey, Property } from "@mikro-orm/core";
 import { Channel } from "./channel";
 
 @Entity()
@@ -15,8 +15,8 @@ export class User {
   @Property()
   blocked: string[] = [];
 
-  @ManyToMany(() => Channel, channel => channel.members, {
-    mappedBy: "members",
+  @ManyToMany(() => Channel, channel => channel.users, {
+    mappedBy: "users",
   })
   channels = new Collection<Channel>(this);
   

@@ -5,7 +5,7 @@ const config: Options = {
         'dist/database/entities/*.js',
     ],
     entitiesTs: [
-        'database/entities/*.ts',
+        'src/database/entities/*.ts',
     ],
     type: 'postgresql',
     host: process.env.DB_HOST,
