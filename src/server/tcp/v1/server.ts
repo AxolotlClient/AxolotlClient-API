@@ -28,7 +28,6 @@ export default class TCPServerV1 implements TCPServer {
 
     this.server.on("connection", (socket) => {
       Logger.log(`TCPServer`, `New connection from ${socket.remoteAddress}:${socket.remotePort}`);
-      this.listener(socket);
     });
   }
 
@@ -38,6 +37,10 @@ export default class TCPServerV1 implements TCPServer {
 
   private listener(socket: net.Socket): void {
     userManager.onSocketCreate(socket);
+
+    socket.on("data", (msg) => {
+      console.log(msg.toString());
+    })
   }
 
   public static getSocketId(socket: net.Socket): string {
