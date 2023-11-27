@@ -12,7 +12,4 @@ export default class TempUser {
         this.socket = socket instanceof OpenSocket ? socket : new OpenSocket(socket);
     }
 
-    
-
-
 }

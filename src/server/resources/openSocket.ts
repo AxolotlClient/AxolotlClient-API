@@ -2,6 +2,7 @@ import { Socket } from "net";
 import Logger from "../../util/logger";
 
 export default class OpenSocket {
+  public readonly id: string = Math.random().toString(36).substr(2, 9);
   public uptime: number = Date.now();
   public lastPing: number = Date.now();
 
@@ -36,5 +37,13 @@ export default class OpenSocket {
     socket.on("error", (err) => {
       Logger.error("OpenSocket", `Socket error: ${err}`);
     });
+
+    socket.on("timeout", () => {
+      Logger.error("OpenSocket", `Socket timeout.`);
+    });
+  }
+
+  public toString(): string {
+    return `OpenSocket[${this.id}] (${this.remoteAddress}:${this.remotePort})`
   }
 }

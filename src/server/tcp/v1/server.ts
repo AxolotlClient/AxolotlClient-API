@@ -2,6 +2,7 @@ import net from "net";
 import { TCPServer } from "../tcpServer";
 import Logger from "../../../util/logger";
 import { userManager } from "../..";
+import DataRouter from "../../managers/dataRouter";
 
 export default class TCPServerV1 implements TCPServer {
   public server: net.Server;
@@ -13,6 +14,8 @@ export default class TCPServerV1 implements TCPServer {
   public start(): void {
     this.server.listen(this.port, () => {
       Logger.log(`TCPServer`, `Started on port ${this.port}`);
+
+      DataRouter.loadMessageTypes();
     });
 
     this.server.on("error", (err) => {
