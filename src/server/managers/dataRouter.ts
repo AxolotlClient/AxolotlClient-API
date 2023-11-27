@@ -34,16 +34,16 @@ export default class DataRouter {
                 return;
             }
 
-            const msgHandler = DataRouter.getMessageType(protocolVersion, MessageType.ClientToServer, packetId);
+            const msgHandler = DataRouter.getMessageType(protocolVersion, MessageType.ClientToServer, packetType);
 
             if (!msgHandler) {
-                console.log(`Unknown message type ${protocolVersion}:${packetType}:${packetId}`);
+                console.log(`Unknown message type ${protocolVersion}:${MessageType.ClientToServer}:${packetType}`);
                 return;
             }
 
             const message = new msgHandler().parse(msg);
 
-            console.log(`${socket} sent message ${message.name} (${packetId})`);
+            console.log(`${socket} sent message ${message.name} (${packetType})`);
             DataRouter._emitter.emit(`message:${message.name}`, socket, message);
         })
     }
