@@ -20,6 +20,11 @@ export default class UserManager {
 
     Logger.info("UserManager", `Created temp user (index ${this.tempUsers.length}) ${tempUser.socket.remoteAddress}:${tempUser.socket.remotePort}... waiting for authentication.`);
     DataRouter.onSocketCreate(tempUser.socket);
+
+    tempUser.socket.socket.on("close", () => {
+      Logger.info("UserManager", `Temp user disconnected.`);
+      this.tempUsers.splice(this.tempUsers.indexOf(tempUser), 1);
+    });
   }
 
   public getCount(): number {
@@ -29,5 +34,5 @@ export default class UserManager {
   public isOnline(uuid: string): boolean {
     return this.onlineUsers.some((user) => user.uuid === uuid);
   }
- 
+
 }
