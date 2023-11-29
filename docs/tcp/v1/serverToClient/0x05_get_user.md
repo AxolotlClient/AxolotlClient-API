@@ -2,7 +2,7 @@
 
 ## ID 0x05
 
-Sent by server to client in response to [Get User | Client to Server](../clientToServer/0x05_get_friend.md).
+Sent by server to client in response to [Get User | Client to Server](../clientToServer/0x05_get_user.md).
 
 <table>
     <thead>
