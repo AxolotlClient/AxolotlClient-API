@@ -1,8 +1,8 @@
-# Send Message | Server To Client
+# Update PluralKit Information | Client to Server
 
-## ID 0x10
+## ID 0x1C
 
-Sent to all online participants of the channel someone sent a message to, except the original sender.
+Sent by client to server to attach a PluralKit system to their account or update the previously attached id. No response unless an error occurs.
 
 <table>
     <thead>
@@ -27,7 +27,7 @@ Sent to all online participants of the channel someone sent a message to, except
         <td>1</td>
         <td>Packet Type</td>
         <td>uint8</td>
-        <td>Must be <code>0x10</code></td>
+        <td>Must be <code>0x1B</code></td>
     </tr>
     <tr>
         <td>0x04</td>
@@ -45,38 +45,12 @@ Sent to all online participants of the channel someone sent a message to, except
     </tr>
     <tr>
         <td>0x09</td>
-        <td>32</td>
-        <td>Sender UUID</td>
-        <td>uuid</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>0x29</td>
-        <td>8</td>
-        <td>Message Timestamp</td>
-        <td>uint64</td>
-        <td>Timestamp in UNIX epoch seconds</td>
-    </tr>
-    <tr>
-        <td>0x31</td>
-        <td>1</td>
-        <td>Message Type</td>
-        <td>uint8</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>0x32</td>
-        <td>4</td>
-        <td>Content length <code>[f]</code></td>
-        <td>uint32</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>0x36</td>
-        <td><code>[f]</code></td>
-        <td>Message Content</td>
+        <td>5</td>
+        <td>PluralKit system id</td>
         <td>string</td>
         <td></td>
     </tr>
     </tbody>
 </table>
+
+

@@ -52,21 +52,21 @@ Sent after client requests global data. See [Global Data | Client to Server](../
     </tr>
     <tr>
         <td>0x0E</td>
-        <td>16 * <code>f</code></td>
+        <td>32 * <code>f</code></td>
         <td>Incoming Friend Request UUIDs</td>
         <td>uuid</td>
         <td>The UUIDs of the users sending friend requests</td>
     </tr>
     <tr>
-        <td>0x0E + 16 * <code>f</code></td>
+        <td>0x0E + 32 * <code>f</code></td>
         <td>4</td>
         <td>Outgoing Friend Request Count <code>[g]</code></td>
         <td>uint32</td>
         <td></td>
     </tr>
     <tr>
-        <td>0x13 + 16 * <code>f</code></td>
-        <td>16 * <code>g</code></td>
+        <td>0x13 + 32 * <code>f</code></td>
+        <td>32 * <code>g</code></td>
         <td>Outgoing Friend Request UUIDs</td>
         <td>uuid</td>
         <td>The UUIDs of the users this user sent friend requests to</td>

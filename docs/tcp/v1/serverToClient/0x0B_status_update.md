@@ -45,13 +45,13 @@ Sent by the server to indicate to the client that a friend's status has changed.
     </tr>
     <tr>
         <td>0x09</td>
-        <td>16</td>
+        <td>32</td>
         <td>Player UUID</td>
         <td>uuid</td>
         <td>The UUID of the player whose status has changed</td>
     </tr>
     <tr>
-        <td>0x19</td>
+        <td>0x29</td>
         <td>1</td>
         <td>Status Update Type</td>
         <td>uint8</td>

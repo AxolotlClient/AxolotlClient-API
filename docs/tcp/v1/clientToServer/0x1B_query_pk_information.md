@@ -45,7 +45,7 @@ Sent by client to server to request user information. Server will respond with [
     </tr>
     <tr>
         <td>0x09</td>
-        <td>16</td>
+        <td>32</td>
         <td>User UUID</td>
         <td>uuid</td>
         <td></td>

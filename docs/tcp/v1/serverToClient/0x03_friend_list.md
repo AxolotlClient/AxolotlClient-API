@@ -59,7 +59,7 @@ Sent by server to client in response to [Friends List | Client to Server](../cli
     </tr>
     <tr>
         <td>0x0E</td>
-        <td>16 * <code>f</code></td>
+        <td>32 * <code>f</code></td>
         <td>Friend UUIDs</td>
         <td>uuid</td>
         <td></td>

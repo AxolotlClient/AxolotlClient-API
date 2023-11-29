@@ -52,7 +52,7 @@ Sent by server to client in response to [Get Blocked | Client to Server](../clie
     </tr>
     <tr>
         <td>0x0C</td>
-        <td>16 * <code>f</code></td>
+        <td>32 * <code>f</code></td>
         <td>Blocked Users UUIDs</td>
         <td>uuid</td>
         <td></td>

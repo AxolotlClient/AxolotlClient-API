@@ -45,7 +45,7 @@ Sent to the target user of a Friend Request, if they are currently online. The c
     </tr>
     <tr>
         <td>0x09</td>
-        <td>16</td>
+        <td>32</td>
         <td>User UUID</td>
         <td>uuid</td>
         <td>The user who sent the friend request</td>
