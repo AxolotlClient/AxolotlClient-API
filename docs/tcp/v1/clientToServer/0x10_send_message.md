@@ -60,13 +60,27 @@ Sent to the server after sending a message from a chat window. The server should
     <tr>
         <td>0x14</td>
         <td>4</td>
-        <td>Content length <code>[f]</code></td>
+        <td>Sender name length <code>[f]</code></td>
         <td>uint32</td>
         <td></td>
     </tr>
     <tr>
         <td>0x18</td>
         <td><code>[f]</code></td>
+        <td>Sender name</td>
+        <td>string</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>0x18+<code>[f]</code></td>
+        <td>4</td>
+        <td>Content length <code>[g]</code></td>
+        <td>uint32</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>0x1C+<code>[f]</code></td>
+        <td><code>[g]</code></td>
         <td>Message Content</td>
         <td>string</td>
         <td></td>

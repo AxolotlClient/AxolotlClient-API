@@ -103,13 +103,27 @@ Sent in response to [Get Messages | Client To Server](../clientToServer/0x0E_get
     <tr>
         <td>0x29</td>
         <td>4</td>
-        <td>Content length <code>[f]</code></td>
+        <td>Sender name length <code>[f]</code></td>
         <td>uint32</td>
         <td></td>
     </tr>
     <tr>
         <td>0x2D</td>
         <td><code>[f]</code></td>
+        <td>Sender name</td>
+        <td>string</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>0x2D+<code>[f]</code></td>
+        <td>4</td>
+        <td>Content length <code>[g]</code></td>
+        <td>uint32</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>0x31+<code>[f]</code></td>
+        <td><code>[g]</code></td>
         <td>Message Content</td>
         <td>string</td>
         <td></td>
