@@ -42,6 +42,16 @@ app.use((req, res, next) => {
 app.use("/api/v1", v1);
 app.use("/assets", express.static(path.resolve("./data/client")));
 
+app.get("/.well-known/microsoft-identity-assosiation.json", (req, res) => {
+    res.json({
+      associatedApplications: [
+        {
+          applicationId: process.env.MS_APP_ID,
+        }
+      ]
+    })
+})
+
 app.get("/api/info", (req, res) => {
   Logger.log("HTTP", `Sent ${process.env.API_URL || "api.axolotlclient.xyz:20400"}`);
   res.json(
