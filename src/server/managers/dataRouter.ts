@@ -41,7 +41,7 @@ export default class DataRouter {
                 return;
             }
 
-            const message = new msgHandler().parse(msg);
+            const message = msgHandler.parse(msg);
 
             console.log(`${socket} sent message ${message.name} (${packetType})`);
             DataRouter._emitter.emit(`message:${message.name}`, socket, message);
