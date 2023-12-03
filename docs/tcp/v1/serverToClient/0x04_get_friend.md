@@ -45,34 +45,34 @@ Sent by server to client in response to [Get Friend | Client to Server](../clien
     </tr>
     <tr>
         <td>0x09</td>
-        <td>4</td>
+        <td>8</td>
         <td>Last Seen</td>
-        <td>uint32</td>
+        <td>uint64</td>
         <td>Last login time, in epoch seconds</td>
     </tr>
     <tr>
-        <td>0x0D</td>
+        <td>0x11</td>
         <td>1</td>
         <td>Online</td>
         <td>uint8</td>
         <td>1 if online, 0 if offline</td>
     </tr>
     <tr>
-        <td>0x0E</td>
+        <td>0x12</td>
         <td>64</td>
         <td>Status Title</td>
         <td>string</td>
         <td>Padded at end with null bytes <code>0x00</code></td>
     </tr>
     <tr>
-        <td>0x4E</td>
+        <td>0x52</td>
         <td>64</td>
         <td>Status Description</td>
         <td>string</td>
         <td>Padded at end with null bytes <code>0x00</code> |  Uses the <a href="../../../formats/keywords.md">Keywords</a> format</td>
     </tr>
     <tr>
-        <td>0x8E</td>
+        <td>0x92</td>
         <td>32</td>
         <td>Status Icon Path</td>
         <td>string</td>
