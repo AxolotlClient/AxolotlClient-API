@@ -1,0 +1,5 @@
+/.idea
+/target
+
+/.sqlx-check.db
+/Cargo.lock
