@@ -197,8 +197,9 @@ pub async fn get_user_public(
 		"#,
 		uuid_ref
 	)
-	.fetch_one(&database)
-	.await?;
+	.fetch_optional(&database)
+	.await?
+	.ok_or(ApiError::user_not_found(&uuid))?;
 
 	Ok(Json(user))
 }

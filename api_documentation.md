@@ -44,6 +44,9 @@ request, no guarantees are made as to the length or format.
 - `registered`: `string or null` - RFC 3339 Format, null if hidden by user
 - `last_activity`: `string or null` - RFC 3339 Format, null if hidden by user
 
+#### Errors
+- HTTP `404` API `1100` - User is not registered
+
 ### `DELETE` `/account` [Authenticated](#Errors)
 Immediately and irrecoverably deletes the users account and associated data.
 
