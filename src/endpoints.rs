@@ -220,14 +220,19 @@ pub async fn get_user(
 pub struct Settings {
 	show_registered: bool,
 	show_last_activity: bool,
+	retain_usernames: bool,
 }
 
 impl Settings {
 	pub async fn get(database: &SqlitePool, uuid: &Uuid) -> Result<Settings, ApiError> {
 		let uuid_ref = uuid.as_ref();
-		Ok(query_as!(Settings, "SELECT show_registered, show_last_activity FROM users WHERE uuid = ?", uuid_ref)
-			.fetch_one(database)
-			.await?)
+		Ok(query_as!(
+			Settings,
+			"SELECT show_registered, show_last_activity, retain_usernames FROM users WHERE uuid = ?",
+			uuid_ref
+		)
+		.fetch_one(database)
+		.await?)
 	}
 }
 
@@ -242,6 +247,7 @@ pub async fn get_user_settings(
 pub struct SettingsPatch {
 	show_registered: Option<bool>,
 	show_last_activity: Option<bool>,
+	retain_usernames: Option<bool>,
 }
 
 pub async fn patch_user_settings(
@@ -254,11 +260,13 @@ pub async fn patch_user_settings(
 		r#"
 			UPDATE users SET
 				show_registered = coalesce(?, show_registered),
-				show_last_activity = coalesce(?, show_last_activity)
+				show_last_activity = coalesce(?, show_last_activity),
+				retain_usernames = coalesce(?, retain_usernames)
 			WHERE uuid = ?
 		"#,
 		user_settings_patch.show_registered,
 		user_settings_patch.show_last_activity,
+		user_settings_patch.retain_usernames,
 		uuid_ref
 	)
 	.execute(&database)

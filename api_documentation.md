@@ -64,11 +64,13 @@ HTTP `204` - No Content
 #### Response
 - `show_registered`: `boolean`
 - `show_last_activity`: `boolean`
+- `retain_usernames`: `boolean`
 
 ### `PATCH` `/account/settings` [Authenticated](#Errors)
 #### Fields
 - `show_registered`: `boolean`
 - `show_last_activity`: `boolean`
+- `retain_usernames`: `boolean`
 
 #### Response
 HTTP `204` - No Content
