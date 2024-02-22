@@ -3,24 +3,14 @@ use axum::{extract::Path, extract::State, http::StatusCode, http::Uri, Json};
 use base64::{engine::general_purpose::STANDARD_NO_PAD, Engine};
 use blake2::{Blake2b512, Digest};
 use chrono::NaiveDateTime;
-use reqwest::Client;
 use serde::{Deserialize, Serialize};
-use sqlx::{error::ErrorKind::UniqueViolation, query, query_as, SqliteConnection, SqlitePool};
-use std::{future::Future, pin::Pin};
+use sqlx::{error::ErrorKind::UniqueViolation, query, query_as, SqlitePool};
 use uuid::Uuid;
 
 #[derive(Deserialize)]
 pub struct Authenticate {
 	username: String,
 	server_id: String,
-}
-
-#[derive(Deserialize)]
-struct BasicUserInfo {
-	#[serde(rename = "id")]
-	uuid: Uuid,
-	#[serde(rename = "name")]
-	username: String,
 }
 
 #[derive(Serialize)]
@@ -34,104 +24,87 @@ pub async fn authenticate(
 	State(ApiState { database, client }): State<ApiState>,
 	Query(Authenticate { username, server_id }): Query<Authenticate>,
 ) -> Result<Json<AuthenticateResponse>, ApiError> {
+	#[derive(Clone, Deserialize)]
+	struct BasicUserInfo {
+		#[serde(rename = "id")]
+		uuid: Uuid,
+		#[serde(rename = "name")]
+		username: String,
+	}
+
 	let response = client
 		.get("https://sessionserver.mojang.com/session/minecraft/hasJoined")
 		.query(&[("username", &username), ("serverId", &server_id)])
 		.send()
 		.await?;
 
-	let response: BasicUserInfo = match response.status() {
+	let user: BasicUserInfo = match response.status() {
 		reqwest::StatusCode::OK => response.json().await?,
 		reqwest::StatusCode::NO_CONTENT => return Err(ApiError::authentication_failed()),
 		_ => return Err(ApiError::internal_server_error()),
 	};
 
-	let response = BasicUserInfo {
-		uuid: Uuid::parse_str("7c85c805-a137-4671-bc79-89c8480c2548").unwrap(),
-		username: response.username,
-	};
-
-	let BasicUserInfo { uuid, username } = response;
-
 	let mut transaction = database.begin().await?;
-	let uuid_ref = uuid.as_ref();
 
-	// Step 1: Make sure someone else doesn't have the username
-	// Yes I know recursion performs terribly, but we're doing IO here, so it has basically zero effect + this is easier
-	// ~~Okay on second thought after writing this recursive async madness, might have been easier to do a loop~~
-	fn ensure_username_not_in_use<'f>(
-		client: &'f Client,
-		database: &'f mut SqliteConnection,
-		uuid: &'f Uuid,
-		username: &'f String,
-	) -> Pin<Box<dyn Future<Output = Result<(), ApiError>> + 'f>> {
-		Box::pin(async move {
-			let uuid_ref = uuid.as_ref();
-			let other_user = query_as!(
-				BasicUserInfo,
-				"SELECT username, uuid AS 'uuid: Uuid' FROM users WHERE uuid != ? AND username = ?",
-				uuid_ref,
-				username
-			)
-			.fetch_optional(&mut *database)
-			.await?;
+	let mut usernames_to_update = vec![user.clone()];
 
-			if let Some(BasicUserInfo { uuid, .. }) = other_user {
-				// Someone else had the username, this means they changed username and we need to update
-				let BasicUserInfo {
-					uuid,
-					username: new_username,
-				} = client
-					.get(format!("https://sessionserver.mojang.com/session/minecraft/profile/{uuid}"))
+	while let Some(user_to_update) = usernames_to_update.pop() {
+		let uuid_ref = user_to_update.uuid.as_ref();
+		let existing_user_with_name = query_as!(
+			BasicUserInfo,
+			"SELECT username, uuid AS 'uuid: Uuid' FROM users WHERE uuid != ? AND username = ?",
+			uuid_ref,
+			user_to_update.username
+		)
+		.fetch_optional(&mut *transaction)
+		.await?;
+
+		match existing_user_with_name {
+			Some(existing_user_with_name) => {
+				let existing_user_with_name = client
+					.get(format!(
+						"https://sessionserver.mojang.com/session/minecraft/profile/{}",
+						existing_user_with_name.uuid
+					))
 					.send()
 					.await?
 					.json()
 					.await?;
 
-				ensure_username_not_in_use(client, &mut *database, &uuid, &new_username).await?;
+				usernames_to_update.push(user_to_update);
+				usernames_to_update.push(existing_user_with_name);
+			}
+			None => {
+				let old_username = query!(
+					"SELECT username FROM users WHERE uuid == ? AND username != ? AND retain_usernames",
+					uuid_ref,
+					user_to_update.username
+				)
+				.fetch_optional(&mut *transaction)
+				.await?
+				.map(|record| record.username);
+
+				if let Some(old_username) = old_username {
+					query!("INSERT INTO old_usernames(user, username) VALUES (?, ?)", uuid_ref, old_username)
+						.execute(&mut *transaction)
+						.await?;
+				}
 
 				query!(
-					"UPDATE users SET username = ? WHERE uuid = ?;\
-					 INSERT INTO old_usernames(user, username) VALUES (?, ?)",
-					new_username,
+					"INSERT INTO users(uuid, username) VALUES (?, ?) ON CONFLICT (uuid) DO UPDATE SET username = ?",
 					uuid_ref,
-					uuid_ref,
-					username
+					user_to_update.username,
+					user_to_update.username
 				)
-				.execute(database)
+				.execute(&mut *transaction)
 				.await?;
 			}
-
-			Ok(())
-		})
+		}
 	}
 
-	ensure_username_not_in_use(&client, &mut transaction, &uuid, &username);
+	let BasicUserInfo { uuid, username } = user;
+	let uuid_ref = uuid.as_ref();
 
-	// Step 2: Make sure the user exists in the database
-	query!("INSERT OR IGNORE INTO users(uuid, username) VALUES (?, ?)", uuid_ref, username)
-		.fetch_optional(&mut *transaction)
-		.await?;
-
-	// Step 3: Update the user's username
-	let old_username = query!("SELECT username FROM users WHERE uuid = ?", uuid_ref)
-		.fetch_one(&mut *transaction)
-		.await?
-		.username;
-	if old_username.to_lowercase() != username.to_lowercase() {
-		query!(
-			"UPDATE users SET username = ? WHERE uuid = ?;\
-			 INSERT INTO old_usernames(user, username) VALUES (?, ?)",
-			username,
-			uuid_ref,
-			uuid_ref,
-			old_username
-		)
-		.execute(&mut *transaction)
-		.await?;
-	}
-
-	// Step 4: Generate access token
 	let access_token = loop {
 		let mut hasher = Blake2b512::new();
 		hasher.update(&username);
@@ -158,7 +131,6 @@ pub async fn authenticate(
 		}
 	};
 
-	// Step 5: Update last activity
 	query!("UPDATE users SET last_activity = CURRENT_TIMESTAMP WHERE uuid = ?", uuid_ref)
 		.execute(&mut *transaction)
 		.await?;
