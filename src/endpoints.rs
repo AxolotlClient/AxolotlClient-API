@@ -150,6 +150,7 @@ pub struct PublicUser {
 	username: String,
 	registered: Option<NaiveDateTime>,
 	last_activity: Option<NaiveDateTime>,
+	old_usernames: Vec<String>,
 }
 
 pub async fn get_user(
@@ -157,8 +158,7 @@ pub async fn get_user(
 	Path(uuid): Path<Uuid>,
 ) -> Result<Json<PublicUser>, ApiError> {
 	let uuid_ref = uuid.as_ref();
-	let user = query_as!(
-		PublicUser,
+	let user = query!(
 		r#"
 			SELECT
 				uuid AS 'uuid: Uuid',
@@ -173,7 +173,20 @@ pub async fn get_user(
 	.await?
 	.ok_or(ApiError::user_not_found(&uuid))?;
 
-	Ok(Json(user))
+	let usernames = query!("SELECT username FROM old_usernames WHERE user = ? AND public", uuid_ref)
+		.fetch_all(&database)
+		.await?
+		.into_iter()
+		.map(|record| record.username)
+		.collect();
+
+	Ok(Json(PublicUser {
+		uuid: user.uuid,
+		username: user.username,
+		registered: user.registered,
+		last_activity: user.last_activity,
+		old_usernames: usernames,
+	}))
 }
 
 pub async fn delete_account(
@@ -194,18 +207,36 @@ pub struct User {
 	username: String,
 	registered: NaiveDateTime,
 	last_activity: NaiveDateTime,
+	old_usernames: Vec<OldUsername>,
+}
+
+#[derive(Serialize)]
+pub struct OldUsername {
+	username: String,
+	public: bool,
 }
 
 impl User {
 	pub async fn get(database: &SqlitePool, uuid: &Uuid) -> Result<User, ApiError> {
 		let uuid_ref = uuid.as_ref();
-		Ok(query_as!(
-			User,
+		let user = query!(
 			"SELECT uuid AS 'uuid: Uuid', username, registered, last_activity FROM users WHERE uuid = ?",
 			uuid_ref
 		)
 		.fetch_one(database)
-		.await?)
+		.await?;
+		let old_usernames =
+			query_as!(OldUsername, "SELECT username, public FROM old_usernames WHERE user = ?", uuid_ref)
+				.fetch_all(database)
+				.await?;
+
+		Ok(User {
+			uuid: user.uuid,
+			username: user.username,
+			registered: user.registered,
+			last_activity: user.last_activity,
+			old_usernames,
+		})
 	}
 }
 
@@ -279,7 +310,6 @@ pub async fn patch_account_settings(
 pub struct UserData {
 	user: User,
 	settings: Settings,
-	previous_usernames: Vec<PreviousUsername>,
 }
 
 #[derive(Serialize)]
@@ -294,15 +324,9 @@ pub async fn get_account_data(
 ) -> Result<Json<UserData>, ApiError> {
 	let uuid_ref = uuid.as_ref();
 
-	let previous_usernames =
-		query_as!(PreviousUsername, "SELECT username, show FROM old_usernames WHERE public = ?", uuid_ref)
-			.fetch_all(&database)
-			.await?;
-
 	Ok(Json(UserData {
 		user: User::get(&database, &uuid).await?,
 		settings: Settings::get(&database, &uuid).await?,
-		previous_usernames,
 	}))
 }
 

@@ -43,6 +43,7 @@ request, no guarantees are made as to the length or format.
 - `username`: `string`
 - `registered`: `string or null` - RFC 3339 Format, null if hidden by user
 - `last_activity`: `string or null` - RFC 3339 Format, null if hidden by user
+- `old_usernames`: `[string]` - Public Previous Usernames, if any
 
 #### Errors
 - HTTP `404` API `1100` - User is not registered
@@ -53,6 +54,11 @@ request, no guarantees are made as to the length or format.
 - `username`: `string`
 - `registered`: `string` - RFC 3339 Format
 - `last_activity`: `string` - RFC 3339 Format
+- `old_usernames`: `[OldUsername]` - Previous Usernames, if any
+
+##### `OldUsername`
+- `username`: `string`
+- `public`: `boolean`
 
 ### `DELETE` `/account` [Authenticated](#Errors)
 Immediately and irrecoverably deletes the users account and associated data.
