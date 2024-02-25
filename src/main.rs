@@ -1,6 +1,6 @@
 use crate::endpoints::{
-	authenticate, brew_coffee, delete_user, get_user, get_user_data, get_user_public, get_user_settings, not_found,
-	patch_user_settings,
+	brew_coffee, delete_account, get_account, get_account_data, get_account_settings, get_authenticate, get_user,
+	not_found, patch_account_settings,
 };
 use axum::{routing::get, serve, Router};
 use reqwest::Client;
@@ -29,11 +29,11 @@ async fn main() -> anyhow::Result<()> {
 	migrate!().run(&database).await?;
 
 	let router = Router::new()
-		.route("/authenticate", get(authenticate))
-		.route("/user/:uuid", get(get_user_public))
-		.route("/account", get(get_user).delete(delete_user))
-		.route("/account/settings", get(get_user_settings).patch(patch_user_settings))
-		.route("/account/data", get(get_user_data))
+		.route("/authenticate", get(get_authenticate))
+		.route("/user/:uuid", get(get_user))
+		.route("/account", get(get_account).delete(delete_account))
+		.route("/account/settings", get(get_account_settings).patch(patch_account_settings))
+		.route("/account/data", get(get_account_data))
 		.route("/brew_coffee", get(brew_coffee).post(brew_coffee))
 		.fallback(not_found)
 		.with_state(ApiState {

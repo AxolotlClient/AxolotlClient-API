@@ -20,7 +20,7 @@ pub struct AuthenticateResponse {
 	access_token: String,
 }
 
-pub async fn authenticate(
+pub async fn get_authenticate(
 	State(ApiState { database, client }): State<ApiState>,
 	Query(Authenticate { username, server_id }): Query<Authenticate>,
 ) -> Result<Json<AuthenticateResponse>, ApiError> {
@@ -152,7 +152,7 @@ pub struct PublicUser {
 	last_activity: Option<NaiveDateTime>,
 }
 
-pub async fn get_user_public(
+pub async fn get_user(
 	State(ApiState { database, .. }): State<ApiState>,
 	Path(uuid): Path<Uuid>,
 ) -> Result<Json<PublicUser>, ApiError> {
@@ -176,7 +176,7 @@ pub async fn get_user_public(
 	Ok(Json(user))
 }
 
-pub async fn delete_user(
+pub async fn delete_account(
 	State(ApiState { database, .. }): State<ApiState>,
 	Authentication(uuid): Authentication,
 ) -> Result<StatusCode, ApiError> {
@@ -209,7 +209,7 @@ impl User {
 	}
 }
 
-pub async fn get_user(
+pub async fn get_account(
 	State(ApiState { database, .. }): State<ApiState>,
 	Authentication(uuid): Authentication,
 ) -> Result<Json<User>, ApiError> {
@@ -236,7 +236,7 @@ impl Settings {
 	}
 }
 
-pub async fn get_user_settings(
+pub async fn get_account_settings(
 	State(ApiState { database, .. }): State<ApiState>,
 	Authentication(uuid): Authentication,
 ) -> Result<Json<Settings>, ApiError> {
@@ -250,7 +250,7 @@ pub struct SettingsPatch {
 	retain_usernames: Option<bool>,
 }
 
-pub async fn patch_user_settings(
+pub async fn patch_account_settings(
 	State(ApiState { database, .. }): State<ApiState>,
 	Authentication(uuid): Authentication,
 	Json(user_settings_patch): Json<SettingsPatch>,
@@ -288,7 +288,7 @@ pub struct PreviousUsername {
 	show: bool,
 }
 
-pub async fn get_user_data(
+pub async fn get_account_data(
 	State(ApiState { database, .. }): State<ApiState>,
 	Authentication(uuid): Authentication,
 ) -> Result<Json<UserData>, ApiError> {
