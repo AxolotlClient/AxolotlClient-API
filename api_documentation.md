@@ -47,18 +47,18 @@ request, no guarantees are made as to the length or format.
 #### Errors
 - HTTP `404` API `1100` - User is not registered
 
-### `DELETE` `/account` [Authenticated](#Errors)
-Immediately and irrecoverably deletes the users account and associated data.
-
-#### Response
-HTTP `204` - No Content
-
-### `GET` `/account/user` [Authenticated](#Errors)
+### `GET` `/account` [Authenticated](#Errors)
 #### Response
 - `uuid`: `string`
 - `username`: `string`
 - `registered`: `string` - RFC 3339 Format
 - `last_activity`: `string` - RFC 3339 Format
+
+### `DELETE` `/account` [Authenticated](#Errors)
+Immediately and irrecoverably deletes the users account and associated data.
+
+#### Response
+HTTP `204` - No Content
 
 ### `GET` `/account/settings` [Authenticated](#Errors)
 #### Response
