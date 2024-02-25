@@ -295,7 +295,7 @@ pub async fn get_account_data(
 	let uuid_ref = uuid.as_ref();
 
 	let previous_usernames =
-		query_as!(PreviousUsername, "SELECT username, show FROM old_usernames WHERE user = ?", uuid_ref)
+		query_as!(PreviousUsername, "SELECT username, show FROM old_usernames WHERE public = ?", uuid_ref)
 			.fetch_all(&database)
 			.await?;
 
