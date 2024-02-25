@@ -1,5 +1,4 @@
-use crate::errors::ApiError;
-use crate::ApiState;
+use crate::{errors::ApiError, ApiState};
 use axum::{async_trait, extract::FromRequestParts, http::request::Parts, http::StatusCode};
 use base64::{engine::general_purpose::STANDARD_NO_PAD, Engine};
 use serde::de::DeserializeOwned;

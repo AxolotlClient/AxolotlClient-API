@@ -32,9 +32,9 @@ async fn main() -> anyhow::Result<()> {
 		.route("/authenticate", get(get_authenticate))
 		.route("/user/:uuid", get(get_user))
 		.route("/account", get(get_account).delete(delete_account))
+		.route("/account/data", get(get_account_data))
 		.route("/account/settings", get(get_account_settings).patch(patch_account_settings))
 		.route("/account/:username", post(post_account_username).delete(delete_account_username))
-		.route("/account/data", get(get_account_data))
 		.route("/brew_coffee", get(brew_coffee).post(brew_coffee))
 		.fallback(not_found)
 		.with_state(ApiState {

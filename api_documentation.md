@@ -3,92 +3,110 @@
 The API is not currently used in production, however there is a development instance available at
 `https://astralchroma.dev/axolotlclient-api/dev/`
 
+## Data Types
+- Nullable values are indicated with a `?`, example: `string?`. Fields that are set to null may be absent in responses.
+- Arrays are indicated with `[]`, example: `[string]`.
+- `Uuid`s are represented as strings, they may or may not be hyphenated.
+- `Timestamp`s are represented as strings, they conform to the RFC 3339 format.
+
 ## Errors
 Errors will return json content with the following:
 - `status_code`: `number` - Http status Code
-- `error_code`: `number` - Api error code
+- `error_code`: `number` - Api error code, generally the same as the Http status code, but sometimes used to
+                           differentiate errors that use the same Http status code on an endpoint.
 - `description`: `string` - Human readable description of the error
 
-If the endpoint is tagged with `Authenticated`, then the following errors are possible
-- HTTP `401` API `1001` - Access Token not provided
-- HTTP `401` API `1002` - Access Token is corrupt
-- HTTP `401` API `1003` - Access Token is expired or revoked
+If the endpoint is tagged with `Authenticated`, then the following errors are possible:
+- HTTP `401` API `1000` - Access Token not provided
+- HTTP `401` API `1001` - Access Token is corrupt
+- HTTP `401` API `1002` - Access Token is expired or revoked
+
+The following errors are always possible:
+- HTTP `500` Internal Server Error
 
 ## Endpoints
-### `GET` `/authenticate`
+### `GET` `/authenticate?<username>&<server_id>`
 The client should first make a request to `https://sessionserver.mojang.com/session/minecraft/join` as outlined on
 [wiki.vg](https://wiki.vg/Protocol_Encryption#Client) except with a secret random string `server_id` that is later given
 to the server. This difference is because in Minecraft's protocol the `server_id` is derived from information exchanged
 in order to set up encryption, this is unnecessary due to the use of Https. 
 
-#### Query Parameters
-- `username` - Username of the authenticating player
-- `server_id` - Server Id used to validate authentication with Mojang, this should be a secret random string
+#### Query Fields
+- `username`: `string`
+- `server_id`: `string` - Server Id used to validate authentication with Mojang, this should be a secret random string
 
 #### Response
-- `username`: `string` - Username as returned by Mojang's Api
-- `uuid`: `string` - Hyphenated Minecraft Player Uuid 
+HTTP `200` Ok
+- `username`: `string`
+- `uuid`: `Uuid` 
 - `access_token`: `string` - Access Token used to authenticate future requests, this is valid for 24 hours from last
-request, no guarantees are made as to the length or format.
+                             request, no guarantees are made as to the length or format.
 
 #### Errors
-- HTTP `401` API `1000` - Authentication Failed
+- HTTP `401` Unauthorized
 
 ### `GET` `/user/<uuid>`
-#### Path Parameters
-- `uuid` - Minecraft Uuid of user
+#### Path Fields
+- `uuid`: `Uuid`
 
 #### Response
-- `uuid`: `string`
+HTTP `200` Ok
+- `uuid`: `Uuid`
 - `username`: `string`
-- `registered`: `string or null` - RFC 3339 Format, null if hidden by user
-- `last_activity`: `string or null` - RFC 3339 Format, null if hidden by user
-- `old_usernames`: `[string]` - Public Previous Usernames, if any
+- `registered`: `Timestamp?`
+- `last_activity`: `Timestamp?`
+- `old_usernames`: `[string]`
 
 #### Errors
-- HTTP `404` API `1100` - User is not registered
+- HTTP `404` Not Found
 
 ### `GET` `/account` [Authenticated](#Errors)
 #### Response
-- `uuid`: `string`
+HTTP `200` Ok
+- `uuid`: `Uuid`
 - `username`: `string`
-- `registered`: `string` - RFC 3339 Format
-- `last_activity`: `string` - RFC 3339 Format
-- `old_usernames`: `[OldUsername]` - Previous Usernames, if any
+- `registered`: `Timestamp`
+- `last_activity`: `Timestamp`
+- `old_usernames`: `[OldUsername]`
 
-##### `OldUsername`
+#### OldUsername
 - `username`: `string`
 - `public`: `boolean`
 
 ### `DELETE` `/account` [Authenticated](#Errors)
 Immediately and irrecoverably deletes the users account and associated data.
 
-#### Response
-HTTP `204` - No Content
-
-### `GET` `/account/settings` [Authenticated](#Errors)
-#### Response
-- `show_registered`: `boolean`
-- `show_last_activity`: `boolean`
-- `retain_usernames`: `boolean`
-
-### `PATCH` `/account/settings` [Authenticated](#Errors)
-#### Fields
-- `show_registered`: `boolean`
-- `show_last_activity`: `boolean`
-- `retain_usernames`: `boolean`
-
-#### Response
-HTTP `204` - No Content
-
-### `POST` `/account/username/<username:string>?<public:boolean>` [Authenticated](#Errors) -> `204` No Content / `404` Not Found
-### `DELETE` `/account/username/<username>` [Authenticated](#Errors) -> `204` No Content
-
 ### `GET` `/account/data` [Authenticated](#Errors)
-Returns user data in a Json format. Access tokens are not included. 
+Returns user data in a Json format. Access tokens are not included.
+
+#### Response
+HTTP `204` No Content
+
+### `GET` `PATCH` `/account/settings` [Authenticated](#Errors)
+#### Body Fields
+- `show_registered`: `boolean`
+- `show_last_activity`: `boolean`
+- `retain_usernames`: `boolean`
+
+#### Response
+HTTP `204` No Content
+
+### `POST` `/account/username/<username>?<public>` [Authenticated](#Errors)
+#### Query Fields
+- `public`: `boolean`
+
+#### Response
+HTTP `204` No Content
+
+#### Errors
+- HTTP `404` Not Found
+
+### `DELETE` `/account/username/<username>` [Authenticated](#Errors)
+#### Response
+HTTP `204` No Content
 
 ### `GET` `POST` `/brew_coffee`
 RFC 2324 joke. Serves no purpose.
 
-#### Errors
-- HTTP `418` API `418` - I'm a teapot
+#### Response
+HTTP `418` I'm a teapot

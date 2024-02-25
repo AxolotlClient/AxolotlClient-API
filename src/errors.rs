@@ -2,7 +2,6 @@ use axum::{http::StatusCode, response::IntoResponse, response::Response, Json};
 use log::error;
 use serde::{Serialize, Serializer};
 use std::{borrow::Cow, error::Error};
-use uuid::Uuid;
 
 /// An error returned by the API. Generally used to indicate a client error, any server side errors should be logged and
 /// the classic vague Http 500 "Internal Server Error" given to the client.
@@ -30,18 +29,18 @@ impl ApiError {
 		Self::internal_server_error()
 	}
 
-	pub fn authentication_failed() -> ApiError {
+	pub fn unauthorized() -> ApiError {
 		ApiError {
 			status_code: StatusCode::UNAUTHORIZED,
-			error_code: 1000,
-			description: Cow::from("Authentication failed"),
+			error_code: 401,
+			description: Cow::from("Unauthorized"),
 		}
 	}
 
 	pub fn authentication_missing() -> ApiError {
 		ApiError {
 			status_code: StatusCode::UNAUTHORIZED,
-			error_code: 1001,
+			error_code: 1000,
 			description: Cow::from("Access Token not provided"),
 		}
 	}
@@ -49,7 +48,7 @@ impl ApiError {
 	pub fn authentication_corrupt() -> ApiError {
 		ApiError {
 			status_code: StatusCode::UNAUTHORIZED,
-			error_code: 1002,
+			error_code: 1001,
 			description: Cow::from("Access Token is corrupt"),
 		}
 	}
@@ -57,24 +56,16 @@ impl ApiError {
 	pub fn authentication_invalid() -> ApiError {
 		ApiError {
 			status_code: StatusCode::UNAUTHORIZED,
-			error_code: 1003,
+			error_code: 1002,
 			description: Cow::from("Access Token is expired or revoked"),
 		}
 	}
 
-	pub fn not_found(path: &str) -> ApiError {
+	pub fn not_found(name: &str) -> ApiError {
 		ApiError {
 			status_code: StatusCode::NOT_FOUND,
 			error_code: 404,
-			description: format!("\"{path}\" not found").into(),
-		}
-	}
-
-	pub fn user_not_found(user: &Uuid) -> ApiError {
-		ApiError {
-			status_code: StatusCode::NOT_FOUND,
-			error_code: 1100,
-			description: format!("User {user} is not registered").into(),
+			description: format!("\"{name}\" not found").into(),
 		}
 	}
 

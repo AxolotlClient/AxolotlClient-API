@@ -40,7 +40,7 @@ pub async fn get_authenticate(
 
 	let user: BasicUserInfo = match response.status() {
 		reqwest::StatusCode::OK => response.json().await?,
-		reqwest::StatusCode::NO_CONTENT => return Err(ApiError::authentication_failed()),
+		reqwest::StatusCode::NO_CONTENT => return Err(ApiError::unauthorized()),
 		_ => return Err(ApiError::internal_server_error()),
 	};
 
@@ -171,7 +171,7 @@ pub async fn get_user(
 	)
 	.fetch_optional(&database)
 	.await?
-	.ok_or(ApiError::user_not_found(&uuid))?;
+	.ok_or(ApiError::not_found(&uuid.to_string()))?;
 
 	let usernames = query!("SELECT username FROM old_usernames WHERE user = ? AND public", uuid_ref)
 		.fetch_all(&database)
@@ -352,8 +352,6 @@ pub async fn get_account_data(
 	State(ApiState { database, .. }): State<ApiState>,
 	Authentication(uuid): Authentication,
 ) -> Result<Json<UserData>, ApiError> {
-	let uuid_ref = uuid.as_ref();
-
 	Ok(Json(UserData {
 		user: User::get(&database, &uuid).await?,
 		settings: Settings::get(&database, &uuid).await?,
