@@ -105,12 +105,6 @@ impl Display for DisconnectReason {
 	}
 }
 
-impl From<serde_json::Error> for DisconnectReason {
-	fn from(_: serde_json::Error) -> DisconnectReason {
-		InternalError
-	}
-}
-
 impl From<axum::Error> for DisconnectReason {
 	fn from(_: axum::Error) -> DisconnectReason {
 		UnknownError
