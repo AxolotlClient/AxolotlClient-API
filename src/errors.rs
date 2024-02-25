@@ -69,6 +69,14 @@ impl ApiError {
 		}
 	}
 
+	pub fn conflict() -> ApiError {
+		ApiError {
+			status_code: StatusCode::CONFLICT,
+			error_code: 419,
+			description: Cow::from("Conflict"),
+		}
+	}
+
 	pub fn im_a_teapot() -> ApiError {
 		ApiError {
 			status_code: StatusCode::IM_A_TEAPOT,

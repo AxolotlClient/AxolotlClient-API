@@ -21,7 +21,7 @@ pub struct AuthenticateResponse {
 }
 
 pub async fn get_authenticate(
-	State(ApiState { database, client }): State<ApiState>,
+	State(ApiState { database, client, .. }): State<ApiState>,
 	Query(Authenticate { username, server_id }): Query<Authenticate>,
 ) -> Result<Json<AuthenticateResponse>, ApiError> {
 	#[derive(Clone, Deserialize)]

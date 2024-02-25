@@ -60,6 +60,15 @@ HTTP `200` Ok
 #### Errors
 - HTTP `404` Not Found
 
+### `GET` `/gateway` [Authenticated](#Errors)
+See [Gateway](#gateway)
+
+#### Response
+HTTP `101` Switching Protocols - *Switch to WebSocket*
+
+#### Errors
+- HTTP `409` Conflict - A gateway connection is already open
+
 ### `GET` `/account` [Authenticated](#Errors)
 #### Response
 HTTP `200` Ok
@@ -117,3 +126,19 @@ RFC 2324 joke. Serves no purpose.
 
 #### Response
 HTTP `418` I'm a teapot
+
+## Gateway
+Currently used so the server knows the client is online. Messages aren't actually sent, just a keep alive connection.
+
+### Ping Pong
+- Server will respond to any pings from client.
+- Server will ping the client if there has been no communication for 10 seconds.
+- Server will disconnect if there has been no communication for 10 seconds after the ping.
+- The client does not *need* to respond with a pong, but it should, at a minimum it just needs to communicate.
+
+### Closing Reasons
+- `0` Closed
+- `1` Internal Error
+- `2` Invalid Data
+- `3` Timed Out - See [Ping Pong](#ping-pong)
+- `4` Unknown Error
