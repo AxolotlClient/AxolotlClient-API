@@ -75,14 +75,10 @@ pub async fn get_authenticate(
 				usernames_to_update.push(existing_user_with_name);
 			}
 			None => {
-				let old_username = query!(
-					"SELECT username FROM users WHERE uuid == ? AND username != ? AND retain_usernames",
-					uuid_ref,
-					user_to_update.username
-				)
-				.fetch_optional(&mut *transaction)
-				.await?
-				.map(|record| record.username);
+				let old_username = query!("SELECT username FROM users WHERE uuid == ? AND retain_usernames", uuid_ref)
+					.fetch_optional(&mut *transaction)
+					.await?
+					.map(|record| record.username);
 
 				if let Some(old_username) = old_username {
 					query!("INSERT INTO old_usernames(user, username) VALUES (?, ?)", uuid_ref, old_username)
