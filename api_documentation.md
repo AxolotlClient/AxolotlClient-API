@@ -82,7 +82,14 @@ Returns user data in a Json format. Access tokens are not included.
 #### Response
 HTTP `204` No Content
 
-### `GET` `PATCH` `/account/settings` [Authenticated](#Errors)
+### `GET` `/account/settings` [Authenticated](#Errors)
+#### Response
+HTTP `200` Ok
+- `show_registered`: `boolean`
+- `show_last_activity`: `boolean`
+- `retain_usernames`: `boolean`
+
+### `PATCH` `/account/settings` [Authenticated](#Errors)
 #### Body Fields
 - `show_registered`: `boolean`
 - `show_last_activity`: `boolean`
