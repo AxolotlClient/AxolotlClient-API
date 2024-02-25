@@ -189,18 +189,6 @@ pub async fn get_user(
 	}))
 }
 
-pub async fn delete_account(
-	State(ApiState { database, .. }): State<ApiState>,
-	Authentication(uuid): Authentication,
-) -> Result<StatusCode, ApiError> {
-	let uuid_ref = uuid.as_ref();
-	query!("DELETE FROM users WHERE uuid = ?", uuid_ref)
-		.execute(&database)
-		.await?;
-
-	Ok(StatusCode::NO_CONTENT)
-}
-
 #[derive(Serialize)]
 pub struct User {
 	uuid: Uuid,
@@ -245,6 +233,34 @@ pub async fn get_account(
 	Authentication(uuid): Authentication,
 ) -> Result<Json<User>, ApiError> {
 	Ok(Json(User::get(&database, &uuid).await?))
+}
+
+pub async fn delete_account(
+	State(ApiState { database, .. }): State<ApiState>,
+	Authentication(uuid): Authentication,
+) -> Result<StatusCode, ApiError> {
+	let uuid_ref = uuid.as_ref();
+	query!("DELETE FROM users WHERE uuid = ?", uuid_ref)
+		.execute(&database)
+		.await?;
+
+	Ok(StatusCode::NO_CONTENT)
+}
+
+#[derive(Serialize)]
+pub struct UserData {
+	user: User,
+	settings: Settings,
+}
+
+pub async fn get_account_data(
+	State(ApiState { database, .. }): State<ApiState>,
+	Authentication(uuid): Authentication,
+) -> Result<Json<UserData>, ApiError> {
+	Ok(Json(UserData {
+		user: User::get(&database, &uuid).await?,
+		settings: Settings::get(&database, &uuid).await?,
+	}))
 }
 
 #[derive(Serialize)]
@@ -334,28 +350,6 @@ pub async fn delete_account_username(
 		.execute(&database)
 		.await?;
 	Ok(StatusCode::NOT_FOUND)
-}
-
-#[derive(Serialize)]
-pub struct UserData {
-	user: User,
-	settings: Settings,
-}
-
-#[derive(Serialize)]
-pub struct PreviousUsername {
-	username: String,
-	show: bool,
-}
-
-pub async fn get_account_data(
-	State(ApiState { database, .. }): State<ApiState>,
-	Authentication(uuid): Authentication,
-) -> Result<Json<UserData>, ApiError> {
-	Ok(Json(UserData {
-		user: User::get(&database, &uuid).await?,
-		settings: Settings::get(&database, &uuid).await?,
-	}))
 }
 
 pub async fn brew_coffee() -> ApiError {
