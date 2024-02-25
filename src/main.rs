@@ -1,8 +1,8 @@
 use crate::endpoints::{
-	brew_coffee, delete_account, get_account, get_account_data, get_account_settings, get_authenticate, get_user,
-	not_found, patch_account_settings,
+	brew_coffee, delete_account, delete_account_username, get_account, get_account_data, get_account_settings,
+	get_authenticate, get_user, not_found, patch_account_settings, post_account_username,
 };
-use axum::{routing::get, serve, Router};
+use axum::{routing::get, routing::post, serve, Router};
 use reqwest::Client;
 use sqlx::{migrate, SqlitePool};
 use std::env::var;
@@ -33,6 +33,7 @@ async fn main() -> anyhow::Result<()> {
 		.route("/user/:uuid", get(get_user))
 		.route("/account", get(get_account).delete(delete_account))
 		.route("/account/settings", get(get_account_settings).patch(patch_account_settings))
+		.route("/account/:username", post(post_account_username).delete(delete_account_username))
 		.route("/account/data", get(get_account_data))
 		.route("/brew_coffee", get(brew_coffee).post(brew_coffee))
 		.fallback(not_found)

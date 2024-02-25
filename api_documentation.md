@@ -81,6 +81,9 @@ HTTP `204` - No Content
 #### Response
 HTTP `204` - No Content
 
+### `POST` `/account/username/<username:string>?<public:boolean>` [Authenticated](#Errors) -> `204` No Content / `404` Not Found
+### `DELETE` `/account/username/<username>` [Authenticated](#Errors) -> `204` No Content
+
 ### `GET` `/account/data` [Authenticated](#Errors)
 Returns user data in a Json format. Access tokens are not included. 
 

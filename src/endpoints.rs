@@ -306,6 +306,36 @@ pub async fn patch_account_settings(
 	Ok(StatusCode::NO_CONTENT)
 }
 
+pub async fn post_account_username(
+	State(ApiState { database, .. }): State<ApiState>,
+	Authentication(uuid): Authentication,
+	Path(username): Path<String>,
+	Query(public): Query<bool>,
+) -> Result<StatusCode, ApiError> {
+	let uuid_ref = uuid.as_ref();
+	let rows_affected =
+		query!("UPDATE old_usernames SET public = ? WHERE user = ? AND username = ?", public, uuid_ref, username)
+			.execute(&database)
+			.await?
+			.rows_affected();
+	match rows_affected {
+		0 => Err(ApiError::not_found(&username)),
+		_ => Ok(StatusCode::NO_CONTENT),
+	}
+}
+
+pub async fn delete_account_username(
+	State(ApiState { database, .. }): State<ApiState>,
+	Authentication(uuid): Authentication,
+	Path(username): Path<String>,
+) -> Result<StatusCode, ApiError> {
+	let uuid_ref = uuid.as_ref();
+	query!("DELETE FROM old_usernames WHERE user = ? AND username = ?", uuid_ref, username)
+		.execute(&database)
+		.await?;
+	Ok(StatusCode::NOT_FOUND)
+}
+
 #[derive(Serialize)]
 pub struct UserData {
 	user: User,
