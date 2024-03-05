@@ -1,5 +1,5 @@
 use crate::{errors::ApiError, extractors::Authentication, ApiState};
-use axum::extract::{ws::CloseFrame, ws::Message, ws::WebSocket, State, WebSocketUpgrade};
+use axum::extract::{ws::close_code, ws::CloseFrame, ws::Message, ws::WebSocket, State, WebSocketUpgrade};
 use axum::{body::Body, response::Response};
 use std::{convert::Infallible, fmt::Display, fmt::Formatter, time::Duration};
 use tokio::{pin, select, time::sleep, time::Instant};
@@ -45,7 +45,7 @@ async fn gateway_accept(socket: &mut WebSocket) -> Result<Infallible, Disconnect
 		select! {
 			biased;
 			message = socket.recv() => {
-				match message.ok_or(UnknownError)?? {
+				match message.ok_or(Closed)?? {
 					Message::Text(_) => {
 						// When we actually use the WebSocket for something other than knowing if the player is online
 						// then we will probably actually have something here, but for now we error if any messages are
@@ -58,7 +58,7 @@ async fn gateway_accept(socket: &mut WebSocket) -> Result<Infallible, Disconnect
 						match pending_pong {
 							None => return Err(InvalidData),
 							Some(inner_pending_pong) => {
-								if pong.get(0..31).ok_or(InvalidData)? != inner_pending_pong {
+								if pong != inner_pending_pong {
 									return Err(InvalidData);
 								}
 							}
@@ -84,29 +84,28 @@ async fn gateway_accept(socket: &mut WebSocket) -> Result<Infallible, Disconnect
 	}
 }
 
+#[repr(u16)]
 #[derive(Copy, Clone)]
 enum DisconnectReason {
-	Closed = 0,
-	InternalError = 1,
-	InvalidData = 2,
-	TimedOut = 3,
-	UnknownError = 4,
+	Closed = close_code::NORMAL,
+	Error = close_code::ERROR,
+	InvalidData = close_code::INVALID,
+	TimedOut = close_code::ABNORMAL,
 }
 
 impl Display for DisconnectReason {
 	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
 		match self {
 			Closed => write!(f, "Closed"),
-			InternalError => write!(f, "Internal Error"),
+			Error => write!(f, "Error"),
 			InvalidData => write!(f, "Invalid Data"),
 			TimedOut => write!(f, "Timed Out"),
-			UnknownError => write!(f, "Unknown Error"),
 		}
 	}
 }
 
 impl From<axum::Error> for DisconnectReason {
 	fn from(_: axum::Error) -> DisconnectReason {
-		UnknownError
+		Error
 	}
 }
