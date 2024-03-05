@@ -1,6 +1,6 @@
 use crate::{errors::ApiError, extractors::Authentication, ApiState};
 use axum::extract::{ws::close_code, ws::CloseFrame, ws::Message, ws::WebSocket, State, WebSocketUpgrade};
-use axum::{body::Body, response::Response};
+use axum::{body::Body, http::StatusCode, response::Response};
 use std::{convert::Infallible, fmt::Display, fmt::Formatter, time::Duration};
 use tokio::{pin, select, time::sleep, time::Instant};
 use uuid::Uuid;
@@ -12,7 +12,7 @@ pub async fn gateway(
 	socket: WebSocketUpgrade,
 ) -> Result<Response<Body>, ApiError> {
 	if state.online_users.read().await.contains(&uuid) {
-		return Err(ApiError::conflict());
+		Err(StatusCode::CONFLICT)?;
 	}
 
 	Ok(socket.on_upgrade(move |socket| gateway_accept_handler(state, uuid, socket)))

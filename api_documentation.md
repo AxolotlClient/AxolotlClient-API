@@ -12,22 +12,20 @@ The API is not currently used in production, however there is a development inst
 
 ## Errors
 
-Errors will return json content with the following:
-
-- `status_code`: `number` - Http status Code
-- `error_code`: `number` - Api error code, generally the same as the Http status code, but sometimes used to
-  differentiate errors that use the same Http status code on an endpoint.
-- `description`: `string` - Human readable description of the error
+Errors may or may not have a plain text reason in the body.
 
 If the endpoint is tagged with `Authenticated`, then the following errors are possible:
 
-- HTTP `401` API `1000` - Access Token not provided
-- HTTP `401` API `1001` - Access Token is corrupt
-- HTTP `401` API `1002` - Access Token is expired or revoked
+- `403` Forbidden - Access Token is missing or corrupt
+- `401` Unauthorized - Access Token is expired or revoked
 
 The following errors are always possible:
 
-- HTTP `500` Internal Server Error
+- `500` Internal Server Error
+
+The following errors are possible whenever body or query data is required:
+
+- `400` Bad Request
 
 ## Endpoints
 
@@ -45,7 +43,7 @@ in order to set up encryption, this is unnecessary due to the use of Https.
 
 #### Response
 
-HTTP `200` Ok
+`200` Ok
 
 - `username`: `string`
 - `uuid`: `Uuid`
@@ -54,7 +52,7 @@ HTTP `200` Ok
 
 #### Errors
 
-- HTTP `401` Unauthorized
+- `401` Unauthorized
 
 ### `GET` `/user/<uuid>`
 
@@ -64,7 +62,7 @@ HTTP `200` Ok
 
 #### Response
 
-HTTP `200` Ok
+`200` Ok
 
 - `uuid`: `Uuid`
 - `username`: `string`
@@ -74,7 +72,7 @@ HTTP `200` Ok
 
 #### Errors
 
-- HTTP `404` Not Found
+- `404` Not Found
 
 ### `GET` `/gateway` [Authenticated](#Errors)
 
@@ -82,17 +80,17 @@ See [Gateway](#gateway)
 
 #### Response
 
-HTTP `101` Switching Protocols - *Switch to WebSocket*
+`101` Switching Protocols - *Switch to WebSocket*
 
 #### Errors
 
-- HTTP `409` Conflict - A gateway connection is already open
+- `409` Conflict - A gateway connection is already open
 
 ### `GET` `/account` [Authenticated](#Errors)
 
 #### Response
 
-HTTP `200` Ok
+`200` Ok
 
 - `uuid`: `Uuid`
 - `username`: `string`
@@ -115,13 +113,13 @@ Returns user data in a Json format. Access tokens are not included.
 
 #### Response
 
-HTTP `204` No Content
+`204` No Content
 
 ### `GET` `/account/settings` [Authenticated](#Errors)
 
 #### Response
 
-HTTP `200` Ok
+`200` Ok
 
 - `show_registered`: `boolean`
 - `show_last_activity`: `boolean`
@@ -137,7 +135,7 @@ HTTP `200` Ok
 
 #### Response
 
-HTTP `204` No Content
+`204` No Content
 
 ### `POST` `/account/username/<username>?<public>` [Authenticated](#Errors)
 
@@ -147,17 +145,17 @@ HTTP `204` No Content
 
 #### Response
 
-HTTP `204` No Content
+`204` No Content
 
 #### Errors
 
-- HTTP `404` Not Found
+- `404` Not Found
 
 ### `DELETE` `/account/username/<username>` [Authenticated](#Errors)
 
 #### Response
 
-HTTP `204` No Content
+`204` No Content
 
 ### `GET` `POST` `/brew_coffee`
 
@@ -165,7 +163,7 @@ RFC 2324 joke. Serves no purpose.
 
 #### Response
 
-HTTP `418` I'm a teapot
+`418` I'm a teapot
 
 ## Gateway
 

@@ -1,5 +1,5 @@
-use crate::{errors::ApiError, extractors::Authentication, extractors::Query, ApiState};
-use axum::{extract::Path, extract::State, http::StatusCode, http::Uri, Json};
+use crate::{errors::ApiError, extractors::Authentication, ApiState};
+use axum::{extract::Path, extract::Query, extract::State, http::StatusCode, response::IntoResponse, Json};
 use base64::{engine::general_purpose::STANDARD_NO_PAD, Engine};
 use blake2::{Blake2b512, Digest};
 use chrono::NaiveDateTime;
@@ -39,10 +39,10 @@ pub async fn get_authenticate(
 		.await?;
 
 	let user: BasicUserInfo = match response.status() {
-		reqwest::StatusCode::OK => response.json().await?,
-		reqwest::StatusCode::NO_CONTENT => return Err(ApiError::unauthorized()),
-		_ => return Err(ApiError::internal_server_error()),
-	};
+		reqwest::StatusCode::OK => Ok(response.json().await?),
+		reqwest::StatusCode::NO_CONTENT => Err(StatusCode::UNAUTHORIZED),
+		_ => Err(StatusCode::INTERNAL_SERVER_ERROR),
+	}?;
 
 	let mut transaction = database.begin().await?;
 
@@ -167,7 +167,7 @@ pub async fn get_user(
 	)
 	.fetch_optional(&database)
 	.await?
-	.ok_or(ApiError::not_found(&uuid.to_string()))?;
+	.ok_or(StatusCode::NOT_FOUND)?;
 
 	let usernames = query!("SELECT username FROM old_usernames WHERE user = ? AND public", uuid_ref)
 		.fetch_all(&database)
@@ -331,7 +331,7 @@ pub async fn post_account_username(
 			.await?
 			.rows_affected();
 	match rows_affected {
-		0 => Err(ApiError::not_found(&username)),
+		0 => Err(StatusCode::NOT_FOUND)?,
 		_ => Ok(StatusCode::NO_CONTENT),
 	}
 }
@@ -348,10 +348,10 @@ pub async fn delete_account_username(
 	Ok(StatusCode::NOT_FOUND)
 }
 
-pub async fn brew_coffee() -> ApiError {
-	ApiError::im_a_teapot()
+pub async fn brew_coffee() -> impl IntoResponse {
+	(StatusCode::IM_A_TEAPOT, "I'm a Teapot")
 }
 
-pub async fn not_found(uri: Uri) -> ApiError {
-	ApiError::not_found(uri.path())
+pub async fn not_found() -> impl IntoResponse {
+	(StatusCode::NOT_FOUND, "Not Found")
 }

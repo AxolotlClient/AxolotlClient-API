@@ -1,31 +1,8 @@
 use crate::{errors::ApiError, ApiState};
 use axum::{async_trait, extract::FromRequestParts, http::request::Parts, http::StatusCode};
 use base64::{engine::general_purpose::STANDARD_NO_PAD, Engine};
-use serde::de::DeserializeOwned;
 use sqlx::query;
 use uuid::Uuid;
-
-/// Basically a copy of Axum's Query except we handle errors our own way. Could have been a wrapper around Axum's Query
-/// but its probably just simpler to not
-#[derive(Clone, Copy)]
-pub struct Query<T>(pub T);
-
-#[async_trait]
-impl<T: DeserializeOwned, S: Send + Sync> FromRequestParts<S> for Query<T> {
-	type Rejection = ApiError;
-
-	async fn from_request_parts(parts: &mut Parts, _: &S) -> Result<Self, Self::Rejection> {
-		let query = parts.uri.query().unwrap_or_default();
-		match serde_urlencoded::from_str(query) {
-			Ok(value) => Ok(Self(value)),
-			Err(error) => Err(ApiError {
-				status_code: StatusCode::BAD_REQUEST,
-				error_code: 400,
-				description: error.to_string().into(),
-			}),
-		}
-	}
-}
 
 #[derive(Clone, Copy)]
 pub struct Authentication(pub Uuid);
@@ -42,8 +19,8 @@ impl FromRequestParts<ApiState> for Authentication {
 			.headers
 			.get("Authorization")
 			.map(|value| STANDARD_NO_PAD.decode(value))
-			.ok_or(ApiError::authentication_missing())?
-			.map_err(|_| ApiError::authentication_corrupt())?;
+			.ok_or(StatusCode::FORBIDDEN)?
+			.map_err(|_| StatusCode::FORBIDDEN)?;
 
 		let authorization_ref = &*authorization;
 		let uuid = {
@@ -54,9 +31,9 @@ impl FromRequestParts<ApiState> for Authentication {
 			match record.valid {
 				true => match record.uuid {
 					Some(uuid) => Ok(uuid),
-					_ => Err(ApiError::authentication_invalid()),
+					_ => Err(StatusCode::UNAUTHORIZED),
 				},
-				false => Err(ApiError::authentication_invalid()),
+				false => Err(StatusCode::UNAUTHORIZED),
 			}?
 		};
 
