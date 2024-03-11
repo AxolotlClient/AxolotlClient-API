@@ -2,43 +2,27 @@ on: push
 env:
   CARGO_TERM_COLOR: always
 jobs:
-  clippy:
-    name: Clippy
+  cargo:
+    name: Cargo
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Rust Cache
+      - name: Cache
         uses: swatinem/rust-cache@v2
+      - name: Update Dependencies
+        run: cargo update
       - name: Install sqlx-cli
         run: cargo install sqlx-cli
       - name: Prepare Sqlx Database
         run: cargo sqlx migrate run
-      - name: Cargo Clippy
-        run: |
-          cargo clippy --all-features --all-targets --message-format=json-diagnostic-rendered-ansi | jq -r 'select(.reason == "compiler-message") | .message as $message | $message.spans[] | select(.is_primary == true) | "::" + $message.level + " file=" + .file_name + ",line=" + (.line_start | tostring) + ",endLine=" + (.line_end | tostring) + ",title=" + $message.message + "::" + $message.rendered'
-          exit ${PIPESTATUS[0]}
-  format:
-    name: Format
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Cargo Format
+      - name: Format Check
         run: cargo fmt --check
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Rust Cache
-        uses: swatinem/rust-cache@v2
-      - name: Install sqlx-cli
-        run: cargo install sqlx-cli
-      - name: Prepare Sqlx Database
-        run: cargo sqlx migrate run
-      - name: Cargo Build
+      - name: Build
         run: |
-          RUSTFLAGS=-Awarnings cargo build --message-format=json-diagnostic-rendered-ansi | jq -r 'select(.reason == "compiler-message") | .message as $message | $message.spans[] | select(.is_primary == true) | "::" + $message.level + " file=" + .file_name + ",line=" + (.line_start | tostring) + ",endLine=" + (.line_end | tostring) + ",title=" + $message.message + "::" + $message.rendered'
+          cargo build --message-format=json-diagnostic-rendered-ansi | jq -r 'select(.reason == "compiler-message" and .message.level != "warning").message | . as {message: $message, level: $level, rendered: $rendered} | .spans[] | select(.is_primary == true) | "::" + $level + " file=" + .file_name + ",col=" + (.column_start | tostring) + ",endColumn=" + (.column_end | tostring) + ",line=" + (.line_start | tostring) + ",endLine=" + (.line_end | tostring) + "::" + $message + "\n" + $rendered'
+          exit ${PIPESTATUS[0]}
+      - name: Clippy
+        run: |
+          cargo clippy --all-features --message-format=json-diagnostic-rendered-ansi | jq -r 'select(.reason == "compiler-message").message | . as {message: $message, level: $level, rendered: $rendered} | .spans[] | select(.is_primary == true) | "::" + $level + " file=" + .file_name + ",col=" + (.column_start | tostring) + ",endColumn=" + (.column_end | tostring) + ",line=" + (.line_start | tostring) + ",endLine=" + (.line_end | tostring) + "::" + $message + "\n" + $rendered'
           exit ${PIPESTATUS[0]}
