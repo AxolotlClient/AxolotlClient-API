@@ -2,7 +2,7 @@ use crate::endpoints::{
 	brew_coffee, delete_account, delete_account_username, get_account, get_account_data, get_account_settings,
 	get_authenticate, get_user, not_found, patch_account_settings, post_account_username,
 };
-use crate::gateway::gateway;
+use crate::{channels::post_channel, gateway::gateway};
 use axum::{routing::get, routing::post, serve, Router};
 use reqwest::Client;
 use sqlx::{migrate, SqlitePool};
@@ -10,10 +10,12 @@ use std::{collections::HashSet, env::var, sync::Arc};
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
+mod channels;
 mod endpoints;
 mod errors;
 mod extractors;
 mod gateway;
+mod id;
 
 #[derive(Clone)]
 pub struct ApiState {
@@ -35,8 +37,9 @@ async fn main() -> anyhow::Result<()> {
 
 	let router = Router::new()
 		.route("/authenticate", get(get_authenticate))
-		.route("/user/:uuid", get(get_user))
 		.route("/gateway", get(gateway))
+		.route("/user/:uuid", get(get_user))
+		.route("/channel", post(post_channel))
 		.route("/account", get(get_account).delete(delete_account))
 		.route("/account/data", get(get_account_data))
 		.route("/account/settings", get(get_account_settings).patch(patch_account_settings))

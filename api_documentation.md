@@ -9,6 +9,7 @@ The API is not currently used in production, however there is a development inst
 - Arrays are indicated with `[]`, example: `[string]`.
 - `Uuid`s are represented as strings, they may or may not be hyphenated.
 - `Timestamp`s are represented as strings, they conform to the RFC 3339 format.
+- `Duration`s are seconds represented as numbers.
 
 ## Errors
 
@@ -54,6 +55,18 @@ in order to set up encryption, this is unnecessary due to the use of Https.
 
 - `401` Unauthorized
 
+### `GET` `/gateway` [Authenticated](#Errors)
+
+See [Gateway](#gateway)
+
+#### Response
+
+`101` Switching Protocols - *Switch to WebSocket*
+
+#### Errors
+
+- `409` Conflict - A gateway connection is already open
+
 ### `GET` `/user/<uuid>`
 
 #### Path Fields
@@ -74,17 +87,33 @@ in order to set up encryption, this is unnecessary due to the use of Https.
 
 - `404` Not Found
 
-### `GET` `/gateway` [Authenticated](#Errors)
+### `POST` `/channel` [Authenticated](#Errors)
 
-See [Gateway](#gateway)
+#### Body Parameters
+
+- `name`: `string` - length between 1 and 32, not unique
+- `persistence`: `Persistence`
+
+#### Data Type: Persistence
+
+Controls when if ever messages should be automatically deleted. 4 options are provided:
+
+- Channel = Delete messages when the channel is deleted
+- Duration = Delete messages X time after they are sent
+- Count = Delete all but the latest X messages
+- Count and Duration = Delete all but the latest X messages X time after they are sent
+
+The server may change this value, but only lower it, never increase it.
+
+- `type`: `string` - either: `channel`, `duration`, `count`, or `count_and_duration`
+- `count`: `number?` - only present if type is `count` or `count_and_duration`
+- `duration`: `number?` - seconds, only present if type is `duration` or `count_and_duration`
 
 #### Response
 
-`101` Switching Protocols - *Switch to WebSocket*
+`200` Ok
 
-#### Errors
-
-- `409` Conflict - A gateway connection is already open
+Channel ID formatted as plain text
 
 ### `GET` `/account` [Authenticated](#Errors)
 

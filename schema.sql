@@ -2,7 +2,7 @@
 -- So here is a combination of those migrations for convenience, this should be kept up to date.
 -- This should not be actually used for a database, this is just a programmer reference.
 
--- Currently in line with: `3_Rename_show_to_public.sql`
+-- Currently in line with: `4_Channels.sql`
 
 CREATE TABLE users (
 	uuid               BLOB
@@ -66,4 +66,31 @@ CREATE TABLE tokens (
 	user    BLOB,
 
 	FOREIGN KEY (user) REFERENCES users(uuid) ON DELETE SET NULL
+);
+
+CREATE TABLE channels (
+	id                           UNSIGNED BIGINT
+	                             PRIMARY KEY
+	                             NOT NULL
+	                             UNIQUE,
+	name                         VARCHAR(32) COLLATE NOCASE
+	                             NOT NULL
+	                             UNIQUE,
+	owner                        BLOB
+	                             NOT NULL,
+	created                      DATETIME
+	                             NOT NULL
+	                             DEFAULT CURRENT_TIMESTAMP,
+	last_updated                 DATETIME
+                                 NOT NULL
+                                 DEFAULT CURRENT_TIMESTAMP,
+	last_active                  DATETIME
+                                 NOT NULL
+                                 DEFAULT CURRENT_TIMESTAMP,
+	persistence                  UNSIGNED TINYINT
+	                             NOT NULL,
+	persistence_count            UNSIGNED INT,
+	persistence_duration_seconds UNSIGNED INT,
+
+	FOREIGN KEY (owner) REFERENCES users (uuid) ON DELETE CASCADE
 );
