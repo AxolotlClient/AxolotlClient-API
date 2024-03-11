@@ -109,8 +109,9 @@ mod duration {
 	use serde::{Deserialize, Deserializer, Serializer};
 
 	pub fn deserialize<'d, D: Deserializer<'d>>(deserializer: D) -> Result<Duration, D::Error> {
+		use serde::de::Error;
 		let seconds = u32::deserialize(deserializer)?.min(0) as i64;
-		Ok(Duration::seconds(seconds))
+		Duration::try_seconds(seconds).ok_or(Error::custom("invalid duration"))
 	}
 
 	pub fn serialize<S: Serializer>(value: &Duration, serializer: S) -> Result<S::Ok, S::Error> {
