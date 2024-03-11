@@ -3,38 +3,71 @@ use axum::{extract::Path, extract::Query, extract::State, http::StatusCode, resp
 use base64::{engine::general_purpose::STANDARD_NO_PAD, Engine};
 use blake2::{Blake2b512, Digest};
 use chrono::NaiveDateTime;
+use garde::Validate;
 use serde::{Deserialize, Serialize};
-use sqlx::{error::ErrorKind::UniqueViolation, query, query_as, SqlitePool};
+use sqlx::{error::ErrorKind::UniqueViolation, query, query_as, SqlitePool, Type};
+use std::ops::Deref;
 use uuid::Uuid;
 
-#[derive(Deserialize)]
+#[derive(Clone, Deserialize, Serialize, Validate, Type)]
+#[repr(transparent)]
+#[serde(transparent)]
+#[sqlx(transparent)]
+pub struct Username(#[garde(pattern(r"[a-zA-Z0-9_]{3,16}"))] String);
+
+impl From<Username> for String {
+	fn from(value: Username) -> Self {
+		value.0
+	}
+}
+
+impl From<String> for Username {
+	fn from(value: String) -> Self {
+		Username(value)
+	}
+}
+
+impl Deref for Username {
+	type Target = String;
+
+	fn deref(&self) -> &Self::Target {
+		&self.0
+	}
+}
+
+#[derive(Deserialize, Validate)]
 pub struct Authenticate {
-	username: String,
+	#[garde(dive)]
+	username: Username,
+	#[garde(skip)] // No documented limits ¯\_(ツ)_/¯
 	server_id: String,
 }
 
 #[derive(Serialize)]
 pub struct AuthenticateResponse {
 	uuid: Uuid,
-	username: String,
+	username: Username,
 	access_token: String,
 }
 
 pub async fn get_authenticate(
 	State(ApiState { database, client, .. }): State<ApiState>,
-	Query(Authenticate { username, server_id }): Query<Authenticate>,
+	Query(authenticate): Query<Authenticate>,
 ) -> Result<Json<AuthenticateResponse>, ApiError> {
+	authenticate.validate(&())?;
+	let Authenticate { username, server_id } = authenticate;
+
 	#[derive(Clone, Deserialize)]
 	struct BasicUserInfo {
 		#[serde(rename = "id")]
 		uuid: Uuid,
 		#[serde(rename = "name")]
-		username: String,
+		username: Username,
 	}
 
 	let response = client
 		.get("https://sessionserver.mojang.com/session/minecraft/hasJoined")
-		.query(&[("username", &username), ("serverId", &server_id)])
+		.query(&[("username", &*username), ("serverId", &server_id)])
 		.send()
 		.await?;
 
@@ -103,7 +136,7 @@ pub async fn get_authenticate(
 
 	let access_token = loop {
 		let mut hasher = Blake2b512::new();
-		hasher.update(&username);
+		hasher.update(&*username);
 		hasher.update(uuid);
 		hasher.update(&server_id);
 		let random: [u8; 16] = rand::random();

@@ -12,6 +12,9 @@ log = "0.4"
 rand = "0.8"
 serde_urlencoded = "0.7"
 thiserror = "1"
+axum_garde = "0.18"
+
+garde = { version = "0.18", features = ["derive", "regex"] }
 
 [dependencies.axum]
 version = "0.7"

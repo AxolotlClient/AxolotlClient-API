@@ -1,4 +1,5 @@
 use axum::{http::StatusCode, response::IntoResponse, response::Response};
+use garde::Report;
 use log::error;
 use std::error::Error;
 
@@ -13,6 +14,12 @@ impl IntoResponse for ApiError {
 impl From<StatusCode> for ApiError {
 	fn from(value: StatusCode) -> Self {
 		ApiError(value.into_response())
+	}
+}
+
+impl From<Report> for ApiError {
+	fn from(value: Report) -> Self {
+		ApiError((StatusCode::BAD_REQUEST, value.to_string()).into_response())
 	}
 }
 
