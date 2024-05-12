@@ -2,12 +2,12 @@ use crate::endpoints::{
 	brew_coffee, delete_account, delete_account_username, get_account, get_account_data, get_account_settings,
 	get_authenticate, get_user, not_found, patch_account_settings, post_account_username,
 };
-use crate::{channels::post_channel, gateway::gateway};
+use crate::gateway::gateway;
 use axum::{routing::get, routing::post, serve, Router};
+use dashmap::DashSet;
 use reqwest::Client;
 use sqlx::{migrate, SqlitePool};
-use std::{collections::HashSet, env::var, sync::Arc};
-use tokio::sync::RwLock;
+use std::{env::var, sync::Arc};
 use uuid::Uuid;
 
 mod channels;
@@ -21,7 +21,7 @@ mod id;
 pub struct ApiState {
 	pub database: SqlitePool,
 	pub client: Client,
-	pub online_users: Arc<RwLock<HashSet<Uuid>>>, // Mildly cursed. Doesn't everyone love `Arc<RwLock<T>>`?
+	pub online_users: Arc<DashSet<Uuid>>,
 }
 
 #[tokio::main]

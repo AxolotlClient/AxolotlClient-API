@@ -11,7 +11,7 @@ pub async fn gateway(
 	Authentication(uuid): Authentication,
 	socket: WebSocketUpgrade,
 ) -> Result<Response<Body>, ApiError> {
-	if state.online_users.read().await.contains(&uuid) {
+	if state.online_users.contains(&uuid) {
 		Err(StatusCode::CONFLICT)?;
 	}
 
@@ -23,7 +23,7 @@ async fn gateway_accept_handler(
 	uuid: Uuid,
 	mut socket: WebSocket,
 ) {
-	online_users.write().await.insert(uuid);
+	online_users.insert(uuid);
 
 	let disconnect_reason = gateway_accept(&mut socket).await.unwrap_err();
 	let _ = socket
@@ -33,7 +33,7 @@ async fn gateway_accept_handler(
 		})))
 		.await;
 
-	online_users.write().await.remove(&uuid);
+	online_users.remove(&uuid);
 }
 
 async fn gateway_accept(socket: &mut WebSocket) -> Result<Infallible, DisconnectReason> {
