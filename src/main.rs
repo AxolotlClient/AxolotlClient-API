@@ -1,6 +1,6 @@
 use crate::endpoints::{
 	brew_coffee, delete_account, delete_account_username, get_account, get_account_data, get_account_settings,
-	get_authenticate, get_user, not_found, patch_account_settings, post_account_username,
+	get_authenticate, not_found, patch_account_settings, post_account_username, user,
 };
 use crate::gateway::gateway;
 use axum::{routing::get, routing::post, serve, Router};
@@ -10,7 +10,6 @@ use sqlx::{migrate, SqlitePool};
 use std::{env::var, sync::Arc};
 use uuid::Uuid;
 
-mod channels;
 mod endpoints;
 mod errors;
 mod extractors;
@@ -38,7 +37,7 @@ async fn main() -> anyhow::Result<()> {
 	let router = Router::new()
 		.route("/authenticate", get(get_authenticate))
 		.route("/gateway", get(gateway))
-		.route("/user/:uuid", get(get_user))
+		.route("/user/:uuid", get(user::get))
 		// .route("/channel", post(post_channel))
 		.route("/account", get(get_account).delete(delete_account))
 		.route("/account/data", get(get_account_data))

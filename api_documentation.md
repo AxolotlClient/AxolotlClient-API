@@ -80,8 +80,13 @@ See [Gateway](#gateway)
 - `uuid`: `Uuid`
 - `username`: `string`
 - `registered`: `Timestamp?`
-- `last_activity`: `Timestamp?`
+- `status`: `Status?`
 - `old_usernames`: `[string]`
+
+##### Status
+
+- `type`: `string` - either: `online` or `offline`
+- `last_online`: `Timestamp` - only present if type is `offline`
 
 #### Errors
 
@@ -94,7 +99,7 @@ See [Gateway](#gateway)
 - `name`: `string` - length between 1 and 32, not unique
 - `persistence`: `Persistence`
 
-#### Data Type: Persistence
+##### Persistence
 
 Controls when if ever messages should be automatically deleted. 4 options are provided:
 
@@ -124,7 +129,7 @@ Channel ID formatted as plain text
 - `uuid`: `Uuid`
 - `username`: `string`
 - `registered`: `Timestamp`
-- `last_activity`: `Timestamp`
+- `last_online`: `Timestamp`
 - `old_usernames`: `[OldUsername]`
 
 #### OldUsername
@@ -151,7 +156,7 @@ Returns user data in a Json format. Access tokens are not included.
 `200` Ok
 
 - `show_registered`: `boolean`
-- `show_last_activity`: `boolean`
+- `show_status`: `boolean`
 - `retain_usernames`: `boolean`
 
 ### `PATCH` `/account/settings` [Authenticated](#Errors)
@@ -159,7 +164,7 @@ Returns user data in a Json format. Access tokens are not included.
 #### Body Fields
 
 - `show_registered`: `boolean`
-- `show_last_activity`: `boolean`
+- `show_status`: `boolean`
 - `retain_usernames`: `boolean`
 
 #### Response

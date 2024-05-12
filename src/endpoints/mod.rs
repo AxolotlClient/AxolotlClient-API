@@ -9,6 +9,9 @@ use sqlx::{error::ErrorKind::UniqueViolation, query, query_as, SqlitePool, Type}
 use std::ops::Deref;
 use uuid::Uuid;
 
+pub mod channel;
+pub mod user;
+
 #[derive(Clone, Deserialize, Serialize, Validate, Type)]
 #[repr(transparent)]
 #[serde(transparent)]
@@ -160,7 +163,7 @@ pub async fn get_authenticate(
 		}
 	};
 
-	query!("UPDATE users SET last_activity = CURRENT_TIMESTAMP WHERE uuid = ?", uuid_ref)
+	query!("UPDATE users SET last_online = CURRENT_TIMESTAMP WHERE uuid = ?", uuid_ref)
 		.execute(&mut *transaction)
 		.await?;
 
@@ -174,56 +177,11 @@ pub async fn get_authenticate(
 }
 
 #[derive(Serialize)]
-pub struct PublicUser {
-	uuid: Uuid,
-	username: String,
-	registered: Option<NaiveDateTime>,
-	last_activity: Option<NaiveDateTime>,
-	old_usernames: Vec<String>,
-}
-
-pub async fn get_user(
-	State(ApiState { database, .. }): State<ApiState>,
-	Path(uuid): Path<Uuid>,
-) -> Result<Json<PublicUser>, ApiError> {
-	let uuid_ref: &[u8] = uuid.as_ref();
-	let user = query!(
-		r#"
-			SELECT
-				uuid AS 'uuid: Uuid',
-				username,
-				IIF(show_registered, registered, NULL) AS registered,
-				IIF(show_last_activity, last_activity, NULL) AS last_activity
-			FROM users WHERE uuid = ?
-		"#,
-		uuid_ref
-	)
-	.fetch_optional(&database)
-	.await?
-	.ok_or(StatusCode::NOT_FOUND)?;
-
-	let usernames = query!("SELECT username FROM old_usernames WHERE user = ? AND public", uuid_ref)
-		.fetch_all(&database)
-		.await?
-		.into_iter()
-		.map(|record| record.username)
-		.collect();
-
-	Ok(Json(PublicUser {
-		uuid: user.uuid,
-		username: user.username,
-		registered: user.registered,
-		last_activity: user.last_activity,
-		old_usernames: usernames,
-	}))
-}
-
-#[derive(Serialize)]
 pub struct User {
 	uuid: Uuid,
 	username: String,
 	registered: NaiveDateTime,
-	last_activity: NaiveDateTime,
+	last_online: NaiveDateTime,
 	old_usernames: Vec<OldUsername>,
 }
 
@@ -237,7 +195,7 @@ impl User {
 	pub async fn get(database: &SqlitePool, uuid: &Uuid) -> Result<User, ApiError> {
 		let uuid_ref: &[u8] = uuid.as_ref();
 		let user = query!(
-			"SELECT uuid AS 'uuid: Uuid', username, registered, last_activity FROM users WHERE uuid = ?",
+			"SELECT uuid AS 'uuid: Uuid', username, registered, last_online FROM users WHERE uuid = ?",
 			uuid_ref
 		)
 		.fetch_one(database)
@@ -251,7 +209,7 @@ impl User {
 			uuid: user.uuid,
 			username: user.username,
 			registered: user.registered,
-			last_activity: user.last_activity,
+			last_online: user.last_online,
 			old_usernames,
 		})
 	}
@@ -295,7 +253,7 @@ pub async fn get_account_data(
 #[derive(Serialize)]
 pub struct Settings {
 	show_registered: bool,
-	show_last_activity: bool,
+	show_status: bool,
 	retain_usernames: bool,
 }
 
@@ -304,7 +262,7 @@ impl Settings {
 		let uuid_ref: &[u8] = uuid.as_ref();
 		Ok(query_as!(
 			Settings,
-			"SELECT show_registered, show_last_activity, retain_usernames FROM users WHERE uuid = ?",
+			"SELECT show_registered, show_status, retain_usernames FROM users WHERE uuid = ?",
 			uuid_ref
 		)
 		.fetch_one(database)
@@ -322,7 +280,7 @@ pub async fn get_account_settings(
 #[derive(Deserialize)]
 pub struct SettingsPatch {
 	show_registered: Option<bool>,
-	show_last_activity: Option<bool>,
+	show_status: Option<bool>,
 	retain_usernames: Option<bool>,
 }
 
@@ -336,12 +294,12 @@ pub async fn patch_account_settings(
 		r#"
 			UPDATE users SET
 				show_registered = coalesce(?, show_registered),
-				show_last_activity = coalesce(?, show_last_activity),
+				show_status = coalesce(?, show_status),
 				retain_usernames = coalesce(?, retain_usernames)
 			WHERE uuid = ?
 		"#,
 		user_settings_patch.show_registered,
-		user_settings_patch.show_last_activity,
+		user_settings_patch.show_status,
 		user_settings_patch.retain_usernames,
 		uuid_ref
 	)

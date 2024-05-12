@@ -2,31 +2,31 @@
 -- So here is a combination of those migrations for convenience, this should be kept up to date.
 -- This should not be actually used for a database, this is just a programmer reference.
 
--- Currently in line with: `4_Channels.sql`
+-- Currently in line with: `5_Rename_status_columns.sql`
 
 CREATE TABLE users (
-	uuid               BLOB
-	                   PRIMARY KEY
-	                   NOT NULL
-	                   UNIQUE,
-	username           VARCHAR(16) COLLATE NOCASE
-	                   NOT NULL
-	                   UNIQUE,
-	registered         DATETIME
-	                   NOT NULL
-	                   DEFAULT CURRENT_TIMESTAMP,
-	show_registered    BOOLEAN
-	                   NOT NULL
-	                   DEFAULT TRUE,
-	last_activity      DATETIME
-	                   NOT NULL
-	                   DEFAULT CURRENT_TIMESTAMP,
-	show_last_activity BOOLEAN
-	                   NOT NULL
-	                   DEFAULT TRUE,
-	retain_usernames   BOOLEAN
-	                   NOT NULL
-	                   DEFAULT TRUE
+	uuid             BLOB
+	                 PRIMARY KEY
+	                 NOT NULL
+	                 UNIQUE,
+	username         VARCHAR(16) COLLATE NOCASE
+	                 NOT NULL
+	                 UNIQUE,
+	registered       DATETIME
+	                 NOT NULL
+	                 DEFAULT CURRENT_TIMESTAMP,
+	show_registered  BOOLEAN
+	                 NOT NULL
+	                 DEFAULT TRUE,
+	last_online      DATETIME
+	                 NOT NULL
+	                 DEFAULT CURRENT_TIMESTAMP,
+	show_status      BOOLEAN
+	                 NOT NULL
+	                 DEFAULT TRUE,
+	retain_usernames BOOLEAN
+	                 NOT NULL
+	                 DEFAULT TRUE
 );
 
 CREATE TABLE old_usernames (

@@ -1,6 +1,7 @@
 use crate::{errors::ApiError, extractors::Authentication, ApiState};
 use axum::extract::{ws::close_code, ws::CloseFrame, ws::Message, ws::WebSocket, State, WebSocketUpgrade};
 use axum::{body::Body, http::StatusCode, response::Response};
+use sqlx::query;
 use std::{convert::Infallible, fmt::Display, fmt::Formatter, time::Duration};
 use tokio::{pin, select, time::sleep, time::Instant};
 use uuid::Uuid;
@@ -19,7 +20,9 @@ pub async fn gateway(
 }
 
 async fn gateway_accept_handler(
-	State(ApiState { online_users, .. }): State<ApiState>,
+	State(ApiState {
+		database, online_users, ..
+	}): State<ApiState>,
 	uuid: Uuid,
 	mut socket: WebSocket,
 ) {
@@ -34,6 +37,10 @@ async fn gateway_accept_handler(
 		.await;
 
 	online_users.remove(&uuid);
+
+	let _ = query!("UPDATE users SET last_online = CURRENT_TIMESTAMP WHERE uuid = ?", uuid)
+		.execute(&database)
+		.await;
 }
 
 async fn gateway_accept(socket: &mut WebSocket) -> Result<Infallible, DisconnectReason> {
