@@ -3,3 +3,4 @@
 
 /.sqlx-check.db
 /Cargo.lock
+/flake.lock
