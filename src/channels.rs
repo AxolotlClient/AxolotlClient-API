@@ -74,7 +74,7 @@ pub async fn post_channel(
 	channel_data.validate(&())?;
 
 	let id = Id::new();
-	let owner_ref = owner.as_ref();
+	let owner_ref: &[u8] = owner.as_ref();
 	let persistence = channel_data.persistence.id();
 	let persistence_count = channel_data.persistence.count();
 	let persistence_duration_seconds = channel_data

@@ -82,7 +82,7 @@ pub async fn get_authenticate(
 	let mut usernames_to_update = vec![user.clone()];
 
 	while let Some(user_to_update) = usernames_to_update.pop() {
-		let uuid_ref = user_to_update.uuid.as_ref();
+		let uuid_ref: &[u8] = user_to_update.uuid.as_ref();
 		let existing_user_with_name = query_as!(
 			BasicUserInfo,
 			"SELECT username, uuid AS 'uuid: Uuid' FROM users WHERE uuid != ? AND username = ?",
@@ -132,7 +132,7 @@ pub async fn get_authenticate(
 	}
 
 	let BasicUserInfo { uuid, username } = user;
-	let uuid_ref = uuid.as_ref();
+	let uuid_ref: &[u8] = uuid.as_ref();
 
 	let access_token = loop {
 		let mut hasher = Blake2b512::new();
@@ -186,7 +186,7 @@ pub async fn get_user(
 	State(ApiState { database, .. }): State<ApiState>,
 	Path(uuid): Path<Uuid>,
 ) -> Result<Json<PublicUser>, ApiError> {
-	let uuid_ref = uuid.as_ref();
+	let uuid_ref: &[u8] = uuid.as_ref();
 	let user = query!(
 		r#"
 			SELECT
@@ -235,7 +235,7 @@ pub struct OldUsername {
 
 impl User {
 	pub async fn get(database: &SqlitePool, uuid: &Uuid) -> Result<User, ApiError> {
-		let uuid_ref = uuid.as_ref();
+		let uuid_ref: &[u8] = uuid.as_ref();
 		let user = query!(
 			"SELECT uuid AS 'uuid: Uuid', username, registered, last_activity FROM users WHERE uuid = ?",
 			uuid_ref
@@ -268,7 +268,7 @@ pub async fn delete_account(
 	State(ApiState { database, .. }): State<ApiState>,
 	Authentication(uuid): Authentication,
 ) -> Result<StatusCode, ApiError> {
-	let uuid_ref = uuid.as_ref();
+	let uuid_ref: &[u8] = uuid.as_ref();
 	query!("DELETE FROM users WHERE uuid = ?", uuid_ref)
 		.execute(&database)
 		.await?;
@@ -301,7 +301,7 @@ pub struct Settings {
 
 impl Settings {
 	pub async fn get(database: &SqlitePool, uuid: &Uuid) -> Result<Settings, ApiError> {
-		let uuid_ref = uuid.as_ref();
+		let uuid_ref: &[u8] = uuid.as_ref();
 		Ok(query_as!(
 			Settings,
 			"SELECT show_registered, show_last_activity, retain_usernames FROM users WHERE uuid = ?",
@@ -331,7 +331,7 @@ pub async fn patch_account_settings(
 	Authentication(uuid): Authentication,
 	Json(user_settings_patch): Json<SettingsPatch>,
 ) -> Result<StatusCode, ApiError> {
-	let uuid_ref = uuid.as_ref();
+	let uuid_ref: &[u8] = uuid.as_ref();
 	query!(
 		r#"
 			UPDATE users SET
@@ -357,7 +357,7 @@ pub async fn post_account_username(
 	Path(username): Path<String>,
 	Query(public): Query<bool>,
 ) -> Result<StatusCode, ApiError> {
-	let uuid_ref = uuid.as_ref();
+	let uuid_ref: &[u8] = uuid.as_ref();
 	let rows_affected =
 		query!("UPDATE old_usernames SET public = ? WHERE user = ? AND username = ?", public, uuid_ref, username)
 			.execute(&database)
@@ -374,7 +374,7 @@ pub async fn delete_account_username(
 	Authentication(uuid): Authentication,
 	Path(username): Path<String>,
 ) -> Result<StatusCode, ApiError> {
-	let uuid_ref = uuid.as_ref();
+	let uuid_ref: &[u8] = uuid.as_ref();
 	query!("DELETE FROM old_usernames WHERE user = ? AND username = ?", uuid_ref, username)
 		.execute(&database)
 		.await?;

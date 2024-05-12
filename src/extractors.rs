@@ -37,7 +37,7 @@ impl FromRequestParts<ApiState> for Authentication {
 			}?
 		};
 
-		let uuid_ref = uuid.as_ref();
+		let uuid_ref: &[u8] = uuid.as_ref();
 		query!(
 			"UPDATE users SET last_activity = CURRENT_TIMESTAMP where uuid = ?;\
 			 UPDATE tokens SET used = CURRENT_TIMESTAMP where token = ?",
