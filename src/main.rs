@@ -39,7 +39,7 @@ async fn main() -> anyhow::Result<()> {
 		.route("/authenticate", get(get_authenticate))
 		.route("/gateway", get(gateway))
 		.route("/user/:uuid", get(get_user))
-		.route("/channel", post(post_channel))
+		// .route("/channel", post(post_channel))
 		.route("/account", get(get_account).delete(delete_account))
 		.route("/account/data", get(get_account_data))
 		.route("/account/settings", get(get_account_settings).patch(patch_account_settings))
