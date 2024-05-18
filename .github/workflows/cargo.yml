@@ -5,6 +5,12 @@ jobs:
   cargo:
     name: Cargo
     runs-on: ubuntu-latest
+    services:
+      image: postgres
+      env:
+        POSTGRES_HOST_AUTH_METHOD: trust
+      ports:
+        - "[::1]:5432:5432"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
