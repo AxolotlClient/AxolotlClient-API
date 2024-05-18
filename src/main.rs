@@ -6,7 +6,7 @@ use crate::gateway::gateway;
 use axum::{routing::get, routing::post, serve, Router};
 use dashmap::DashSet;
 use reqwest::Client;
-use sqlx::{migrate, SqlitePool};
+use sqlx::{migrate, PgPool};
 use std::{env::var, sync::Arc};
 use uuid::Uuid;
 
@@ -18,7 +18,7 @@ mod id;
 
 #[derive(Clone)]
 pub struct ApiState {
-	pub database: SqlitePool,
+	pub database: PgPool,
 	pub client: Client,
 	pub online_users: Arc<DashSet<Uuid>>,
 }
@@ -29,7 +29,7 @@ async fn main() -> anyhow::Result<()> {
 
 	let database = {
 		let database_url = var("SERVER_DATABASE_URL")?;
-		SqlitePool::connect(&database_url).await?
+		PgPool::connect(&database_url).await?
 	};
 
 	migrate!().run(&database).await?;

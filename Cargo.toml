@@ -27,4 +27,4 @@ axum = { version = "0.7", default-features = false, features = ["http1", "json",
 [dependencies.sqlx]
 version = "0.7"
 default-features = false
-features = ["chrono", "macros", "migrate", "runtime-tokio", "sqlite", "tls-none", "uuid"]
+features = ["chrono", "macros", "migrate", "postgres", "runtime-tokio", "tls-none", "uuid"]

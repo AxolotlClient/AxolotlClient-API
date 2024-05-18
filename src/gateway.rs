@@ -38,7 +38,7 @@ async fn gateway_accept_handler(
 
 	online_users.remove(&uuid);
 
-	let _ = query!("UPDATE users SET last_online = CURRENT_TIMESTAMP WHERE uuid = ?", uuid)
+	let _ = query!("UPDATE players SET last_online = 'now' WHERE uuid = $1", uuid)
 		.execute(&database)
 		.await;
 }

@@ -24,12 +24,12 @@ impl FromRequestParts<ApiState> for Authentication {
 
 		let authorization_ref = &*authorization;
 		let uuid = {
-			let record = query!("SELECT valid, user AS 'uuid: Uuid' FROM tokens WHERE token = ?", authorization_ref)
+			let record = query!("SELECT valid, player FROM tokens WHERE token = $1", authorization_ref)
 				.fetch_one(database)
 				.await?;
 
 			match record.valid {
-				true => match record.uuid {
+				true => match record.player {
 					Some(uuid) => Ok(uuid),
 					_ => Err(StatusCode::UNAUTHORIZED),
 				},
@@ -37,15 +37,13 @@ impl FromRequestParts<ApiState> for Authentication {
 			}?
 		};
 
-		let uuid_ref: &[u8] = uuid.as_ref();
-		query!(
-			"UPDATE users SET last_online = CURRENT_TIMESTAMP where uuid = ?;\
-			 UPDATE tokens SET used = CURRENT_TIMESTAMP where token = ?",
-			uuid_ref,
-			authorization_ref
-		)
-		.execute(database)
-		.await?;
+		query!("UPDATE players SET last_online = 'now' where uuid = $1", uuid)
+			.execute(database)
+			.await?;
+
+		query!("UPDATE tokens SET used = 'now' where token = $1", authorization_ref)
+			.execute(database)
+			.await?;
 
 		Ok(Self(uuid))
 	}

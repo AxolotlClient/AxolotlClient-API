@@ -38,12 +38,15 @@ pub async fn get(
 	let user = query!(
 		r#"
 			SELECT
-				uuid AS 'uuid: Uuid',
+				uuid,
 				username,
-				IIF(show_registered, registered, NULL) AS registered,
-                last_online,
-                show_status
-			FROM users WHERE uuid = ?
+				CASE
+					WHEN show_registered THEN registered
+					ELSE NULL
+				END as registered,
+				last_online,
+				show_status
+			FROM players WHERE uuid = $1
 		"#,
 		uuid
 	)
@@ -51,7 +54,7 @@ pub async fn get(
 	.await?
 	.ok_or(StatusCode::NOT_FOUND)?;
 
-	let old_usernames = query_scalar!("SELECT username FROM old_usernames WHERE user = ? AND public", uuid)
+	let old_usernames = query_scalar!("SELECT username FROM previous_usernames WHERE player = $1 AND public", uuid)
 		.fetch_all(&database)
 		.await?;
 

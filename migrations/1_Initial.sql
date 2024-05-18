@@ -1,9 +1,3 @@
--- Keeping track of the actual database schema is annoying beyond a few migrations.
--- So here is a combination of those migrations for convenience, this should be kept up to date.
--- This should not be actually used for a database, this is just a programmer reference.
-
--- Currently in line with: `migrations/1_Initial.sql`
-
 CREATE TABLE players (
 	uuid     UUID
 	         PRIMARY KEY,
@@ -81,7 +75,7 @@ CREATE TABLE channels (
 	                             NOT NULL
 	                             DEFAULT 'now',
 	last_updated                 TIMESTAMP
-								NOT NULL
+	                             NOT NULL
 	                             DEFAULT 'now',
 	last_message                 TIMESTAMP
 	                             NOT NULL

@@ -5,11 +5,11 @@ use blake2::{Blake2b512, Digest};
 use chrono::NaiveDateTime;
 use garde::Validate;
 use serde::{Deserialize, Serialize};
-use sqlx::{error::ErrorKind::UniqueViolation, query, query_as, SqlitePool, Type};
+use sqlx::{error::ErrorKind::UniqueViolation, query, query_as, query_scalar, PgPool, Type};
 use std::ops::Deref;
 use uuid::Uuid;
 
-pub mod channel;
+// pub mod channel;
 pub mod user;
 
 #[derive(Clone, Deserialize, Serialize, Validate, Type)]
@@ -84,49 +84,53 @@ pub async fn get_authenticate(
 
 	let mut usernames_to_update = vec![user.clone()];
 
-	while let Some(user_to_update) = usernames_to_update.pop() {
-		let uuid_ref: &[u8] = user_to_update.uuid.as_ref();
-		let existing_user_with_name = query_as!(
+	while let Some(player_to_update) = usernames_to_update.pop() {
+		let existing_player_with_name = query_as!(
 			BasicUserInfo,
-			"SELECT username, uuid AS 'uuid: Uuid' FROM users WHERE uuid != ? AND username = ?",
-			uuid_ref,
-			user_to_update.username
+			"SELECT username, uuid FROM players WHERE uuid != $1 AND username = $2",
+			player_to_update.uuid,
+			&player_to_update.username
 		)
 		.fetch_optional(&mut *transaction)
 		.await?;
 
-		match existing_user_with_name {
-			Some(existing_user_with_name) => {
-				let existing_user_with_name = client
+		match existing_player_with_name {
+			Some(existing_player_with_name) => {
+				let existing_player_with_name = client
 					.get(format!(
 						"https://sessionserver.mojang.com/session/minecraft/profile/{}",
-						existing_user_with_name.uuid
+						existing_player_with_name.uuid
 					))
 					.send()
 					.await?
 					.json()
 					.await?;
 
-				usernames_to_update.push(user_to_update);
-				usernames_to_update.push(existing_user_with_name);
+				usernames_to_update.push(player_to_update);
+				usernames_to_update.push(existing_player_with_name);
 			}
 			None => {
-				let old_username = query!("SELECT username FROM users WHERE uuid == ? AND retain_usernames", uuid_ref)
-					.fetch_optional(&mut *transaction)
-					.await?
-					.map(|record| record.username);
+				let previous_username = query_scalar!(
+					"SELECT username FROM players WHERE uuid = $1 AND retain_usernames",
+					player_to_update.uuid
+				)
+				.fetch_optional(&mut *transaction)
+				.await?;
 
-				if let Some(old_username) = old_username {
-					query!("INSERT INTO old_usernames(user, username) VALUES (?, ?)", uuid_ref, old_username)
-						.execute(&mut *transaction)
-						.await?;
+				if let Some(previous_username) = previous_username {
+					query!(
+						"INSERT INTO previous_usernames(player, username) VALUES ($1, $2)",
+						player_to_update.uuid,
+						previous_username
+					)
+					.execute(&mut *transaction)
+					.await?;
 				}
 
 				query!(
-					"INSERT INTO users(uuid, username) VALUES (?, ?) ON CONFLICT (uuid) DO UPDATE SET username = ?",
-					uuid_ref,
-					user_to_update.username,
-					user_to_update.username
+					"INSERT INTO players(uuid, username) VALUES ($1, $2) ON CONFLICT (uuid) DO UPDATE SET username = $2",
+					player_to_update.uuid,
+					&player_to_update.username
 				)
 				.execute(&mut *transaction)
 				.await?;
@@ -135,7 +139,6 @@ pub async fn get_authenticate(
 	}
 
 	let BasicUserInfo { uuid, username } = user;
-	let uuid_ref: &[u8] = uuid.as_ref();
 
 	let access_token = loop {
 		let mut hasher = Blake2b512::new();
@@ -147,7 +150,7 @@ pub async fn get_authenticate(
 
 		let potential_access_token = hasher.finalize();
 		let potential_access_token_bytes = potential_access_token.as_slice();
-		let result = query!("INSERT INTO tokens(token, user) VALUES (?, ?)", potential_access_token_bytes, uuid_ref)
+		let result = query!("INSERT INTO tokens(token, player) VALUES ($1, $2)", potential_access_token_bytes, uuid)
 			.execute(&mut *transaction)
 			.await;
 
@@ -163,7 +166,7 @@ pub async fn get_authenticate(
 		}
 	};
 
-	query!("UPDATE users SET last_online = CURRENT_TIMESTAMP WHERE uuid = ?", uuid_ref)
+	query!("UPDATE players SET last_online = 'now' WHERE uuid = $1", uuid)
 		.execute(&mut *transaction)
 		.await?;
 
@@ -192,16 +195,12 @@ pub struct OldUsername {
 }
 
 impl User {
-	pub async fn get(database: &SqlitePool, uuid: &Uuid) -> Result<User, ApiError> {
-		let uuid_ref: &[u8] = uuid.as_ref();
-		let user = query!(
-			"SELECT uuid AS 'uuid: Uuid', username, registered, last_online FROM users WHERE uuid = ?",
-			uuid_ref
-		)
-		.fetch_one(database)
-		.await?;
+	pub async fn get(database: &PgPool, uuid: &Uuid) -> Result<User, ApiError> {
+		let user = query!("SELECT uuid, username, registered, last_online FROM players WHERE uuid = $1", uuid)
+			.fetch_one(database)
+			.await?;
 		let old_usernames =
-			query_as!(OldUsername, "SELECT username, public FROM old_usernames WHERE user = ?", uuid_ref)
+			query_as!(OldUsername, "SELECT username, public FROM previous_usernames WHERE player = $1", uuid)
 				.fetch_all(database)
 				.await?;
 
@@ -226,8 +225,7 @@ pub async fn delete_account(
 	State(ApiState { database, .. }): State<ApiState>,
 	Authentication(uuid): Authentication,
 ) -> Result<StatusCode, ApiError> {
-	let uuid_ref: &[u8] = uuid.as_ref();
-	query!("DELETE FROM users WHERE uuid = ?", uuid_ref)
+	query!("DELETE FROM players WHERE uuid = $1", uuid)
 		.execute(&database)
 		.await?;
 
@@ -258,12 +256,11 @@ pub struct Settings {
 }
 
 impl Settings {
-	pub async fn get(database: &SqlitePool, uuid: &Uuid) -> Result<Settings, ApiError> {
-		let uuid_ref: &[u8] = uuid.as_ref();
+	pub async fn get(database: &PgPool, uuid: &Uuid) -> Result<Settings, ApiError> {
 		Ok(query_as!(
 			Settings,
-			"SELECT show_registered, show_status, retain_usernames FROM users WHERE uuid = ?",
-			uuid_ref
+			"SELECT show_registered, show_status, retain_usernames FROM players WHERE uuid = $1",
+			uuid
 		)
 		.fetch_one(database)
 		.await?)
@@ -289,19 +286,18 @@ pub async fn patch_account_settings(
 	Authentication(uuid): Authentication,
 	Json(user_settings_patch): Json<SettingsPatch>,
 ) -> Result<StatusCode, ApiError> {
-	let uuid_ref: &[u8] = uuid.as_ref();
 	query!(
 		r#"
-			UPDATE users SET
-				show_registered = coalesce(?, show_registered),
-				show_status = coalesce(?, show_status),
-				retain_usernames = coalesce(?, retain_usernames)
-			WHERE uuid = ?
+			UPDATE players SET
+				show_registered = coalesce($1, show_registered),
+				show_status = coalesce($2, show_status),
+				retain_usernames = coalesce($3, retain_usernames)
+			WHERE uuid = $4
 		"#,
 		user_settings_patch.show_registered,
 		user_settings_patch.show_status,
 		user_settings_patch.retain_usernames,
-		uuid_ref
+		uuid
 	)
 	.execute(&database)
 	.await?;
@@ -315,9 +311,8 @@ pub async fn post_account_username(
 	Path(username): Path<String>,
 	Query(public): Query<bool>,
 ) -> Result<StatusCode, ApiError> {
-	let uuid_ref: &[u8] = uuid.as_ref();
 	let rows_affected =
-		query!("UPDATE old_usernames SET public = ? WHERE user = ? AND username = ?", public, uuid_ref, username)
+		query!("UPDATE previous_usernames SET public = $1 WHERE player = $2 AND username = $3", public, uuid, username)
 			.execute(&database)
 			.await?
 			.rows_affected();
@@ -332,8 +327,7 @@ pub async fn delete_account_username(
 	Authentication(uuid): Authentication,
 	Path(username): Path<String>,
 ) -> Result<StatusCode, ApiError> {
-	let uuid_ref: &[u8] = uuid.as_ref();
-	query!("DELETE FROM old_usernames WHERE user = ? AND username = ?", uuid_ref, username)
+	query!("DELETE FROM previous_usernames WHERE player = $1 AND username = $2", uuid, username)
 		.execute(&database)
 		.await?;
 	Ok(StatusCode::NOT_FOUND)
