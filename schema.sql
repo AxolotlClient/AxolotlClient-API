@@ -2,7 +2,7 @@
 -- So here is a combination of those migrations for convenience, this should be kept up to date.
 -- This should not be actually used for a database, this is just a programmer reference.
 
--- Currently in line with: `migrations/1_Initial.sql`
+-- Currently in line with: `migrations/2_Expanded_Status.sql`
 
 CREATE TABLE players (
 	uuid     UUID
@@ -15,16 +15,18 @@ CREATE TABLE players (
 	            NOT NULL
 	            DEFAULT 'now',
 	last_online TIMESTAMP
-	            NOT NULL
 	            DEFAULT 'now',
 
 	show_registered  BOOLEAN
 	                 NOT NULL
 	                 DEFAULT true,
-	show_status      BOOLEAN
+	retain_usernames BOOLEAN
 	                 NOT NULL
 	                 DEFAULT true,
-	retain_usernames BOOLEAN
+	show_last_online BOOLEAN
+	                 NOT NULL
+	                 DEFAULT true,
+	show_activity    BOOLEAN
 	                 NOT NULL
 	                 DEFAULT true
 );

@@ -12,7 +12,7 @@ pub async fn gateway(
 	Authentication(uuid): Authentication,
 	socket: WebSocketUpgrade,
 ) -> Result<Response<Body>, ApiError> {
-	if state.online_users.contains(&uuid) {
+	if state.online_users.contains_key(&uuid) {
 		Err(StatusCode::CONFLICT)?;
 	}
 
@@ -26,7 +26,7 @@ async fn gateway_accept_handler(
 	uuid: Uuid,
 	mut socket: WebSocket,
 ) {
-	online_users.insert(uuid);
+	online_users.insert(uuid, None);
 
 	let disconnect_reason = gateway_accept(&mut socket).await.unwrap_err();
 	let _ = socket
@@ -38,7 +38,7 @@ async fn gateway_accept_handler(
 
 	online_users.remove(&uuid);
 
-	let _ = query!("UPDATE players SET last_online = 'now' WHERE uuid = $1", uuid)
+	let _ = query!("UPDATE players SET last_online = 'now' WHERE uuid = $1 AND show_last_online = true", uuid)
 		.execute(&database)
 		.await;
 }

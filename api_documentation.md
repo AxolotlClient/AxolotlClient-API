@@ -80,13 +80,20 @@ See [Gateway](#gateway)
 - `uuid`: `Uuid`
 - `username`: `string`
 - `registered`: `Timestamp?`
-- `status`: `Status?`
-- `old_usernames`: `[string]`
+- `status`: `Status`
+- `previous_usernames`: `[string]`
 
 ##### Status
 
 - `type`: `string` - either: `online` or `offline`
-- `last_online`: `Timestamp` - only present if type is `offline`
+- `last_online`: `Timestamp?` - only present if type is `offline` and if enabled by the user
+- `activity`: `Activity?` - only present if type is `online` and if enabled by the user
+
+##### Activity
+
+- `title`: `string`
+- `description`: `string`
+- `started`: `Timestamp`
 
 #### Errors
 
@@ -129,8 +136,8 @@ Channel ID formatted as plain text
 - `uuid`: `Uuid`
 - `username`: `string`
 - `registered`: `Timestamp`
-- `last_online`: `Timestamp`
-- `old_usernames`: `[OldUsername]`
+- `last_online`: `Timestamp?`
+- `previous_usernames`: `[OldUsername]`
 
 #### OldUsername
 
@@ -156,16 +163,18 @@ Returns user data in a Json format. Access tokens are not included.
 `200` Ok
 
 - `show_registered`: `boolean`
-- `show_status`: `boolean`
 - `retain_usernames`: `boolean`
+- `show_last_online`: `boolean`
+- `show_activity`: `boolean`
 
 ### `PATCH` `/account/settings` [Authenticated](#Errors)
 
 #### Body Fields
 
 - `show_registered`: `boolean`
-- `show_status`: `boolean`
 - `retain_usernames`: `boolean`
+- `show_last_online`: `boolean`
+- `show_activity`: `boolean`
 
 #### Response
 

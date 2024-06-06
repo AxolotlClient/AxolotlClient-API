@@ -1,6 +1,7 @@
 use crate::{errors::ApiError, ApiState};
 use axum::{extract::Path, extract::State, Json};
 use chrono::NaiveDateTime;
+use log::warn;
 use reqwest::StatusCode;
 use serde::Serialize;
 use sqlx::{query, query_scalar};
@@ -15,18 +16,30 @@ pub struct User {
 	#[serde(skip_serializing_if = "Option::is_none")]
 	registered: Option<NaiveDateTime>,
 
-	#[serde(skip_serializing_if = "Option::is_none")]
-	status: Option<Status>,
+	status: Status,
 
 	#[serde(skip_serializing_if = "Vec::is_empty")]
-	old_usernames: Vec<String>,
+	previous_usernames: Vec<String>,
 }
 
 #[derive(Serialize)]
 #[serde(rename_all = "snake_case", tag = "type")]
 pub enum Status {
-	Offline { last_online: NaiveDateTime },
-	Online,
+	Offline {
+		#[serde(skip_serializing_if = "Option::is_none")]
+		last_online: Option<NaiveDateTime>,
+	},
+	Online {
+		#[serde(skip_serializing_if = "Option::is_none")]
+		activity: Option<Activity>,
+	},
+}
+
+#[derive(Clone, Serialize)]
+pub struct Activity {
+	title: String,
+	description: String,
+	started: NaiveDateTime,
 }
 
 pub async fn get(
@@ -38,14 +51,11 @@ pub async fn get(
 	let user = query!(
 		r#"
 			SELECT
-				uuid,
 				username,
-				CASE
-					WHEN show_registered THEN registered
-					ELSE NULL
-				END as registered,
+				CASE WHEN show_registered THEN registered ELSE NULL END as registered,
 				last_online,
-				show_status
+				show_last_online,
+				show_activity
 			FROM players WHERE uuid = $1
 		"#,
 		uuid
@@ -54,25 +64,36 @@ pub async fn get(
 	.await?
 	.ok_or(StatusCode::NOT_FOUND)?;
 
-	let old_usernames = query_scalar!("SELECT username FROM previous_usernames WHERE player = $1 AND public", uuid)
-		.fetch_all(&database)
-		.await?;
+	let status = match online_users.get(&uuid) {
+		None => {
+			let last_online = match user.show_last_online {
+				true => user.last_online,
+				false => match user.last_online {
+					None => None,
+					Some(_) => {
+						warn!("players.last_online was NOT NULL, when it should be NULL");
+						None
+					}
+				},
+			};
 
-	let status = match user.show_status {
-		true => match online_users.contains(&uuid) {
-			true => Some(Status::Online),
-			false => Some(Status::Offline {
-				last_online: user.last_online,
-			}),
+			Status::Offline { last_online }
+		}
+		Some(activity) => Status::Online {
+			activity: activity.clone(),
 		},
-		false => None,
 	};
 
+	let previous_usernames =
+		query_scalar!("SELECT username FROM previous_usernames WHERE player = $1 AND public", uuid)
+			.fetch_all(&database)
+			.await?;
+
 	Ok(Json(User {
-		uuid: user.uuid,
+		uuid,
 		username: user.username,
 		registered: user.registered,
 		status,
-		old_usernames,
+		previous_usernames,
 	}))
 }

@@ -4,7 +4,8 @@ use crate::endpoints::{
 };
 use crate::gateway::gateway;
 use axum::{routing::get, routing::post, serve, Router};
-use dashmap::DashSet;
+use dashmap::DashMap;
+use endpoints::user::Activity;
 use reqwest::Client;
 use sqlx::{migrate, PgPool};
 use std::{env::var, sync::Arc};
@@ -20,7 +21,7 @@ mod id;
 pub struct ApiState {
 	pub database: PgPool,
 	pub client: Client,
-	pub online_users: Arc<DashSet<Uuid>>,
+	pub online_users: Arc<DashMap<Uuid, Option<Activity>>>,
 }
 
 #[tokio::main]

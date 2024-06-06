@@ -166,7 +166,7 @@ pub async fn get_authenticate(
 		}
 	};
 
-	query!("UPDATE players SET last_online = 'now' WHERE uuid = $1", uuid)
+	query!("UPDATE players SET last_online = 'now' WHERE uuid = $1 AND show_last_online = true", uuid)
 		.execute(&mut *transaction)
 		.await?;
 
@@ -184,8 +184,8 @@ pub struct User {
 	uuid: Uuid,
 	username: String,
 	registered: NaiveDateTime,
-	last_online: NaiveDateTime,
-	old_usernames: Vec<OldUsername>,
+	last_online: Option<NaiveDateTime>,
+	previous_usernames: Vec<OldUsername>,
 }
 
 #[derive(Serialize)]
@@ -199,7 +199,7 @@ impl User {
 		let user = query!("SELECT uuid, username, registered, last_online FROM players WHERE uuid = $1", uuid)
 			.fetch_one(database)
 			.await?;
-		let old_usernames =
+		let previous_usernames =
 			query_as!(OldUsername, "SELECT username, public FROM previous_usernames WHERE player = $1", uuid)
 				.fetch_all(database)
 				.await?;
@@ -209,7 +209,7 @@ impl User {
 			username: user.username,
 			registered: user.registered,
 			last_online: user.last_online,
-			old_usernames,
+			previous_usernames,
 		})
 	}
 }
@@ -251,15 +251,16 @@ pub async fn get_account_data(
 #[derive(Serialize)]
 pub struct Settings {
 	show_registered: bool,
-	show_status: bool,
 	retain_usernames: bool,
+	show_last_online: bool,
+	show_activity: bool,
 }
 
 impl Settings {
 	pub async fn get(database: &PgPool, uuid: &Uuid) -> Result<Settings, ApiError> {
 		Ok(query_as!(
 			Settings,
-			"SELECT show_registered, show_status, retain_usernames FROM players WHERE uuid = $1",
+			"SELECT show_registered, retain_usernames, show_last_online, show_activity FROM players WHERE uuid = $1",
 			uuid
 		)
 		.fetch_one(database)
@@ -277,12 +278,15 @@ pub async fn get_account_settings(
 #[derive(Deserialize)]
 pub struct SettingsPatch {
 	show_registered: Option<bool>,
-	show_status: Option<bool>,
 	retain_usernames: Option<bool>,
+	show_last_online: Option<bool>,
+	show_activity: Option<bool>,
 }
 
 pub async fn patch_account_settings(
-	State(ApiState { database, .. }): State<ApiState>,
+	State(ApiState {
+		database, online_users, ..
+	}): State<ApiState>,
 	Authentication(uuid): Authentication,
 	Json(user_settings_patch): Json<SettingsPatch>,
 ) -> Result<StatusCode, ApiError> {
@@ -290,17 +294,29 @@ pub async fn patch_account_settings(
 		r#"
 			UPDATE players SET
 				show_registered = coalesce($1, show_registered),
-				show_status = coalesce($2, show_status),
-				retain_usernames = coalesce($3, retain_usernames)
-			WHERE uuid = $4
+				retain_usernames = coalesce($2, retain_usernames),
+				show_last_online = coalesce($3, show_last_online),
+				show_activity = coalesce($4, show_activity)
+			WHERE uuid = $5
 		"#,
 		user_settings_patch.show_registered,
-		user_settings_patch.show_status,
 		user_settings_patch.retain_usernames,
+		user_settings_patch.show_last_online,
+		user_settings_patch.show_activity,
 		uuid
 	)
 	.execute(&database)
 	.await?;
+
+	query!("UPDATE players SET last_online = null WHERE uuid = $1 AND show_last_online = true", uuid)
+		.execute(&database)
+		.await?;
+
+	if user_settings_patch.show_activity.is_some_and(|value| !value) {
+		if let Some(mut activity) = online_users.get_mut(&uuid) {
+			*activity = None;
+		}
+	}
 
 	Ok(StatusCode::NO_CONTENT)
 }
