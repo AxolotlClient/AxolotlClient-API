@@ -1,7 +1,4 @@
-use crate::endpoints::{
-	brew_coffee, delete_account, delete_account_username, get_account, get_account_data, get_account_settings,
-	get_authenticate, not_found, patch_account_settings, post_account_username, user,
-};
+use crate::endpoints::{account, brew_coffee, get_authenticate, not_found, user};
 use crate::gateway::gateway;
 use axum::{routing::get, routing::post, serve, Router};
 use dashmap::DashMap;
@@ -40,10 +37,10 @@ async fn main() -> anyhow::Result<()> {
 		.route("/gateway", get(gateway))
 		.route("/user/:uuid", get(user::get))
 		// .route("/channel", post(post_channel))
-		.route("/account", get(get_account).delete(delete_account))
-		.route("/account/data", get(get_account_data))
-		.route("/account/settings", get(get_account_settings).patch(patch_account_settings))
-		.route("/account/:username", post(post_account_username).delete(delete_account_username))
+		.route("/account", get(account::get).delete(account::delete))
+		.route("/account/data", get(account::get_data))
+		.route("/account/settings", get(account::get_settings).patch(account::patch_settings))
+		.route("/account/:username", post(account::post_username).delete(account::delete_username))
 		.route("/brew_coffee", get(brew_coffee).post(brew_coffee))
 		.fallback(not_found)
 		.with_state(ApiState {
