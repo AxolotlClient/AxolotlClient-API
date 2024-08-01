@@ -18,6 +18,8 @@ jobs:
       - uses: swatinem/rust-cache@v2
       - uses: cachix/install-nix-action@v26
       - uses: cachix/cachix-action@v14
+        with:
+          name: devenv
       - run: nix profile install nixpkgs#devenv
       - run: devenv shell sqlx migrate run
       - run: devenv shell cargo fmt --check
