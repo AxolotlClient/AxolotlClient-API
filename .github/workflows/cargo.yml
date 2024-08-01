@@ -5,14 +5,6 @@ jobs:
   cargo:
     name: Cargo
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_HOST_AUTH_METHOD: trust
-          POSTGRES_DB: axolotl_client-api
-        ports:
-          - "127.0.0.1:5432:5432"
     steps:
       - uses: actions/checkout@v4
       - uses: swatinem/rust-cache@v2
@@ -21,6 +13,7 @@ jobs:
         with:
           name: devenv
       - run: nix profile install nixpkgs#devenv
+      - run: devenv up -d
       - run: devenv shell sqlx migrate run
       - run: devenv shell cargo fmt --check
       - run: devenv shell cargo build
