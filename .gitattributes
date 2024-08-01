@@ -1,3 +1,2 @@
 *.sql linguist-detectable
 api_documentation.md linguist-detectable
-devenv.nix linguist-vendored
