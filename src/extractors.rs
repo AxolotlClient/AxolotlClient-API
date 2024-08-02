@@ -19,8 +19,8 @@ impl FromRequestParts<ApiState> for Authentication {
 			.headers
 			.get("Authorization")
 			.map(|value| STANDARD_NO_PAD.decode(value))
-			.ok_or(StatusCode::FORBIDDEN)?
-			.map_err(|_| StatusCode::FORBIDDEN)?;
+			.ok_or(StatusCode::UNAUTHORIZED)?
+			.map_err(|_| StatusCode::UNAUTHORIZED)?;
 
 		let authorization_ref = &*authorization;
 		let uuid = {

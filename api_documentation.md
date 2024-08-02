@@ -17,8 +17,7 @@ Errors may or may not have a plain text reason in the body.
 
 If the endpoint is tagged with `Authenticated`, then the following errors are possible:
 
-- `403` Forbidden - Access Token is missing or corrupt
-- `401` Unauthorized - Access Token is expired or revoked
+- `401` Unauthorized - Access Token is corrupt, expired, missing, or revoked
 
 The following errors are always possible:
 
@@ -26,7 +25,7 @@ The following errors are always possible:
 
 The following errors are possible whenever body or query data is required:
 
-- `400` Bad Request
+- `400` Bad Request - Data is malformed, may have additional possible meanings dependent on endpoint
 
 ## Endpoints
 
@@ -79,6 +78,7 @@ See [Gateway](#gateway)
 
 - `uuid`: `Uuid`
 - `username`: `string`
+- `relation`: `string` - either: `blocked`, `none`, `request`, or `friend`. Will be absent if request is made unauthenticated.
 - `registered`: `Timestamp?`
 - `status`: `Status`
 - `previous_usernames`: `[string]`
@@ -98,6 +98,33 @@ See [Gateway](#gateway)
 #### Errors
 
 - `404` Not Found
+
+### `POST` `/user/<uuid>?<relation>` [Authenticated](#Errors)
+
+#### Path Fields
+
+- `uuid`: `Uuid`
+
+#### Query Fields
+
+- `relation`: `string` - either: `blocked`, `none`, `request`, or `friend`
+
+#### Response
+
+`204` No Content
+
+A successful result may be sent even when no change has occured under these conditions:
+- The requested relation is already set
+- A friend request was sent even though the other user is already a friend
+
+Additionally, the relation will be set to friend if the authenticated user is trying to send a friend request to a user who has already sent a friend request.
+
+#### Errors
+
+- `400` Bad Request - If the authenticated user and the queried user are the same
+- `403` Forbidden:
+  - If the authenticated user is trying to friend a user who has not sent a friend request
+  - If the authenticated user is trying to send a friend request to a user who has blocked them
 
 ### `POST` `/channel` [Authenticated](#Errors)
 

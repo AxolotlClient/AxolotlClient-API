@@ -35,7 +35,7 @@ async fn main() -> anyhow::Result<()> {
 	let router = Router::new()
 		.route("/authenticate", get(get_authenticate))
 		.route("/gateway", get(gateway))
-		.route("/user/:uuid", get(user::get))
+		.route("/user/:uuid", get(user::get).post(user::post))
 		// .route("/channel", post(post_channel))
 		.route("/account", get(account::get).delete(account::delete))
 		.route("/account/data", get(account::get_data))

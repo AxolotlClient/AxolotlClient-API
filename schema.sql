@@ -2,7 +2,7 @@
 -- So here is a combination of those migrations for convenience, this should be kept up to date.
 -- This should not be actually used for a database, this is just a programmer reference.
 
--- Currently in line with: `migrations/2_Expanded_Status.sql`
+-- Currently in line with: `migrations/3_Relations.sql`
 
 CREATE TABLE players (
 	uuid     UUID
@@ -41,6 +41,25 @@ CREATE TABLE previous_usernames (
 	         DEFAULT TRUE,
 
 	FOREIGN KEY (player) REFERENCES players(uuid) ON DELETE CASCADE
+);
+
+CREATE TYPE relation AS ENUM (
+	'blocked',
+	'none', -- This relation should never appear in the database, it is here
+	        -- so that SQLx can properly map Rust types to PostgreSQL types
+	'request',
+	'friend'
+);
+
+CREATE TABLE relations (
+	player_a UUID     NOT NULL,
+	player_b UUID     NOT NULL,
+	relation RELATION NOT NULL,
+
+	PRIMARY KEY (player_a, player_b),
+
+	FOREIGN KEY (player_a) REFERENCES players(uuid) ON DELETE CASCADE,
+	FOREIGN KEY (player_b) REFERENCES players(uuid) ON DELETE CASCADE
 );
 
 CREATE TABLE tokens (
