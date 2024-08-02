@@ -9,8 +9,8 @@ use std::ops::Deref;
 use uuid::Uuid;
 
 // pub mod channel;
-pub mod user;
 pub mod account;
+pub mod user;
 
 #[derive(Clone, Deserialize, Serialize, Validate, Type)]
 #[repr(transparent)]
