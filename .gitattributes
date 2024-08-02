@@ -1,2 +1,2 @@
 *.sql linguist-detectable
-api_documentation.md linguist-detectable
+/docs/api_documentation.md linguist-detectable
