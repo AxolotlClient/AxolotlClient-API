@@ -3,5 +3,4 @@
 /.devenv*
 /.direnv
 
-/Cargo.lock
 /devenv.local.nix

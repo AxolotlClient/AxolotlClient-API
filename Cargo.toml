@@ -22,9 +22,23 @@ serde = { version = "1", features = ["derive"] }
 tokio = { version = "1", features = ["net", "rt-multi-thread"] }
 uuid = { version = "1", features = ["serde", "v4"] }
 
-axum = { version = "0.7", default-features = false, features = ["http1", "json", "query", "tokio", "ws"] }
+axum = { version = "0.7", default-features = false, features = [
+    "http1",
+    "json",
+    "query",
+    "tokio",
+    "ws",
+] }
 
 [dependencies.sqlx]
-version = "0.7"
+version = "0.8.1"
 default-features = false
-features = ["chrono", "macros", "migrate", "postgres", "runtime-tokio", "tls-none", "uuid"]
+features = [
+    "chrono",
+    "macros",
+    "migrate",
+    "postgres",
+    "runtime-tokio",
+    "tls-none",
+    "uuid",
+]
