@@ -1,6 +1,5 @@
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
-use sqlx::{database::HasArguments, database::HasValueRef};
 use sqlx::{encode::IsNull, error::BoxDynError, Database, Decode, Encode, Type};
 use std::{cell::Cell, cell::RefCell, ops::Deref, sync::atomic::AtomicU8, sync::atomic::Ordering::Relaxed};
 
@@ -50,8 +49,8 @@ impl<'r, D: Database> Decode<'r, D> for Id
 where
 	i64: Decode<'r, D>,
 {
-	fn decode(value: <D as HasValueRef<'r>>::ValueRef) -> Result<Self, BoxDynError> {
-		<i64 as Decode<D>>::decode(value).map(|value| Id(value as u64))
+	fn decode(value: <D>::ValueRef<'r>) -> Result<Self, BoxDynError> {
+		<i64 as Decode<D>>::decode(value).map(|value| Self(value as u64))
 	}
 }
 
@@ -59,7 +58,7 @@ impl<'r, D: Database> Encode<'r, D> for Id
 where
 	i64: Encode<'r, D>,
 {
-	fn encode_by_ref(&self, buffer: &mut <D as HasArguments<'r>>::ArgumentBuffer) -> IsNull {
+	fn encode_by_ref(&self, buffer: &mut <D>::ArgumentBuffer<'r>) -> Result<IsNull, BoxDynError> {
 		<i64 as Encode<D>>::encode_by_ref(&(self.0 as i64), buffer)
 	}
 }
