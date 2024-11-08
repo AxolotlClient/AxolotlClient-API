@@ -5,7 +5,6 @@ use std::{cell::Cell, cell::RefCell, ops::Deref, sync::atomic::AtomicU8, sync::a
 
 #[derive(Deserialize, Serialize)]
 #[repr(transparent)]
-#[serde(transparent)]
 pub struct Id(u64);
 
 impl Id {
@@ -43,14 +42,18 @@ where
 	fn type_info() -> D::TypeInfo {
 		<i64 as Type<D>>::type_info()
 	}
+
+	fn compatible(ty: &<D as Database>::TypeInfo) -> bool {
+		<i64 as Type<D>>::compatible(ty)
+	}
 }
 
 impl<'r, D: Database> Decode<'r, D> for Id
 where
 	i64: Decode<'r, D>,
 {
-	fn decode(value: <D>::ValueRef<'r>) -> Result<Self, BoxDynError> {
-		<i64 as Decode<D>>::decode(value).map(|value| Self(value as u64))
+	fn decode(value: <D as Database>::ValueRef<'r>) -> Result<Self, BoxDynError> {
+		<i64 as Decode<'r, D>>::decode(value).map(|value| Self(value as u64))
 	}
 }
 
@@ -58,8 +61,16 @@ impl<'r, D: Database> Encode<'r, D> for Id
 where
 	i64: Encode<'r, D>,
 {
-	fn encode_by_ref(&self, buffer: &mut <D>::ArgumentBuffer<'r>) -> Result<IsNull, BoxDynError> {
-		<i64 as Encode<D>>::encode_by_ref(&(self.0 as i64), buffer)
+	fn encode_by_ref(&self, buffer: &mut <D as Database>::ArgumentBuffer<'r>) -> Result<IsNull, BoxDynError> {
+		<i64 as Encode<'r, D>>::encode_by_ref(&(self.0 as i64), buffer)
+	}
+
+	fn produces(&self) -> Option<<D>::TypeInfo> {
+		<i64 as Encode<'r, D>>::produces(&(self.0 as i64))
+	}
+
+	fn size_hint(&self) -> usize {
+		<i64 as Encode<'r, D>>::size_hint(&(self.0 as i64))
 	}
 }
 

@@ -8,7 +8,7 @@ use sqlx::{error::ErrorKind::UniqueViolation, query, query_as, query_scalar, Typ
 use std::ops::Deref;
 use uuid::Uuid;
 
-// pub mod channel;
+pub mod channel;
 pub mod account;
 pub mod user;
 
