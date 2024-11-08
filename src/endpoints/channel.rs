@@ -78,25 +78,17 @@ impl Persistence {
 		match id {
 			0 => Some(Self::Channel),
 			1 => {
-				if let Some(duration) = duration {
-					Some(Self::Duration { duration: duration })
-				} else {
-					None
-				}
+				duration.map(|duration| Self::Duration { duration })
 			}
 			2 => {
-				if let Some(count) = count {
-					Some(Self::Count { count: count })
-				} else {
-					None
-				}
+				count.map(|count| Self::Count { count })
 			}
 			3 => {
 				if let Some(count) = count {
 					if let Some(duration) = duration {
 						return Some(Self::CountAndDuration {
-							count: count,
-							duration: duration,
+							count,
+							duration,
 						});
 					}
 				}
@@ -137,14 +129,14 @@ pub async fn get(
 		if let Some(persistence) = Persistence::from(
 			channel.persistence,
 			channel.persistence_count.map(|i| i as u32),
-			channel.persistence_duration_seconds.map(|i| TimeDelta::seconds(i)),
+			channel.persistence_duration_seconds.map(TimeDelta::seconds),
 		) {
 			return Ok(Json(Channel {
 				id: channel_id,
 				channel_data: ChannelData {
 					name: channel.name,
 					persistence,
-					participants: participants,
+					participants,
 				},
 			}));
 		}
@@ -221,7 +213,7 @@ pub async fn patch(
 		if let Some(mut persistence) = Persistence::from(
 			channel.persistence,
 			channel.persistence_count.map(|i| i as u32),
-			channel.persistence_duration_seconds.map(|i| TimeDelta::seconds(i)),
+			channel.persistence_duration_seconds.map(TimeDelta::seconds),
 		) {
 			let mut name = channel.name;
 			let mut participants: Vec<Uuid> =
