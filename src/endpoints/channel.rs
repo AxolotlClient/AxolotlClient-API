@@ -77,19 +77,12 @@ impl Persistence {
 	fn from(id: i16, count: Option<u32>, duration: Option<Duration>) -> Option<Persistence> {
 		match id {
 			0 => Some(Self::Channel),
-			1 => {
-				duration.map(|duration| Self::Duration { duration })
-			}
-			2 => {
-				count.map(|count| Self::Count { count })
-			}
+			1 => duration.map(|duration| Self::Duration { duration }),
+			2 => count.map(|count| Self::Count { count }),
 			3 => {
 				if let Some(count) = count {
 					if let Some(duration) = duration {
-						return Some(Self::CountAndDuration {
-							count,
-							duration,
-						});
+						return Some(Self::CountAndDuration { count, duration });
 					}
 				}
 				None
