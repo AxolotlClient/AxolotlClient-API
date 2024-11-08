@@ -1,8 +1,10 @@
 use crate::{errors::ApiError, extractors::Authentication, ApiState};
 use axum::extract::{ws::close_code, ws::CloseFrame, ws::Message, ws::WebSocket, State, WebSocketUpgrade};
 use axum::{body::Body, http::StatusCode, response::Response};
+use log::warn;
 use sqlx::query;
 use std::{convert::Infallible, fmt::Display, fmt::Formatter, time::Duration};
+use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver};
 use tokio::{pin, select, time::sleep, time::Instant};
 use uuid::Uuid;
 use DisconnectReason::*;
@@ -21,14 +23,19 @@ pub async fn gateway(
 
 async fn gateway_accept_handler(
 	State(ApiState {
-		database, online_users, ..
+		database,
+		online_users,
+		socket_sender,
+		..
 	}): State<ApiState>,
 	uuid: Uuid,
 	mut socket: WebSocket,
 ) {
 	online_users.insert(uuid, None);
+	let (sender, mut receiver) = unbounded_channel();
+	socket_sender.insert(uuid, sender);
 
-	let disconnect_reason = gateway_accept(&mut socket).await.unwrap_err();
+	let disconnect_reason = gateway_accept(&mut socket, &mut receiver).await.unwrap_err();
 	let _ = socket
 		.send(Message::Close(Some(CloseFrame {
 			code: disconnect_reason as u16,
@@ -36,6 +43,10 @@ async fn gateway_accept_handler(
 		})))
 		.await;
 
+	if let Some((_, s)) = socket_sender.remove(&uuid) {
+		drop(s);
+	}
+	receiver.close();
 	online_users.remove(&uuid);
 
 	let _ = query!("UPDATE players SET last_online = 'now' WHERE uuid = $1 AND show_last_online = true", uuid)
@@ -43,7 +54,10 @@ async fn gateway_accept_handler(
 		.await;
 }
 
-async fn gateway_accept(socket: &mut WebSocket) -> Result<Infallible, DisconnectReason> {
+async fn gateway_accept(
+	socket: &mut WebSocket,
+	receiver: &mut UnboundedReceiver<String>,
+) -> Result<Infallible, DisconnectReason> {
 	let mut pending_pong: Option<[u8; 32]> = None;
 	let keep_alive = sleep(Duration::from_secs(10));
 	pin!(keep_alive);
@@ -53,10 +67,13 @@ async fn gateway_accept(socket: &mut WebSocket) -> Result<Infallible, Disconnect
 			biased;
 			message = socket.recv() => {
 				match message.ok_or(Closed)?? {
-					Message::Text(_) => {
+					Message::Text(data) => {
 						// When we actually use the WebSocket for something other than knowing if the player is online
 						// then we will probably actually have something here, but for now we error if any messages are
 						// sent
+
+						warn!("received {data} through websocket even though there should be no messages this way!");
+
 						return Err(InvalidData);
 					}
 					Message::Binary(_) => return Err(InvalidData),
@@ -76,6 +93,12 @@ async fn gateway_accept(socket: &mut WebSocket) -> Result<Infallible, Disconnect
 
 				keep_alive.as_mut().reset(Instant::now() + Duration::from_secs(10));
 				pending_pong = None;
+			}
+			socket_message = receiver.recv() => {
+				if let Some(socket_message) = socket_message {
+					socket.send(Message::Text(socket_message)).await?;
+
+				}
 			}
 			_ = &mut keep_alive => {
 				match pending_pong {

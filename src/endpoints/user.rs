@@ -1,5 +1,8 @@
 use crate::{errors::ApiError, extractors::Authentication, ApiState};
-use axum::{extract::Path, extract::Query, extract::State, Json};
+use axum::{
+	extract::{Path, Query, State},
+	Json,
+};
 use chrono::NaiveDateTime;
 use log::warn;
 use reqwest::StatusCode;
@@ -140,8 +143,19 @@ pub struct PostRelation {
 	relation: Relation,
 }
 
+#[derive(Serialize)]
+pub struct FriendRequestNotification {
+	target: String,
+	from: Uuid,
+}
+
 pub async fn post(
-	State(ApiState { database, .. }): State<ApiState>,
+	State(ApiState {
+		database,
+		online_users,
+		socket_sender,
+		..
+	}): State<ApiState>,
 	Authentication(uuid): Authentication,
 	Path(other_uuid): Path<Uuid>,
 	Query(PostRelation { relation }): Query<PostRelation>,
@@ -196,7 +210,23 @@ pub async fn post(
 			match other_relation {
 				Relation::Blocked => Err(StatusCode::FORBIDDEN)?,
 
-				Relation::None => {}
+				Relation::None => {
+					// Notify $other_uuid that they have a new friend request (as there hasn't yet been a relation between the two)
+
+					if online_users.contains_key(&other_uuid) {
+						if let Some(sender) = socket_sender.get(&other_uuid) {
+							sender
+								.send(
+									serde_json::to_string(&FriendRequestNotification {
+										target: "friend_request".to_string(),
+										from: uuid,
+									})
+									.unwrap(),
+								)
+								.unwrap();
+						}
+					}
+				}
 
 				// They already sent a request, as the intent is to friend the other player, let's accept the request, and pretend we sent one
 				Relation::Request => {

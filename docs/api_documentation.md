@@ -126,12 +126,36 @@ Additionally, the relation will be set to friend if the authenticated user is tr
   - If the authenticated user is trying to friend a user who has not sent a friend request
   - If the authenticated user is trying to send a friend request to a user who has blocked them
 
+### `GET` `/channel/<id>` [Authenticated](#Errors)
+
+#### Path Fields
+
+- `id`: `string` - channel id
+
+#### Response
+
+`200` Ok
+
+- `id`: `string` - channel id
+- `name`: `string` - channel name
+- `persistence`: `Persistence`
+- `participants`: `[uuid]` - List of participants
+
+#### Errors
+
+- `400` Bad Request:
+  - The authenticated user does not own or participate in the given channel
+  - The given channel does not exist
+  While this may seem odd this is a deliberate choice for privacy as otherwise it would be possible
+  for bad actors to find channels through brute-force measures
+
 ### `POST` `/channel` [Authenticated](#Errors)
 
 #### Body Parameters
 
 - `name`: `string` - length between 1 and 32, not unique
 - `persistence`: `Persistence`
+- `participants`: `[uuid]` - List of UUIDs of other users that should participate in the newly created channel
 
 ##### Persistence
 
@@ -153,6 +177,31 @@ The server may change this value, but only lower it, never increase it.
 `200` Ok
 
 Channel ID formatted as plain text
+
+### `PATCH` `/channel/<id>`
+
+Update channel settings. Fields that shouldn't be changed can be left out.
+
+#### Path Fields
+
+- `id`: `string` - channel id
+
+#### Body Fields
+
+- `name`: `string?` - length between 1 and 32, not unique. Updated value, if desired to be changed
+- `persistence`: `Persistence?` - Updated persistence of the channel
+- `participants`: `[uuid]?` - List of UUIDs of other users that should be added to the channel
+
+#### Response
+
+`200` No Content
+
+#### Errors
+
+- `400` Bad request:
+  - The channel does not exist
+  - The authenticated user doesn't own the specified channel
+  - The given body fields are invalid or malformed
 
 ### `GET` `/account` [Authenticated](#Errors)
 
@@ -245,6 +294,18 @@ Currently used so the server knows the client is online. Messages aren't actuall
 - Server will ping the client if there has been no communication for 10 seconds.
 - Server will disconnect if there has been no communication for 10 seconds after the ping.
 - The client does not *need* to respond with a pong, but it should, at a minimum it just needs to communicate.
+
+The websocket connection embodied by the gateway is only used for communication
+from the server to the client. Currently, this is used for chat messages and
+friend requests.
+
+```json
+{
+  "target": "",
+}
+```
+
+
 
 ### Closing Reasons
 
