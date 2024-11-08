@@ -1,6 +1,6 @@
 use crate::{errors::ApiError, extractors::Authentication, ApiState};
 use axum::{extract::Path, extract::Query, extract::State, Json};
-use chrono::NaiveDateTime;
+use chrono::{DateTime, Utc};
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 use sqlx::{query, query_as, PgPool};
@@ -10,8 +10,8 @@ use uuid::Uuid;
 pub struct User {
 	uuid: Uuid,
 	username: String,
-	registered: NaiveDateTime,
-	last_online: Option<NaiveDateTime>,
+	registered: DateTime<Utc>,
+	last_online: Option<DateTime<Utc>>,
 	previous_usernames: Vec<OldUsername>,
 }
 
@@ -34,8 +34,8 @@ impl User {
 		Ok(User {
 			uuid: user.uuid,
 			username: user.username,
-			registered: user.registered,
-			last_online: user.last_online,
+			registered: user.registered.and_utc(),
+			last_online: user.last_online.map(|dt| dt.and_utc()),
 			previous_usernames,
 		})
 	}

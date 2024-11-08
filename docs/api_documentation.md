@@ -146,6 +146,7 @@ Additionally, the relation will be set to friend if the authenticated user is tr
 - `400` Bad Request:
   - The authenticated user does not own or participate in the given channel
   - The given channel does not exist
+  
   While this may seem odd this is a deliberate choice for privacy as otherwise it would be possible
   for bad actors to find channels through brute-force measures
 

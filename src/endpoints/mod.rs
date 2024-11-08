@@ -118,13 +118,15 @@ pub async fn get_authenticate(
 				.await?;
 
 				if let Some(previous_username) = previous_username {
-					query!(
-						"INSERT INTO previous_usernames(player, username) VALUES ($1, $2)",
-						player_to_update.uuid,
-						previous_username
-					)
-					.execute(&mut *transaction)
-					.await?;
+					if previous_username != String::from(player_to_update.username.clone()) {
+						query!(
+							"INSERT INTO previous_usernames(player, username) VALUES ($1, $2)",
+							player_to_update.uuid,
+							previous_username
+						)
+						.execute(&mut *transaction)
+						.await?;
+					}
 				}
 
 				query!(

@@ -3,7 +3,7 @@ use axum::{
 	extract::{Path, Query, State},
 	Json,
 };
-use chrono::NaiveDateTime;
+use chrono::{DateTime, Utc};
 use log::warn;
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
@@ -20,7 +20,7 @@ pub struct User {
 	relation: Option<Relation>,
 
 	#[serde(skip_serializing_if = "Option::is_none")]
-	registered: Option<NaiveDateTime>,
+	registered: Option<DateTime<Utc>>,
 
 	status: Status,
 
@@ -33,7 +33,7 @@ pub struct User {
 pub enum Status {
 	Offline {
 		#[serde(skip_serializing_if = "Option::is_none")]
-		last_online: Option<NaiveDateTime>,
+		last_online: Option<DateTime<Utc>>,
 	},
 	Online {
 		#[serde(skip_serializing_if = "Option::is_none")]
@@ -45,7 +45,7 @@ pub enum Status {
 pub struct Activity {
 	title: String,
 	description: String,
-	started: NaiveDateTime,
+	started: DateTime<Utc>,
 }
 
 #[derive(Deserialize, Serialize, Type)]
@@ -101,7 +101,7 @@ pub async fn get(
 	let status = match online_users.get(&other_uuid) {
 		None => {
 			let last_online = match user.show_last_online {
-				true => user.last_online,
+				true => user.last_online.map(|dt| dt.and_utc()),
 				false => {
 					if user.last_online.is_some() {
 						// show_last_online is false, yet last_online is set? This shouldn't happen, but if it does, fix it
@@ -132,7 +132,7 @@ pub async fn get(
 		uuid: other_uuid,
 		username: user.username,
 		relation,
-		registered: user.registered,
+		registered: user.registered.map(|dt| dt.and_utc()),
 		status,
 		previous_usernames,
 	}))
