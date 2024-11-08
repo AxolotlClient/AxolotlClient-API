@@ -1,3 +1,8 @@
-ALTER TABLE channels ADD participants UUID ARRAY NOT NULL;
-ALTER TABLE channels ADD FOREIGN KEY (EACH ELEMENT of participants) REFERENCES players(uuid);
+CREATE TABLE channel_memberships (
+    player UUID           NOT NULL,
+    channels BIGINT ARRAY NOT NULL,
+
+    PRIMARY KEY (player),
+    FOREIGN KEY (player) REFERENCES players(uuid) ON DELETE CASCADE
+)
 

@@ -1,7 +1,10 @@
 use std::str::FromStr;
 
 use crate::{errors::ApiError, extractors::Authentication, id::Id, ApiState};
-use axum::{extract::{Path, State}, Json};
+use axum::{
+	extract::{Path, State},
+	Json,
+};
 use chrono::{Duration, TimeDelta};
 use garde::Validate;
 use reqwest::StatusCode;
@@ -23,7 +26,7 @@ pub struct ChannelData {
 	#[garde(length(min = 1, max = 32))]
 	name: String,
 	persistence: Persistence,
-	participants: Vec<Uuid>
+	participants: Vec<Uuid>,
 }
 
 #[derive(Deserialize, Serialize)]
@@ -76,61 +79,79 @@ impl Persistence {
 			0 => Some(Self::Channel),
 			1 => {
 				if let Some(duration) = duration {
-    				Some(Self::Duration { duration: duration })
+					Some(Self::Duration { duration: duration })
 				} else {
 					None
 				}
-			},
+			}
 			2 => {
 				if let Some(count) = count {
 					Some(Self::Count { count: count })
 				} else {
 					None
 				}
-			},
+			}
 			3 => {
 				if let Some(count) = count {
 					if let Some(duration) = duration {
-						return Some(Self::CountAndDuration { count: count, duration: duration });
+						return Some(Self::CountAndDuration {
+							count: count,
+							duration: duration,
+						});
 					}
 				}
 				None
 			}
-			_ => None
+			_ => None,
 		}
 	}
 }
 
-pub async fn get(State(ApiState {database, ..}): State<ApiState>,
+pub async fn get(
+	State(ApiState { database, .. }): State<ApiState>,
 	Authentication(uuid): Authentication,
-	Path(channel_id): Path<Id>) -> Result<Json<Channel>, ApiError> {
-
+	Path(channel_id): Path<Id>,
+) -> Result<Json<Channel>, ApiError> {
 	let channel = query!(
 		r#"SELECT id,
 			name,
 		    owner,
 			persistence,
 			persistence_count, 
-			persistence_duration_seconds,
-			participants
-			FROM channels WHERE id = $1"#, channel_id as _)
+			persistence_duration_seconds
+			FROM channels WHERE id = $1"#,
+		channel_id as _
+	)
 	.fetch_optional(&database)
-	.await?.ok_or(StatusCode::BAD_REQUEST)?;
+	.await?
+	.ok_or(StatusCode::BAD_REQUEST)?;
 
-	if channel.owner == uuid || channel.participants.contains(&uuid) {
-		if let Some(persistence) = Persistence::from(channel.persistence,
+	let participants: Vec<Uuid> = query!("SELECT * FROM channel_memberships WHERE $1 = ANY(channels)", channel_id as _)
+		.fetch_all(&database)
+		.await?
+		.iter()
+		.map(|rec| rec.player)
+		.collect();
+
+	if channel.owner == uuid || participants.contains(&uuid) {
+		if let Some(persistence) = Persistence::from(
+			channel.persistence,
 			channel.persistence_count.map(|i| i as u32),
-			 channel.persistence_duration_seconds.map(|i| TimeDelta::seconds(i))) {
-  				return Ok(Json(Channel {
-	   				id: channel_id,
-	   				channel_data: ChannelData { name: channel.name, persistence, participants: channel.participants }
-   				}))
+			channel.persistence_duration_seconds.map(|i| TimeDelta::seconds(i)),
+		) {
+			return Ok(Json(Channel {
+				id: channel_id,
+				channel_data: ChannelData {
+					name: channel.name,
+					persistence,
+					participants: participants,
+				},
+			}));
 		}
 	}
-		
+
 	Err(StatusCode::BAD_REQUEST)?
 }
-
 
 pub async fn post(
 	State(ApiState { database, .. }): State<ApiState>,
@@ -155,19 +176,23 @@ pub async fn post(
 			owner,
 			persistence,
 			persistence_count,
-			persistence_duration_seconds,
-			participants
-		) VALUES ($1, $2, $3, $4, $5, $6, $7)"#,
+			persistence_duration_seconds
+		) VALUES ($1, $2, $3, $4, $5, $6)"#,
 		id as _,
 		channel_data.name,
 		owner,
 		persistence as i8,
 		persistence_count.map(|c| *c as i32),
-		persistence_duration_seconds,
-		&participants
+		persistence_duration_seconds
 	)
 	.execute(&database)
 	.await?;
+
+	for uuid in participants {
+		query!("UPDATE channel_memberships SET channels = ARRAY_APPEND(channels, $2) WHERE player = $1", uuid, id as _)
+			.execute(&database)
+			.await?;
+	}
 
 	Ok(id.to_string())
 }
@@ -176,66 +201,73 @@ pub async fn patch(
 	State(ApiState { database, .. }): State<ApiState>,
 	Authentication(uuid): Authentication,
 	Path(channel_id): Path<Id>,
-	Json(value): Json<Value>
+	Json(value): Json<Value>,
 ) -> Result<StatusCode, ApiError> {
-
 	let channel = query!(
 		r#"SELECT id,
 			name,
 		    owner,
 			persistence,
 			persistence_count, 
-			persistence_duration_seconds,
-			participants
-			FROM channels WHERE id = $1"#, channel_id as _)
+			persistence_duration_seconds
+			FROM channels WHERE id = $1"#,
+		channel_id as _
+	)
 	.fetch_optional(&database)
-	.await?.ok_or(StatusCode::BAD_REQUEST)?;
+	.await?
+	.ok_or(StatusCode::BAD_REQUEST)?;
 
 	if channel.owner == uuid {
-		if let Some(mut persistence) = Persistence::from(channel.persistence,
+		if let Some(mut persistence) = Persistence::from(
+			channel.persistence,
 			channel.persistence_count.map(|i| i as u32),
-			 channel.persistence_duration_seconds.map(|i| TimeDelta::seconds(i))) {
+			channel.persistence_duration_seconds.map(|i| TimeDelta::seconds(i)),
+		) {
+			let mut name = channel.name;
+			let mut participants: Vec<Uuid> =
+				query!("SELECT * FROM channel_memberships WHERE $1 = ANY(channels)", channel_id as _)
+					.fetch_all(&database)
+					.await?
+					.iter()
+					.map(|rec| rec.player)
+					.collect();
+			if let Some(val) = value.get("name") {
+				name = val.as_str().ok_or(StatusCode::BAD_REQUEST)?.to_string()
+			}
+			if let Some(uuids) = value.get("participants") {
+				let vec = uuids.as_array().unwrap();
+				for val in vec {
+					let str = val.as_str().ok_or(StatusCode::BAD_REQUEST)?;
+					let uuid = Uuid::from_str(str).map_err(|_| StatusCode::BAD_REQUEST)?;
+					participants.push(uuid);
+				}
+			}
+			if let Some(val) = value.get("persistence") {
+				persistence = serde_json::from_value(val.clone()).map_err(|_| StatusCode::BAD_REQUEST)?;
+			}
 
-				let mut name = channel.name;
-				let mut participants: Vec<Uuid> = Vec::clone(&channel.participants);
-				if let Some(val) = value.get("name") {
-					name = val.as_str().ok_or(StatusCode::BAD_REQUEST)?.to_string()
-				}
-				if let Some(uuids) = value.get("participants") {
-					let vec = uuids.as_array().unwrap();
-					for val in vec {
-						let str = val.as_str().ok_or(StatusCode::BAD_REQUEST)?;
-						let uuid = Uuid::from_str(str).map_err(|_| StatusCode::BAD_REQUEST)?;
-						participants.push(uuid);
-					}
-				}
-				if let Some(val) = value.get("persistence") {
-					persistence = serde_json::from_value(val.clone()).map_err(|_| StatusCode::BAD_REQUEST)?;
-				}
-				
-				let persistence_id = persistence.id() as i8;
-				let persistence_count = persistence.count();
-				let persistence_duration_seconds = persistence
-					.duration()
-					.map(|duration| duration.num_seconds());
-				query!(r#"UPDATE channels SET
+			let persistence_id = persistence.id() as i8;
+			let persistence_count = persistence.count();
+			let persistence_duration_seconds = persistence.duration().map(|duration| duration.num_seconds());
+			query!(
+				r#"UPDATE channels SET
 					name = coalesce($1, name),
 					persistence = coalesce($2, persistence),
 					persistence_count = coalesce($3, persistence_count),
-					persistence_duration_seconds = coalesce($4, persistence_duration_seconds),
-					participants = coalesce($5, participants)
-					WHERE id = $6"#,
-					name,
-					persistence_id as _,
-					persistence_count.map(|c| *c as i32),
-					persistence_duration_seconds,
-					&participants,
-					channel_id as _).execute(&database).await?;
-				return Ok(StatusCode::NO_CONTENT)
-   				
+					persistence_duration_seconds = coalesce($4, persistence_duration_seconds)
+					WHERE id = $5"#,
+				name,
+				persistence_id as _,
+				persistence_count.map(|c| *c as i32),
+				persistence_duration_seconds,
+				channel_id as _
+			)
+			.execute(&database)
+			.await?;
+			return Ok(StatusCode::NO_CONTENT);
 		}
 	}
-		
+
 	Err(StatusCode::BAD_REQUEST)?
 }
 

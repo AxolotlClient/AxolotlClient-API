@@ -1,15 +1,14 @@
-use crate::endpoints::{account, brew_coffee, get_authenticate, not_found, user, channel};
+use crate::endpoints::{account, brew_coffee, channel, get_authenticate, not_found, user};
 use crate::gateway::gateway;
 use axum::{routing::get, routing::post, serve, Router};
 use dashmap::DashMap;
-use dotenvy::dotenv;
 use endpoints::user::Activity;
 use env_logger::Env;
 use log::info;
 use reqwest::Client;
 use sqlx::{migrate, PgPool};
-use tokio::sync::mpsc::UnboundedSender;
 use std::{env::var, sync::Arc};
+use tokio::sync::mpsc::UnboundedSender;
 use uuid::Uuid;
 
 mod endpoints;
@@ -23,7 +22,7 @@ pub struct ApiState {
 	pub database: PgPool,
 	pub client: Client,
 	pub online_users: Arc<DashMap<Uuid, Option<Activity>>>,
-	pub socket_sender: Arc<DashMap<Uuid, UnboundedSender<String>>>
+	pub socket_sender: Arc<DashMap<Uuid, UnboundedSender<String>>>,
 }
 
 #[tokio::main]
@@ -58,7 +57,7 @@ async fn main() -> anyhow::Result<()> {
 			database,
 			client: Client::new(),
 			online_users: Default::default(),
-			socket_sender: Default::default()
+			socket_sender: Default::default(),
 		});
 
 	let listener = tokio::net::TcpListener::bind("[::]:8000").await?;

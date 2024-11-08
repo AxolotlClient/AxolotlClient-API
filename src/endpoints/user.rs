@@ -1,12 +1,14 @@
 use crate::{errors::ApiError, extractors::Authentication, ApiState};
-use axum::{extract::{Path, Query, State}, Json};
+use axum::{
+	extract::{Path, Query, State},
+	Json,
+};
 use chrono::NaiveDateTime;
 use log::warn;
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 use sqlx::{query, query_scalar, Type};
 use uuid::Uuid;
-
 
 #[derive(Serialize)]
 pub struct User {
@@ -143,11 +145,17 @@ pub struct PostRelation {
 
 #[derive(Serialize)]
 pub struct FriendRequestNotification {
-	from: Uuid
+	target: String,
+	from: Uuid,
 }
 
 pub async fn post(
-	State(ApiState { database, online_users, socket_sender, .. }): State<ApiState>,
+	State(ApiState {
+		database,
+		online_users,
+		socket_sender,
+		..
+	}): State<ApiState>,
 	Authentication(uuid): Authentication,
 	Path(other_uuid): Path<Uuid>,
 	Query(PostRelation { relation }): Query<PostRelation>,
@@ -207,9 +215,15 @@ pub async fn post(
 
 					if online_users.contains_key(&other_uuid) {
 						if let Some(sender) = socket_sender.get(&other_uuid) {
-							sender.send(serde_json::to_string(&FriendRequestNotification {
-								from: uuid
-							}).unwrap()).unwrap();
+							sender
+								.send(
+									serde_json::to_string(&FriendRequestNotification {
+										target: "friend_request".to_string(),
+										from: uuid,
+									})
+									.unwrap(),
+								)
+								.unwrap();
 						}
 					}
 				}

@@ -3,8 +3,8 @@ use axum::extract::{ws::close_code, ws::CloseFrame, ws::Message, ws::WebSocket, 
 use axum::{body::Body, http::StatusCode, response::Response};
 use log::warn;
 use sqlx::query;
-use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver};
 use std::{convert::Infallible, fmt::Display, fmt::Formatter, time::Duration};
+use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver};
 use tokio::{pin, select, time::sleep, time::Instant};
 use uuid::Uuid;
 use DisconnectReason::*;
@@ -23,7 +23,10 @@ pub async fn gateway(
 
 async fn gateway_accept_handler(
 	State(ApiState {
-		database, online_users, socket_sender, ..
+		database,
+		online_users,
+		socket_sender,
+		..
 	}): State<ApiState>,
 	uuid: Uuid,
 	mut socket: WebSocket,
@@ -51,7 +54,10 @@ async fn gateway_accept_handler(
 		.await;
 }
 
-async fn gateway_accept(socket: &mut WebSocket, receiver: &mut UnboundedReceiver<String>) -> Result<Infallible, DisconnectReason> {
+async fn gateway_accept(
+	socket: &mut WebSocket,
+	receiver: &mut UnboundedReceiver<String>,
+) -> Result<Infallible, DisconnectReason> {
 	let mut pending_pong: Option<[u8; 32]> = None;
 	let keep_alive = sleep(Duration::from_secs(10));
 	pin!(keep_alive);
@@ -65,7 +71,7 @@ async fn gateway_accept(socket: &mut WebSocket, receiver: &mut UnboundedReceiver
 						// When we actually use the WebSocket for something other than knowing if the player is online
 						// then we will probably actually have something here, but for now we error if any messages are
 						// sent
-			
+
 						warn!("received {data} through websocket even though there should be no messages this way!");
 
 						return Err(InvalidData);
@@ -89,9 +95,9 @@ async fn gateway_accept(socket: &mut WebSocket, receiver: &mut UnboundedReceiver
 				pending_pong = None;
 			}
 			socket_message = receiver.recv() => {
-				if let Some(socket_message) = socket_message {	
+				if let Some(socket_message) = socket_message {
 					socket.send(Message::Text(socket_message)).await?;
-					
+
 				}
 			}
 			_ = &mut keep_alive => {

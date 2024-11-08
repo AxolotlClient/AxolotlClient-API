@@ -111,7 +111,15 @@ CREATE TABLE channels (
 	persistence                  SMALLINT
 	                             NOT NULL,
 	persistence_count            INT,
-	persistence_duration_seconds INT,
+	persistence_duration_seconds BIGINT,
 
 	FOREIGN KEY (owner) REFERENCES players(uuid) ON DELETE CASCADE
 );
+
+CREATE TABLE channel_memberships (
+	player		UUID NOT NULL,
+	channels 	BIGINT ARRAY NOT NULL,
+
+	PRIMARY KEY (player),
+	FOREIGN KEY (player) REFERENCES players(uuid) ON DELETE CASCADE
+)
