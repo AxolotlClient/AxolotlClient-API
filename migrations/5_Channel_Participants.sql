@@ -4,5 +4,4 @@ CREATE TABLE channel_memberships (
 
     PRIMARY KEY (player),
     FOREIGN KEY (player) REFERENCES players(uuid) ON DELETE CASCADE
-)
-
+);
