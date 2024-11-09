@@ -166,7 +166,7 @@ pub async fn post(
 		id as _,
 		channel_data.name,
 		owner,
-		persistence as i8,
+		persistence as i16,
 		persistence_count.map(|c| *c as i32),
 		persistence_duration_seconds
 	)
@@ -231,7 +231,7 @@ pub async fn patch(
 				persistence = serde_json::from_value(val.clone()).map_err(|_| StatusCode::BAD_REQUEST)?;
 			}
 
-			let persistence_id = persistence.id() as i8;
+			let persistence_id = persistence.id() as i16;
 			let persistence_count = persistence.count();
 			let persistence_duration_seconds = persistence.duration().map(|duration| duration.num_seconds());
 			query!(

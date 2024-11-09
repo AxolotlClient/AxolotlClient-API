@@ -59,6 +59,31 @@ pub async fn delete(
 	Ok(StatusCode::NO_CONTENT)
 }
 
+pub async fn get_channels(
+	State(ApiState { database, .. }): State<ApiState>,
+	Authentication(uuid): Authentication,
+) -> Result<Json<Vec<u64>>, ApiError> {
+	let mut response = Vec::new();
+
+	let owned = query!("SELECT id FROM channels WHERE owner = $1", uuid)
+		.fetch_all(&database)
+		.await?;
+	let participating = query!("SELECT channels FROM channel_memberships WHERE player = $1", uuid)
+		.fetch_optional(&database)
+		.await?;
+
+	for id in owned {
+		response.push(id.id as u64);
+	}
+	if let Some(ids) = participating {
+		for id in ids.channels {
+			response.push(id as u64);
+		}
+	}
+
+	Ok(Json(response))
+}
+
 #[derive(Serialize)]
 pub struct UserData {
 	user: User,
