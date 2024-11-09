@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::{errors::ApiError, extractors::Authentication, ApiState};
 use axum::{extract::Path, extract::Query, extract::State, Json};
 use chrono::{DateTime, Utc};
@@ -82,6 +84,62 @@ pub async fn get_channels(
 	}
 
 	Ok(Json(response))
+}
+
+pub async fn get_friends(
+	State(ApiState { database, .. }): State<ApiState>,
+	Authentication(uuid): Authentication,
+) -> Result<Json<Vec<Uuid>>, ApiError> {
+	Ok(Json(
+		query!("SELECT player_b FROM relations WHERE player_a = $1 AND relation = 'friend'", uuid)
+			.fetch_all(&database)
+			.await?
+			.iter()
+			.map(|r| r.player_b)
+			.collect(),
+	))
+}
+
+pub async fn get_blocked(
+	State(ApiState { database, .. }): State<ApiState>,
+	Authentication(uuid): Authentication,
+) -> Result<Json<Vec<Uuid>>, ApiError> {
+	Ok(Json(
+		query!("SELECT player_b FROM relations WHERE player_a = $1 AND relation = 'blocked'", uuid)
+			.fetch_all(&database)
+			.await?
+			.iter()
+			.map(|r| r.player_b)
+			.collect(),
+	))
+}
+
+pub async fn get_requests(
+	State(ApiState { database, .. }): State<ApiState>,
+	Authentication(uuid): Authentication,
+) -> Result<Json<HashMap<String, Vec<Uuid>>>, ApiError> {
+	let mut map: HashMap<String, Vec<Uuid>> = HashMap::new();
+
+	map.insert(
+		"out".to_string(),
+		query!("SELECT player_b FROM relations WHERE player_a = $1 AND relation = 'request'", uuid)
+			.fetch_all(&database)
+			.await?
+			.iter()
+			.map(|r| r.player_b)
+			.collect(),
+	);
+
+	map.insert(
+		"in".to_string(),
+		query!("SELECT player_a FROM relations WHERE player_b = $1 AND relation = 'request'", uuid)
+			.fetch_all(&database)
+			.await?
+			.iter()
+			.map(|r| r.player_a)
+			.collect(),
+	);
+	Ok(Json(map))
 }
 
 #[derive(Serialize)]

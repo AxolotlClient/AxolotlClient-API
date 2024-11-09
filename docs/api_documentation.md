@@ -289,6 +289,31 @@ Returns user data in a Json format. Access tokens are not included.
 
 `204` No Content
 
+### `GET` `/account/relations/friends` [Authenticated](#Errors)
+
+Get the list of friends for the currently authenticated user
+
+#### Response
+
+- `[uuid]` - json array of uuids
+
+### `GET` `/account/relations/blocked` [Authenticated](#Errors)
+
+Get the list of people the currently authenticated user has blocked
+
+#### Response
+
+- `[uuid]` - json array of uuids
+
+### `GET` `/account/relations/requests`
+
+Get the list of either incoming or outgoing friend requests for the currently authenticated user
+
+#### Response
+
+- `out`: `[uuid]` - json array of uuids of outgoing requests
+- `in`: `[uuid]` - json array of uuids of incoming requests
+
 ### `GET` `POST` `/brew_coffee`
 
 RFC 2324 joke. Serves no purpose.
@@ -299,7 +324,9 @@ RFC 2324 joke. Serves no purpose.
 
 ## Gateway
 
-Currently used so the server knows the client is online. Messages aren't actually sent, just a keep alive connection.
+The gateway is used so the server knows the client is online. Messages are only sent from server to
+client, the client continues to use normal http(s) requests to request data. A sequence of ping-pong
+messages is used to keep the connection alive.
 
 ### Ping Pong
 
@@ -314,9 +341,19 @@ friend requests.
 
 ```json
 {
-  "target": ""
+  "target": "",
+  ...
 }
 ```
+
+#### Currently implemented targets
+
+- `friend_request`
+  - body fields: `from`: `uuid` - The uuid of the player who sent the friend request
+- `friend_request_accept`
+  - body fields: `from`: `uuid` - The uuid of the player who accepted the friend request
+- `friend_request_deny`
+  - body fields: `from`: `uuid` - The uuid of the player who denied the friend request
 
 ### Closing Reasons
 

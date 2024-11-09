@@ -168,7 +168,7 @@ pub async fn get_authenticate(
 		}
 	};
 
-	query!("UPDATE players SET last_online = 'now' WHERE uuid = $1 AND show_last_online = true", uuid)
+	query!("UPDATE players SET last_online = LOCALTIMESTAMP WHERE uuid = $1 AND show_last_online = true", uuid)
 		.execute(&mut *transaction)
 		.await?;
 

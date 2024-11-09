@@ -51,12 +51,17 @@ async fn main() -> anyhow::Result<()> {
 		.route("/account", get(account::get).delete(account::delete))
 		.route("/account/data", get(account::get_data))
 		.route("/account/settings", get(account::get_settings).patch(account::patch_settings))
-		.route("/account/:username", post(account::post_username).delete(account::delete_username))
+		.route("/account/username/:username", post(account::post_username).delete(account::delete_username))
+		.route("/account/relations/friends", get(account::get_friends))
+		.route("/account/relations/blocked", get(account::get_blocked))
+		.route("/account/relations/requests", get(account::get_requests))
 		.route("/brew_coffee", get(brew_coffee).post(brew_coffee))
 		.fallback(not_found)
 		.with_state(ApiState {
 			database,
-			client: Client::new(),
+			client: Client::builder()
+				.user_agent(concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION")))
+				.build()?,
 			online_users: Default::default(),
 			socket_sender: Default::default(),
 		});

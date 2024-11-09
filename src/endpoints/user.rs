@@ -185,12 +185,38 @@ pub async fn post(
 			.await?;
 		}
 		Relation::None => {
+			let other_relation = query_scalar!(
+				r#"SELECT relation as "relation: Relation" FROM relations WHERE player_a = $1 AND player_b = $2"#,
+				other_uuid,
+				uuid
+			)
+			.fetch_optional(&mut *transaction)
+			.await?
+			.unwrap_or(Relation::None);
+			match other_relation {
+				Relation::Request => {
+					if online_users.contains_key(&other_uuid) {
+						if let Some(sender) = socket_sender.get(&other_uuid) {
+							sender
+								.send(
+									serde_json::to_string(&FriendRequestNotification {
+										target: "friend_request_deny".to_string(),
+										from: uuid,
+									})
+									.unwrap(),
+								)
+								.unwrap();
+						}
+					}
+				}
+				_ => {}
+			}
 			query!("DELETE FROM relations WHERE player_a = $1 AND player_b = $2", uuid, other_uuid)
 				.execute(&mut *transaction)
 				.await?;
 
 			query!(
-				"DELETE FROM relations WHERE player_a = $1 AND player_b = $2 AND relation = 'friend'",
+				"DELETE FROM relations WHERE player_a = $1 AND player_b = $2 AND relation = 'friend' OR relation = 'request'",
 				other_uuid,
 				uuid
 			)
@@ -280,6 +306,21 @@ pub async fn post(
 					)
 					.execute(&mut *transaction)
 					.await?;
+
+					// Notify $other_uuid that the request has been accepted
+					if online_users.contains_key(&other_uuid) {
+						if let Some(sender) = socket_sender.get(&other_uuid) {
+							sender
+								.send(
+									serde_json::to_string(&FriendRequestNotification {
+										target: "friend_request_accept".to_string(),
+										from: uuid,
+									})
+									.unwrap(),
+								)
+								.unwrap();
+						}
+					}
 				}
 
 				// Already friended? Pretend we accepted

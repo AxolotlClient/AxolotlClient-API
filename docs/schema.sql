@@ -2,7 +2,7 @@
 -- So here is a combination of those migrations for convenience, this should be kept up to date.
 -- This should not be actually used for a database, this is just a programmer reference.
 
--- Currently in line with: `migrations/3_Relations.sql`
+-- Currently in line with: `migrations/6_Fix_Timestamp_Defaults.sql`
 
 CREATE TABLE players (
 	uuid     UUID
@@ -13,9 +13,9 @@ CREATE TABLE players (
 
 	registered  TIMESTAMP
 	            NOT NULL
-	            DEFAULT 'now',
+	            DEFAULT LOCALTIMESTAMP,
 	last_online TIMESTAMP
-	            DEFAULT 'now',
+	            DEFAULT LOCALTIMESTAMP,
 
 	show_registered  BOOLEAN
 	                 NOT NULL
@@ -70,11 +70,11 @@ CREATE TABLE tokens (
 	created TIMESTAMP
 	        NOT NULL
 	        CHECK (used >= created)
-	        DEFAULT 'now',
+	        DEFAULT LOCALTIMESTAMP,
 	used    TIMESTAMP
 	        NOT NULL
 	        CHECK (used >= created)
-	        DEFAULT 'now',
+	        DEFAULT LOCALTIMESTAMP,
 
 	revoked BOOLEAN
 	        NOT NULL
@@ -100,13 +100,13 @@ CREATE TABLE channels (
 
 	created                      TIMESTAMP
 	                             NOT NULL
-	                             DEFAULT 'now',
+	                             DEFAULT LOCALTIMESTAMP,
 	last_updated                 TIMESTAMP
 								NOT NULL
-	                             DEFAULT 'now',
+	                             DEFAULT LOCALTIMESTAMP,
 	last_message                 TIMESTAMP
 	                             NOT NULL
-	                             DEFAULT 'now',
+	                             DEFAULT LOCALTIMESTAMP,
 
 	persistence                  SMALLINT
 	                             NOT NULL,
