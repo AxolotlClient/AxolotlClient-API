@@ -193,23 +193,20 @@ pub async fn post(
 			.fetch_optional(&mut *transaction)
 			.await?
 			.unwrap_or(Relation::None);
-			match other_relation {
-				Relation::Request => {
-					if online_users.contains_key(&other_uuid) {
-						if let Some(sender) = socket_sender.get(&other_uuid) {
-							sender
-								.send(
-									serde_json::to_string(&FriendRequestNotification {
-										target: "friend_request_deny".to_string(),
-										from: uuid,
-									})
-									.unwrap(),
-								)
-								.unwrap();
-						}
+			if let Relation::Request = other_relation {
+				if online_users.contains_key(&other_uuid) {
+					if let Some(sender) = socket_sender.get(&other_uuid) {
+						sender
+							.send(
+								serde_json::to_string(&FriendRequestNotification {
+									target: "friend_request_deny".to_string(),
+									from: uuid,
+								})
+								.unwrap(),
+							)
+							.unwrap();
 					}
 				}
-				_ => {}
 			}
 			query!("DELETE FROM relations WHERE player_a = $1 AND player_b = $2", uuid, other_uuid)
 				.execute(&mut *transaction)

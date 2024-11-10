@@ -2,11 +2,13 @@ use crate::endpoints::{account, brew_coffee, channel, get_authenticate, not_foun
 use crate::gateway::gateway;
 use axum::{routing::get, routing::post, serve, Router};
 use dashmap::DashMap;
+use endpoints::global_data::{self, GlobalDataContainer};
 use endpoints::user::Activity;
 use env_logger::Env;
 use log::info;
 use reqwest::Client;
 use sqlx::{migrate, PgPool};
+use std::borrow::Cow;
 use std::{env::var, sync::Arc};
 use tokio::sync::mpsc::UnboundedSender;
 use uuid::Uuid;
@@ -23,6 +25,7 @@ pub struct ApiState {
 	pub client: Client,
 	pub online_users: Arc<DashMap<Uuid, Option<Activity>>>,
 	pub socket_sender: Arc<DashMap<Uuid, UnboundedSender<String>>>,
+	pub global_data: Cow<'static, GlobalDataContainer>,
 }
 
 #[tokio::main]
@@ -42,12 +45,14 @@ async fn main() -> anyhow::Result<()> {
 	migrate!().run(&database).await?;
 
 	let router = Router::new()
+		.route("/global_data", get(global_data::get))
 		.route("/authenticate", get(get_authenticate))
 		.route("/gateway", get(gateway))
 		.route("/user/:uuid", get(user::get).post(user::post))
 		.route("/channels", get(account::get_channels))
 		.route("/channel", post(channel::post))
-		.route("/channel/:id", get(channel::get).patch(channel::patch))
+		.route("/channel/:id", get(channel::get).post(channel::post_channel).patch(channel::patch))
+		.route("/channel/:id/messages", get(channel::get_messages))
 		.route("/account", get(account::get).delete(account::delete))
 		.route("/account/data", get(account::get_data))
 		.route("/account/settings", get(account::get_settings).patch(account::patch_settings))
@@ -64,6 +69,7 @@ async fn main() -> anyhow::Result<()> {
 				.build()?,
 			online_users: Default::default(),
 			socket_sender: Default::default(),
+			global_data: Default::default(),
 		});
 
 	let listener = tokio::net::TcpListener::bind("[::]:8000").await?;

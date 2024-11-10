@@ -2,15 +2,15 @@ use std::str::FromStr;
 
 use crate::{errors::ApiError, extractors::Authentication, id::Id, ApiState};
 use axum::{
-	extract::{Path, State},
+	extract::{Path, Query, State},
 	Json,
 };
-use chrono::{Duration, TimeDelta};
+use chrono::{DateTime, Duration, TimeDelta, Utc};
 use garde::Validate;
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
-use sqlx::query;
+use serde_json::{json, Value};
+use sqlx::{query, PgPool};
 use uuid::Uuid;
 
 #[derive(Deserialize, Serialize)]
@@ -25,6 +25,8 @@ pub struct Channel {
 pub struct ChannelData {
 	#[garde(length(min = 1, max = 32))]
 	name: String,
+	#[serde(skip_deserializing)]
+	owner: Uuid,
 	persistence: Persistence,
 	participants: Vec<Uuid>,
 }
@@ -92,11 +94,7 @@ impl Persistence {
 	}
 }
 
-pub async fn get(
-	State(ApiState { database, .. }): State<ApiState>,
-	Authentication(uuid): Authentication,
-	Path(channel_id): Path<Id>,
-) -> Result<Json<Channel>, ApiError> {
+async fn get_channel(database: &PgPool, uuid: &Uuid, channel_id: Id) -> Result<Channel, ApiError> {
 	let channel = query!(
 		r#"SELECT id,
 			name,
@@ -105,37 +103,47 @@ pub async fn get(
 			persistence_count, 
 			persistence_duration_seconds
 			FROM channels WHERE id = $1"#,
-		channel_id as _
+		&channel_id as _
 	)
-	.fetch_optional(&database)
+	.fetch_optional(database)
 	.await?
 	.ok_or(StatusCode::BAD_REQUEST)?;
 
-	let participants: Vec<Uuid> = query!("SELECT * FROM channel_memberships WHERE $1 = ANY(channels)", channel_id as _)
-		.fetch_all(&database)
-		.await?
-		.iter()
-		.map(|rec| rec.player)
-		.collect();
+	let participants: Vec<Uuid> =
+		query!("SELECT * FROM channel_memberships WHERE $1 = ANY(channels)", &channel_id as _)
+			.fetch_all(database)
+			.await?
+			.iter()
+			.map(|rec| rec.player)
+			.collect();
 
-	if channel.owner == uuid || participants.contains(&uuid) {
+	if &channel.owner == uuid || participants.contains(&uuid) {
 		if let Some(persistence) = Persistence::from(
 			channel.persistence,
 			channel.persistence_count.map(|i| i as u32),
 			channel.persistence_duration_seconds.map(TimeDelta::seconds),
 		) {
-			return Ok(Json(Channel {
+			return Ok(Channel {
 				id: channel_id,
 				channel_data: ChannelData {
 					name: channel.name,
+					owner: channel.owner,
 					persistence,
 					participants,
 				},
-			}));
+			});
 		}
 	}
 
 	Err(StatusCode::BAD_REQUEST)?
+}
+
+pub async fn get(
+	State(ApiState { database, .. }): State<ApiState>,
+	Authentication(uuid): Authentication,
+	Path(channel_id): Path<Id>,
+) -> Result<Json<Channel>, ApiError> {
+	Ok(Json(get_channel(&database, &uuid, channel_id).await?))
 }
 
 pub async fn post(
@@ -239,7 +247,8 @@ pub async fn patch(
 					name = coalesce($1, name),
 					persistence = coalesce($2, persistence),
 					persistence_count = coalesce($3, persistence_count),
-					persistence_duration_seconds = coalesce($4, persistence_duration_seconds)
+					persistence_duration_seconds = coalesce($4, persistence_duration_seconds),
+					last_updated = LOCALTIMESTAMP
 					WHERE id = $5"#,
 				name,
 				persistence_id as _,
@@ -254,6 +263,118 @@ pub async fn patch(
 	}
 
 	Err(StatusCode::BAD_REQUEST)?
+}
+
+pub async fn post_channel(
+	State(ApiState {
+		database,
+		online_users,
+		socket_sender,
+		..
+	}): State<ApiState>,
+	Authentication(uuid): Authentication,
+	Path(channel_id): Path<Id>,
+	Json(PostMessage { content, display_name }): Json<PostMessage>,
+) -> Result<StatusCode, ApiError> {
+	let channel = get_channel(&database, &uuid, channel_id).await?;
+
+	let mut transaction = database.begin().await?;
+
+	query!(
+		"INSERT INTO messages (id, channel_id, sender, sender_name, content) VALUES ($1, $2, $3, $4, $5)",
+		Id::new() as _,
+		&channel.id as _,
+		uuid,
+		display_name,
+		content
+	)
+	.execute(&mut *transaction)
+	.await?;
+
+	query!("UPDATE channels SET last_message = LOCALTIMESTAMP WHERE id = $1", &channel.id as _)
+		.execute(&mut *transaction)
+		.await?;
+
+	transaction.commit().await?;
+	let message = serde_json::to_string(&json!({
+		"target": "chat_message",
+		"channel": &channel.id,
+		"sender": &uuid,
+		"sender_name": display_name,
+		"content": content
+	}))
+	.unwrap();
+
+	if uuid != channel.channel_data.owner && online_users.contains_key(&channel.channel_data.owner) {
+		socket_sender
+			.get(&channel.channel_data.owner)
+			.ok_or(StatusCode::INTERNAL_SERVER_ERROR)?
+			.value()
+			.send(message.clone())
+			.unwrap();
+	}
+	for participant in channel.channel_data.participants {
+		if participant != uuid && online_users.contains_key(&participant) {
+			socket_sender
+				.get(&participant)
+				.ok_or(StatusCode::INTERNAL_SERVER_ERROR)?
+				.value()
+				.send(message.clone())
+				.unwrap();
+		}
+	}
+	Ok(StatusCode::NO_CONTENT)
+}
+
+pub async fn get_messages(
+	State(ApiState { database, .. }): State<ApiState>,
+	Authentication(uuid): Authentication,
+	Path(channel_id): Path<Id>,
+	Query(QueryBefore { before }): Query<QueryBefore>,
+) -> Result<Json<Vec<Message>>, ApiError> {
+	let channel = get_channel(&database, &uuid, channel_id).await?;
+
+	let records = query!(
+		"SELECT channel_id, sender, sender_name, content, send_time FROM messages WHERE channel_id = $1 AND send_time < $2 LIMIT 50",
+		&channel.id as _,
+		before.unwrap_or(Utc::now()) as _
+	)
+	.fetch_all(&database)
+	.await?;
+
+	let mut messages: Vec<Message> = records
+		.iter()
+		.map(|m| Message {
+			channel_id: m.channel_id as u64,
+			sender: m.sender,
+			sender_name: m.sender_name.clone(),
+			content: m.content.clone(),
+			timestamp: m.send_time.and_utc(),
+		})
+		.collect();
+	messages.sort_by_key(|m| m.timestamp);
+
+	Ok(Json(messages))
+}
+
+#[derive(Serialize)]
+pub struct Message {
+	channel_id: u64,
+	sender: Uuid,
+	sender_name: String,
+	content: String,
+	timestamp: DateTime<Utc>,
+}
+
+#[derive(Deserialize)]
+pub struct QueryBefore {
+	before: Option<DateTime<Utc>>,
+}
+
+#[derive(Deserialize)]
+pub struct PostMessage {
+	content: String,
+	display_name: String,
 }
 
 mod duration {

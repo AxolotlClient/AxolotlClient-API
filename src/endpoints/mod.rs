@@ -10,6 +10,7 @@ use uuid::Uuid;
 
 pub mod account;
 pub mod channel;
+pub mod global_data;
 pub mod user;
 
 #[derive(Clone, Deserialize, Serialize, Validate, Type)]
@@ -143,7 +144,7 @@ pub async fn get_authenticate(
 	let BasicUserInfo { uuid, username } = user;
 
 	// evict all previous tokens for the authenticating user
-	query!("DELETE FROM tokens WHERE player = $1 AND valid = false", uuid)
+	query!("DELETE FROM tokens WHERE player = $1", uuid)
 		.execute(&mut *transaction)
 		.await?;
 

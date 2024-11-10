@@ -29,6 +29,17 @@ The following errors are possible whenever body or query data is required:
 
 ## Endpoints
 
+### `GET` `/global_data`
+
+Get global data about the backend and mod.
+
+#### Response
+
+- `total_players`: `number` - Total number of players known to the backend. Updated every other minute.
+- `ontline_players`: `number` - Number of currently online players. Updated every other minute.
+- `latest_version`: `string` - The latest version of the mod, does not include a game version. Cached for 1 day, fetched from modrinth.
+- `notes`: `string` - Misc notes, f.e. updates, maintenance notices, ...
+
 ### `GET` `/authenticate?<username>&<server_id>`
 
 The client should first make a request to `https://sessionserver.mojang.com/session/minecraft/join` as outlined on
@@ -150,6 +161,7 @@ Get a list of all channel ids the authenticated user participates in (owner + pa
 
 - `id`: `number` - channel id
 - `name`: `string` - channel name
+- `owner`: `uuid` - uuid of the channel's owner
 - `persistence`: `Persistence`
 - `participants`: `[uuid]` - List of participants
 
@@ -192,7 +204,7 @@ The server may change this value, but only lower it, never increase it.
 
 Channel ID formatted as plain text
 
-### `PATCH` `/channel/<id>`
+### `PATCH` `/channel/<id>` [Authenticated](#Errors)
 
 Update channel settings. Fields that shouldn't be changed can be left out.
 
@@ -208,7 +220,7 @@ Update channel settings. Fields that shouldn't be changed can be left out.
 
 #### Response
 
-`200` No Content
+`204` No Content
 
 #### Errors
 
@@ -216,6 +228,59 @@ Update channel settings. Fields that shouldn't be changed can be left out.
   - The channel does not exist
   - The authenticated user doesn't own the specified channel
   - The given body fields are invalid or malformed
+
+### `POST` `/channel/<id>` [Authenticated](#Errors)
+
+Send a message to a channel
+
+#### Path Fields
+
+- `id` - channel id
+
+#### Body Fields
+
+- `content`: `string` - The message, max. 2000 characters.
+- `display_name`: `string` - The name under which to display this message, max. 179 characters. Used for proxying with PluralKit
+
+#### Response
+
+`204` No Content
+
+#### Errors
+
+- `400` Bad request:
+  - The channel does not exist
+  - The authenticated user does not participate in or own the given channel
+
+### `GET` `/channel/<id>/messages?<before?>` [Authenticated](#Errors)
+
+Get up to 50 messages from a channel.
+
+#### Path Fields
+
+- `id` - channel id
+
+#### Query Fields
+
+- `before` - timestamp, used for pagination (optional)
+
+#### Response
+
+`[Message]`
+
+##### Message
+
+- `channel_id`: `number` - The channel id
+- `sender`: `uuid` - The sender's uuid
+- `sender_name`: `string` - The sender's display name
+- `content`: `string` - The message content
+- `timestamp`: `Timestamp` - The timestamp of the message
+
+#### Errors
+
+- `400` Bad request:
+  - The channel does not exist
+  - The authenticated user does not participate in or own the given channel
 
 ### `GET` `/account` [Authenticated](#Errors)
 
@@ -306,7 +371,7 @@ Get the list of people the currently authenticated user has blocked
 
 - `[uuid]` - json array of uuids
 
-### `GET` `/account/relations/requests`
+### `GET` `/account/relations/requests` [Authenticated](#Errors)
 
 Get the list of either incoming or outgoing friend requests for the currently authenticated user
 
@@ -355,6 +420,12 @@ friend requests.
   - body fields: `from`: `uuid` - The uuid of the player who accepted the friend request
 - `friend_request_deny`
   - body fields: `from`: `uuid` - The uuid of the player who denied the friend request
+- `chat_message`
+  - body fields:
+    - `channel`: `number` - channel id
+    - `sender`: `uuid` - The uuid of the sender
+    - `sender_name`: `string` - The display name of the sender
+    - `content`: `string` - The message content
 
 ### Closing Reasons
 
