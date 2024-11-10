@@ -37,11 +37,11 @@ impl FromRequestParts<ApiState> for Authentication {
 			}?
 		};
 
-		query!("UPDATE players SET last_online = 'now' where uuid = $1", uuid)
+		query!("UPDATE players SET last_online = LOCALTIMESTAMP where uuid = $1", uuid)
 			.execute(database)
 			.await?;
 
-		query!("UPDATE tokens SET used = 'now' where token = $1", authorization_ref)
+		query!("UPDATE tokens SET used = LOCALTIMESTAMP where token = $1", authorization_ref)
 			.execute(database)
 			.await?;
 

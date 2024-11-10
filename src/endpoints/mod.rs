@@ -142,6 +142,11 @@ pub async fn get_authenticate(
 
 	let BasicUserInfo { uuid, username } = user;
 
+	// evict all previous tokens for the authenticating user
+	query!("DELETE FROM tokens WHERE player = $1 AND valid = false", uuid)
+		.execute(&mut *transaction)
+		.await?;
+
 	let access_token = loop {
 		let mut hasher = Blake2b512::new();
 		hasher.update(&*username);

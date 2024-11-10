@@ -237,8 +237,18 @@ pub async fn post(
 				Relation::Blocked => Err(StatusCode::FORBIDDEN)?,
 
 				Relation::None => {
-					// Notify $other_uuid that they have a new friend request (as there hasn't yet been a relation between the two)
+					if query!("SELECT username FROM players WHERE uuid = $1", &other_uuid)
+						.fetch_optional(&mut *transaction)
+						.await?
+						.is_none()
+					{
+						Err(StatusCode::NOT_FOUND)?
+					}
+					query!("INSERT INTO relations VALUES ($1, $2, 'request')", uuid, other_uuid)
+						.execute(&mut *transaction)
+						.await?;
 
+					// Notify $other_uuid that they have a new friend request (as there hasn't yet been a relation between the two)
 					if online_users.contains_key(&other_uuid) {
 						if let Some(sender) = socket_sender.get(&other_uuid) {
 							sender

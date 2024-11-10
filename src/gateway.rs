@@ -120,7 +120,7 @@ enum DisconnectReason {
 	Closed = close_code::NORMAL,
 	Error = close_code::ERROR,
 	InvalidData = close_code::INVALID,
-	TimedOut = close_code::ABNORMAL,
+	TimedOut = 1014, // There is no pre-defined code for timeouts
 }
 
 impl Display for DisconnectReason {

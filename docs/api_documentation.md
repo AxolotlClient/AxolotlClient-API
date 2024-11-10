@@ -126,6 +126,7 @@ Additionally, the relation will be set to friend if the authenticated user is tr
 - `403` Forbidden:
   - If the authenticated user is trying to friend a user who has not sent a friend request
   - If the authenticated user is trying to send a friend request to a user who has blocked them
+- `404` Not Found - If the queried user isn't known to the database
 
 ### `GET` `/channels` [Authenticated](#Errors)
 
@@ -358,6 +359,6 @@ friend requests.
 ### Closing Reasons
 
 - `1000` Closed
-- `1006` Timed Out - See [Ping Pong](#ping-pong)
 - `1007` Invalid Data
 - `1011` Error
+- `1014` Timed Out - See [Ping Pong](#ping-pong)
