@@ -1,4 +1,7 @@
-use axum::{http::StatusCode, response::IntoResponse, response::Response};
+use axum::{
+	http::StatusCode,
+	response::{IntoResponse, Response},
+};
 use garde::Report;
 use log::error;
 use std::error::Error;
@@ -38,6 +41,18 @@ impl From<sqlx::Error> for ApiError {
 impl From<std::io::Error> for ApiError {
 	fn from(error: std::io::Error) -> Self {
 		Self::handle_internal_error(error)
+	}
+}
+
+impl From<serde_json::Error> for ApiError {
+	fn from(error: serde_json::Error) -> Self {
+		Self::handle_internal_error(error)
+	}
+}
+
+impl From<Response> for ApiError {
+	fn from(value: Response) -> Self {
+		Self(value)
 	}
 }
 

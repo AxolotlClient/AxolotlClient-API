@@ -7,6 +7,7 @@ use crate::endpoints::{
 use crate::gateway::gateway;
 use axum::{routing::get, routing::post, serve, Router};
 use dashmap::DashMap;
+use endpoints::hypixel::{self, HypixelApiProxyState};
 use env_logger::Env;
 use log::info;
 use reqwest::Client;
@@ -31,6 +32,7 @@ pub struct ApiState {
 	pub online_users: Arc<DashMap<Uuid, Option<Activity>>>,
 	pub socket_sender: Arc<DashMap<Uuid, UnboundedSender<String>>>,
 	pub global_data: Cow<'static, GlobalDataContainer>,
+	pub hypixel_api_state: Arc<HypixelApiProxyState>,
 }
 
 #[tokio::main]
@@ -51,7 +53,7 @@ async fn main() -> anyhow::Result<()> {
 
 	let db = database.clone();
 	tokio::spawn(async move {
-		let mut interval = interval(Duration::from_secs(1 * 24 * 60));
+		let mut interval = interval(Duration::from_secs(1 * 24 * 60 * 60));
 		interval.set_missed_tick_behavior(MissedTickBehavior::Skip);
 		let tasks = [image::evict_expired];
 		loop {
@@ -81,6 +83,7 @@ async fn main() -> anyhow::Result<()> {
 		.route("/account/relations/requests", get(account::get_requests))
 		.route("/image/:id", get(image::get).post(image::post))
 		.route("/image/:id/raw", get(image::get_raw))
+		.route("/hypixel", get(hypixel::get))
 		.route("/brew_coffee", get(brew_coffee).post(brew_coffee))
 		.fallback(not_found)
 		.with_state(ApiState {
@@ -91,6 +94,7 @@ async fn main() -> anyhow::Result<()> {
 			online_users: Default::default(),
 			socket_sender: Default::default(),
 			global_data: Default::default(),
+			hypixel_api_state: Default::default(),
 		});
 
 	let listener = tokio::net::TcpListener::bind("[::]:8000").await?;

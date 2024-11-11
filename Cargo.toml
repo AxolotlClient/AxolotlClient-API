@@ -30,6 +30,8 @@ axum = { version = "0.7", default-features = false, features = [
     "ws",
 ] }
 serde_json = "1.0.132"
+mini-moka = { version = "0.10.3", features = ["dashmap"] }
+ratelimit = "0.10.0"
 
 [dependencies.sqlx]
 version = "0.8.1"

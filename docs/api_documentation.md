@@ -435,6 +435,37 @@ The image data, in raw bytes
 
 The image id, in plain text.
 
+### `GET` `/hypixel` [Authenticated](#Errors)
+
+Query cached values from the public hypixel API
+
+#### Body Fields
+
+- `request_type`: `string` - One of `network_level`, `bedwars_level`, `skywars_experience` or `bedwars_data`
+- `target_player`: `uuid` - The player whose data should be fetched
+
+#### Response
+
+Response varies for each `request_type`:
+
+`network_level`:
+- `network_level`: `number` - The hypixel network level
+
+`bedwars_level`: 
+- `bedwars_level`: `number`
+
+`skywars_experience`:
+- `skywars_experience`: `number`
+
+`bedwars_data`:
+- `final_kills_bedwars`: `number`
+- `beds_broken_bedwars`: `number`
+- `deaths_bedwars`: `number`
+- `kills_bedwars`: `number`
+- `losses_bedwars`: `number`
+- `wins_bedwars`: `number`
+- `winstreak`: `number`
+
 ### `GET` `POST` `/brew_coffee`
 
 RFC 2324 joke. Serves no purpose.

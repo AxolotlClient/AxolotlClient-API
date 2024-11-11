@@ -11,6 +11,7 @@ use uuid::Uuid;
 pub mod account;
 pub mod channel;
 pub mod global_data;
+pub mod hypixel;
 pub mod image;
 pub mod user;
 

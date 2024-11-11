@@ -106,6 +106,7 @@ async fn gateway_accept(
 						let ping = rand::random();
 						socket.send(Message::Ping(Vec::from(&ping))).await?;
 						pending_pong = Some(ping);
+						keep_alive.as_mut().reset(Instant::now() + Duration::from_secs(10));
 					}
 					Some(_) => return Err(TimedOut),
 				}
