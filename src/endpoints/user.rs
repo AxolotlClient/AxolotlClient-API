@@ -41,7 +41,7 @@ pub enum Status {
 	},
 }
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Activity {
 	title: String,
 	description: String,

@@ -8,6 +8,8 @@ use serde::{Deserialize, Serialize};
 use sqlx::{query, query_as, PgPool};
 use uuid::Uuid;
 
+use super::user::Activity;
+
 #[derive(Serialize)]
 pub struct User {
 	uuid: Uuid,
@@ -257,4 +259,14 @@ pub async fn delete_username(
 		.execute(&database)
 		.await?;
 	Ok(StatusCode::NOT_FOUND)
+}
+
+pub async fn post_activity(
+	State(ApiState { online_users, .. }): State<ApiState>,
+	Authentication(uuid): Authentication,
+	Json(activity): Json<Activity>,
+) -> Result<StatusCode, ApiError> {
+	online_users.insert(uuid, Some(activity));
+
+	Ok(StatusCode::OK)
 }

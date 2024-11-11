@@ -311,6 +311,18 @@ Returns user data in a Json format. Access tokens are not included.
 
 `204` No Content
 
+### `POST` `/account/activity` [Authenticated](#Errors)
+
+#### Body Fields
+
+- `title`: `string`
+- `description`: `string`
+- `started`: `Timestamp`
+
+#### Response
+
+`200` Ok
+
 ### `GET` `/account/settings` [Authenticated](#Errors)
 
 #### Response

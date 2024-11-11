@@ -2,7 +2,7 @@
 -- So here is a combination of those migrations for convenience, this should be kept up to date.
 -- This should not be actually used for a database, this is just a programmer reference.
 
--- Currently in line with: `migrations/6_Fix_Timestamp_Defaults.sql`
+-- Currently in line with: `migrations/7_Channel_Messages.sql`
 
 CREATE TABLE players (
 	uuid     UUID
@@ -124,7 +124,7 @@ CREATE TABLE channel_memberships (
 	FOREIGN KEY (player) REFERENCES players(uuid) ON DELETE CASCADE
 );
 
-CREATE TABLE messages(
+CREATE TABLE messages (
     id          BIGINT 
                 NOT NULL
                 PRIMARY KEY UNIQUE,
