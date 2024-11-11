@@ -2,7 +2,7 @@
 -- So here is a combination of those migrations for convenience, this should be kept up to date.
 -- This should not be actually used for a database, this is just a programmer reference.
 
--- Currently in line with: `migrations/7_Channel_Messages.sql`
+-- Currently in line with: `migrations/8_Shared_Images.sql`
 
 CREATE TABLE players (
 	uuid     UUID
@@ -139,4 +139,18 @@ CREATE TABLE messages (
 
     FOREIGN KEY (channel_id) REFERENCES channels(id) ON DELETE CASCADE,
     FOREIGN KEY (sender) REFERENCES players(uuid) ON DELETE CASCADE
+);
+
+CREATE TABLE images (
+    id          BIGINT 
+                NOT NULL 
+                PRIMARY KEY
+                UNIQUE,
+    player      UUID
+                NOT NULL,
+    filename    BYTEA NOT NULL,
+    file        BYTEA NOT NULL,
+    timestamp   TIMESTAMP NOT NULL DEFAULT LOCALTIMESTAMP,
+
+    FOREIGN KEY (player) REFERENCES players(uuid) ON DELETE CASCADE
 );

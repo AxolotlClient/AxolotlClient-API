@@ -11,6 +11,7 @@ use uuid::Uuid;
 pub mod account;
 pub mod channel;
 pub mod global_data;
+pub mod image;
 pub mod user;
 
 #[derive(Clone, Deserialize, Serialize, Validate, Type)]

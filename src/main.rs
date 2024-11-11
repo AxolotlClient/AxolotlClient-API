@@ -1,16 +1,21 @@
-use crate::endpoints::{account, brew_coffee, channel, get_authenticate, not_found, user};
+use crate::endpoints::{
+	account, brew_coffee, channel, get_authenticate,
+	global_data::{self, GlobalDataContainer},
+	image, not_found,
+	user::{self, Activity},
+};
 use crate::gateway::gateway;
 use axum::{routing::get, routing::post, serve, Router};
 use dashmap::DashMap;
-use endpoints::global_data::{self, GlobalDataContainer};
-use endpoints::user::Activity;
 use env_logger::Env;
 use log::info;
 use reqwest::Client;
 use sqlx::{migrate, PgPool};
 use std::borrow::Cow;
+use std::time::Duration;
 use std::{env::var, sync::Arc};
 use tokio::sync::mpsc::UnboundedSender;
+use tokio::time::{interval, MissedTickBehavior};
 use uuid::Uuid;
 
 mod endpoints;
@@ -44,6 +49,19 @@ async fn main() -> anyhow::Result<()> {
 
 	migrate!().run(&database).await?;
 
+	let db = database.clone();
+	tokio::spawn(async move {
+		let mut interval = interval(Duration::from_secs(1 * 24 * 60));
+		interval.set_missed_tick_behavior(MissedTickBehavior::Skip);
+		let tasks = [image::evict_expired];
+		loop {
+			let _ = interval.tick().await;
+			for task in tasks {
+				let _ = task(&db).await;
+			}
+		}
+	});
+
 	let router = Router::new()
 		.route("/global_data", get(global_data::get))
 		.route("/authenticate", get(get_authenticate))
@@ -61,6 +79,8 @@ async fn main() -> anyhow::Result<()> {
 		.route("/account/relations/friends", get(account::get_friends))
 		.route("/account/relations/blocked", get(account::get_blocked))
 		.route("/account/relations/requests", get(account::get_requests))
+		.route("/image/:id", get(image::get).post(image::post))
+		.route("/image/:id/raw", get(image::get_raw))
 		.route("/brew_coffee", get(brew_coffee).post(brew_coffee))
 		.fallback(not_found)
 		.with_state(ApiState {

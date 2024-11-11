@@ -392,6 +392,49 @@ Get the list of either incoming or outgoing friend requests for the currently au
 - `out`: `[uuid]` - json array of uuids of outgoing requests
 - `in`: `[uuid]` - json array of uuids of incoming requests
 
+### `GET` `/image/<id>`
+
+Fetch a shared image (usually screenshots) with metadata.
+
+#### Path Fields
+
+`id` - The id of the image
+
+#### Response
+
+- `uploader`: `uuid` - The uuid of the player that shared this image
+- `filename`: `string` - The name of the image file
+- `file`: `string` - The file content, encoded with standard base64
+- `shared_at`: `Timestamp`
+
+### `GET` `/image/<id>/raw`
+
+Fetch a raw image
+
+#### Path Fields
+
+`id` - The id of the image
+
+#### Response
+
+The raw bytes of the image
+
+### `POST` `/image/<filename>` [Authenticated](#Errors)
+
+Share an image
+
+#### Path Fields
+
+`filename` - The name of the file to share
+
+#### Body Fields
+
+The image data, in raw bytes
+
+#### Response
+
+The image id, in plain text.
+
 ### `GET` `POST` `/brew_coffee`
 
 RFC 2324 joke. Serves no purpose.

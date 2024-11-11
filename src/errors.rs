@@ -35,9 +35,30 @@ impl From<sqlx::Error> for ApiError {
 	}
 }
 
+impl From<std::io::Error> for ApiError {
+	fn from(error: std::io::Error) -> Self {
+		Self::handle_internal_error(error)
+	}
+}
+
 impl ApiError {
 	fn handle_internal_error<E: Error>(error: E) -> ApiError {
 		error!("Unhandled internal error: {error}");
 		StatusCode::INTERNAL_SERVER_ERROR.into()
+	}
+}
+
+pub struct TaskError;
+
+impl TaskError {
+	fn handle<E: Error>(error: E) -> TaskError {
+		error!("Error while running taks: {error}");
+		TaskError
+	}
+}
+
+impl From<sqlx::Error> for TaskError {
+	fn from(value: sqlx::Error) -> Self {
+		Self::handle(value)
 	}
 }

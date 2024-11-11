@@ -4,3 +4,4 @@
 /.direnv
 
 /devenv.local.nix
+.env
