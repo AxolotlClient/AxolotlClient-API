@@ -252,6 +252,25 @@ Send a message to a channel
   - The channel does not exist
   - The authenticated user does not participate in or own the given channel
 
+### `DELETE` `/channel/<id>` [Authenticated](#Errors)
+
+Leave or delete a channel. If the authenticated user is participating, they leave the channel.
+If they own the channel, it will be deleted as it is currently not possible to transfer a channel to a new owner.
+
+#### Path Fields
+
+- `id` - channel id
+
+#### Response
+
+`200` Ok
+
+#### Errors
+
+- `400` Bad request:
+  - The channel does not exist
+  - The authenticated user does not participate in or own the given channel
+
 ### `GET` `/channel/<id>/messages?<before?>` [Authenticated](#Errors)
 
 Get up to 50 messages from a channel.
@@ -449,15 +468,19 @@ Query cached values from the public hypixel API
 Response varies for each `request_type`:
 
 `network_level`:
+
 - `network_level`: `number` - The hypixel network level
 
-`bedwars_level`: 
+`bedwars_level`:
+
 - `bedwars_level`: `number`
 
 `skywars_experience`:
+
 - `skywars_experience`: `number`
 
 `bedwars_data`:
+
 - `final_kills_bedwars`: `number`
 - `beds_broken_bedwars`: `number`
 - `deaths_bedwars`: `number`

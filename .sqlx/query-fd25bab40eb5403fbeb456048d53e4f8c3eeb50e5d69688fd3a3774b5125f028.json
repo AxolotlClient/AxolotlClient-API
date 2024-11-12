@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE channel_memberships SET channels = array_remove(channels, $1) WHERE $1 = ANY(channels)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "fd25bab40eb5403fbeb456048d53e4f8c3eeb50e5d69688fd3a3774b5125f028"
+}

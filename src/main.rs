@@ -114,7 +114,13 @@ async fn main() -> anyhow::Result<()> {
 		.route("/user/:uuid", get(user::get).post(user::post))
 		.route("/channels", get(account::get_channels))
 		.route("/channel", post(channel::post))
-		.route("/channel/:id", get(channel::get).post(channel::post_channel).patch(channel::patch))
+		.route(
+			"/channel/:id",
+			get(channel::get)
+				.post(channel::post_channel)
+				.patch(channel::patch)
+				.delete(channel::delete),
+		)
 		.route("/channel/:id/messages", get(channel::get_messages))
 		.route("/account", get(account::get).delete(account::delete))
 		.route("/account/activity", post(account::post_activity))

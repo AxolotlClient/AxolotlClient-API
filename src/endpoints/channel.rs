@@ -146,6 +146,31 @@ pub async fn get(
 	Ok(Json(get_channel(&database, &uuid, channel_id).await?))
 }
 
+pub async fn delete(
+	State(ApiState { database, .. }): State<ApiState>,
+	Authentication(uuid): Authentication,
+	Path(channel_id): Path<Id>,
+) -> Result<StatusCode, ApiError> {
+	let channel = get_channel(&database, &uuid, channel_id).await?;
+
+	if channel.channel_data.owner == uuid {
+		query!("DELETE FROM channels WHERE id = $1", &channel.id as _)
+			.execute(&database)
+			.await?;
+		query!(
+			"UPDATE channel_memberships SET channels = array_remove(channels, $1) WHERE $1 = ANY(channels)",
+			&channel.id as _
+		)
+		.execute(&database)
+		.await?;
+	} else {
+		query!("UPDATE channel_memberships SET channels = array_remove(channels, $2) WHERE player = $1 AND $2 = ANY(channels)", &uuid, &channel.id as _)
+		.execute(&database).await?;
+	}
+
+	Ok(StatusCode::OK)
+}
+
 pub async fn post(
 	State(ApiState { database, .. }): State<ApiState>,
 	Authentication(owner): Authentication,
