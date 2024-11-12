@@ -1,5 +1,5 @@
 [package]
-name = "axolotlclient-api"
+name = "axolotl_client-api"
 version = "0.0.0"
 edition = "2021"
 
