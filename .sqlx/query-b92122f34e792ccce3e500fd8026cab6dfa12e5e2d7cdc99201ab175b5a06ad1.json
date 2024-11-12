@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE relations SET relation = 'friend' WHERE player_a = $1 AND player_b = $2",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "b92122f34e792ccce3e500fd8026cab6dfa12e5e2d7cdc99201ab175b5a06ad1"
+}

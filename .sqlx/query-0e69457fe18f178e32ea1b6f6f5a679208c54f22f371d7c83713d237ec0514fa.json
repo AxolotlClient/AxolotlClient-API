@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "DELETE FROM relations WHERE player_a = $1 AND player_b = $2 AND relation = 'friend' OR relation = 'request'",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "0e69457fe18f178e32ea1b6f6f5a679208c54f22f371d7c83713d237ec0514fa"
+}

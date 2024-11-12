@@ -1,0 +1,40 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT show_registered, retain_usernames, show_last_online, show_activity FROM players WHERE uuid = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "show_registered",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 1,
+        "name": "retain_usernames",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 2,
+        "name": "show_last_online",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 3,
+        "name": "show_activity",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "3960edf2ef7f8e518cb81e4f64b490a54ad3512c3b7f99d76f729f78a8a34873"
+}

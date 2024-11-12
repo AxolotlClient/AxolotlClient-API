@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE channel_memberships SET channels = ARRAY_APPEND(channels, $2) WHERE player = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "41fa47cb09cad2c2f7654c21fe0bbeaa7fdb7e17c95c7a253ea5836b3b983680"
+}

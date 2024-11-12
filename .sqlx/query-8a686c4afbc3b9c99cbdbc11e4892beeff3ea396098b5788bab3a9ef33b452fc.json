@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE players SET last_online = 'now' WHERE uuid = $1 AND show_last_online = true",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "8a686c4afbc3b9c99cbdbc11e4892beeff3ea396098b5788bab3a9ef33b452fc"
+}

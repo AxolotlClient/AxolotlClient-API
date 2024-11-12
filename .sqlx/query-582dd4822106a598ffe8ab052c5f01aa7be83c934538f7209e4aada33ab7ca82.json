@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO relations VALUES ($1, $2, 'friend') ON CONFLICT ON CONSTRAINT relations_pkey DO UPDATE SET relation = 'friend'",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "582dd4822106a598ffe8ab052c5f01aa7be83c934538f7209e4aada33ab7ca82"
+}

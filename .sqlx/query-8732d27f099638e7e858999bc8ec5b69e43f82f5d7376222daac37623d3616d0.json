@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO players(uuid, username) VALUES ($1, $2) ON CONFLICT (uuid) DO UPDATE SET username = $2",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Varchar"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "8732d27f099638e7e858999bc8ec5b69e43f82f5d7376222daac37623d3616d0"
+}

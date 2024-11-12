@@ -1,0 +1,46 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n\t\t\tSELECT\n\t\t\t\tusername,\n\t\t\t\tCASE WHEN show_registered THEN registered ELSE NULL END as registered,\n\t\t\t\tlast_online,\n\t\t\t\tshow_last_online,\n\t\t\t\tshow_activity\n\t\t\tFROM players WHERE uuid = $1\n\t\t",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "username",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 1,
+        "name": "registered",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 2,
+        "name": "last_online",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 3,
+        "name": "show_last_online",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 4,
+        "name": "show_activity",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      null,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "1c35f271c0172e8c93667f67f72cbc8c2deeb70969541ede7628afefee511301"
+}

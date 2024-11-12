@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT player_b FROM relations WHERE player_a = $1 AND relation = 'request'",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "player_b",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "cd230ab7581c5e5ce191b828ebdb2725784f213099984f9f7063e4d967821371"
+}

@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE previous_usernames SET public = $1 WHERE player = $2 AND username = $3",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Bool",
+        "Uuid",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "cc4679164717fe287c3b25e42e70fa3d80a5577e603955a454c3697c66a17c5b"
+}

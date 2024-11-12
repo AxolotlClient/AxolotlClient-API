@@ -1,0 +1,35 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT relation as \"relation: Relation\" FROM relations WHERE player_a = $1 AND player_b = $2",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "relation: Relation",
+        "type_info": {
+          "Custom": {
+            "name": "relation",
+            "kind": {
+              "Enum": [
+                "blocked",
+                "none",
+                "request",
+                "friend"
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "da1436bdacea5a3ef4cf0709d53872b9b4e4bfcf92cac7877a9007927a4bf24e"
+}

@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT valid, player FROM tokens WHERE token = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "valid",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 1,
+        "name": "player",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Bytea"
+      ]
+    },
+    "nullable": [
+      false,
+      true
+    ]
+  },
+  "hash": "1186fb0d29748f912b89be78a1d7076ad3e07648fc327ec2e1f98eb9df688bd2"
+}

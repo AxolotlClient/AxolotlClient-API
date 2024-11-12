@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "DELETE FROM previous_usernames WHERE player = $1 AND username = $2",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "0553d4fe8c0d968587f58f7d05c23dc736740d2eaa125bc05b516cd1a3374086"
+}

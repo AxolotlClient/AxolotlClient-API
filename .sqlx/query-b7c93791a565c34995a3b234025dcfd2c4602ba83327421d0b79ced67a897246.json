@@ -1,0 +1,52 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT id,\n\t\t\tname,\n\t\t    owner,\n\t\t\tpersistence,\n\t\t\tpersistence_count, \n\t\t\tpersistence_duration_seconds\n\t\t\tFROM channels WHERE id = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "owner",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 3,
+        "name": "persistence",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 4,
+        "name": "persistence_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "persistence_duration_seconds",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      true
+    ]
+  },
+  "hash": "b7c93791a565c34995a3b234025dcfd2c4602ba83327421d0b79ced67a897246"
+}

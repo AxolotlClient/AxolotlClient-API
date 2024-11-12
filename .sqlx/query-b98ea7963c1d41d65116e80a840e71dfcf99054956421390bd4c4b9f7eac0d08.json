@@ -1,0 +1,20 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT reltuples AS estimate FROM pg_class where relname = 'players'",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "estimate",
+        "type_info": "Float4"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "b98ea7963c1d41d65116e80a840e71dfcf99054956421390bd4c4b9f7eac0d08"
+}

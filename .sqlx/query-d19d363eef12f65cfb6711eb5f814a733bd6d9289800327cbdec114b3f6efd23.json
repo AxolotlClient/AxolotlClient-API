@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "DELETE FROM images WHERE (LOCALTIMESTAMP - timestamp) > '1 week'",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "d19d363eef12f65cfb6711eb5f814a733bd6d9289800327cbdec114b3f6efd23"
+}

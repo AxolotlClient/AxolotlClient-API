@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM channel_memberships WHERE $1 = ANY(channels)",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "player",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "channels",
+        "type_info": "Int8Array"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "ba7cd061582bdbfb0e43a21857328f4225c488b65e6cd6eb0500442939509e03"
+}

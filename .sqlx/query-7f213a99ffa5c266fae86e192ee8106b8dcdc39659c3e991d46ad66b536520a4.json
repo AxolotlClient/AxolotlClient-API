@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE tokens SET used = LOCALTIMESTAMP where token = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Bytea"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "7f213a99ffa5c266fae86e192ee8106b8dcdc39659c3e991d46ad66b536520a4"
+}
