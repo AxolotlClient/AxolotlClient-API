@@ -48,7 +48,7 @@ pub struct PostgreSQL {
 }
 
 #[derive(Args)]
-#[group(required = true, multiple = false)]
+#[group(required = false, multiple = false)]
 pub struct Hypixel {
 	/// Hypixel API Key
 	#[arg(long)]
