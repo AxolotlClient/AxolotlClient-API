@@ -38,7 +38,7 @@ Get global data about the backend and mod.
 - `total_players`: `number` - Total number of players known to the backend. Updated every other minute.
 - `ontline_players`: `number` - Number of currently online players. Updated every other minute.
 - `latest_version`: `string` - The latest version of the mod, does not include a game version. Cached for 1 day, fetched from modrinth.
-- `notes`: `string` - Misc notes, f.e. updates, maintenance notices, ...
+- `notes`: `string?` - Misc notes, f.e. updates, maintenance notices, ...
 
 ### `GET` `/authenticate?<username>&<server_id>`
 

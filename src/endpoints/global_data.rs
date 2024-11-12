@@ -1,19 +1,13 @@
-use std::env::var;
-
+use crate::{errors::ApiError, ApiState};
 use axum::{extract::State, Json};
 use chrono::{DateTime, Utc};
 use reqwest::{Client, StatusCode};
 use serde::Serialize;
 use serde_json::Value;
 use sqlx::{query, PgPool};
-
-use crate::{errors::ApiError, ApiState};
+use std::fs::read_to_string;
 
 const PROJECT_ID: &str = "p2rxzX0q";
-
-fn get_notes() -> String {
-	var("GLOBAL_NOTES").unwrap_or(String::new())
-}
 
 #[derive(Clone)]
 pub struct GlobalDataContainer(DateTime<Utc>, GlobalData);
@@ -40,6 +34,7 @@ pub struct GlobalData {
 	online_players: u32,
 	#[serde(flatten)]
 	modrinth_data: ModrinthData,
+	#[serde(skip_serializing_if = "String::is_empty")]
 	notes: String,
 }
 
@@ -81,6 +76,7 @@ impl Clone for ModrinthData {
 pub async fn get(
 	State(ApiState {
 		database,
+		cl_args,
 		online_users,
 		client,
 		mut global_data,
@@ -100,7 +96,9 @@ pub async fn get(
 		total_players: get_total_players(&database).await?,
 		online_players: online_users.len() as u32,
 		modrinth_data: fetch_modrinth_data(client).await?,
-		notes: get_notes(),
+		notes: (cl_args.notes_file.as_ref())
+			.map(|file| read_to_string(file).unwrap_or_else(|_| String::new()))
+			.unwrap_or_else(String::new),
 	};
 
 	let container = global_data.to_mut();

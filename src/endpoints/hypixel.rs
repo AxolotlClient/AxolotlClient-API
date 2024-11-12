@@ -1,21 +1,15 @@
-use std::env::var;
-
+use crate::{errors::ApiError, extractors::Authentication, ApiState};
 use axum::{body::Body, extract::State, response::Response, Json};
 use mini_moka::sync::{Cache, CacheBuilder};
-use reqwest::{Client, RequestBuilder, StatusCode};
+use reqwest::StatusCode;
 use serde::Deserialize;
 use serde_json::{json, Value};
+use std::fs::read_to_string;
 use std::time::Duration;
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
-use crate::{errors::ApiError, extractors::Authentication, ApiState};
-
 const HYPIXEL_API_URL: &str = "https://api.hypixel.net/v2";
-
-fn get_api_key() -> Result<String, ApiError> {
-	Ok(var("HYPIXEL_API_KEY").map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?)
-}
 
 pub struct HypixelApiProxyState {
 	cache: Cache<Uuid, Value>,
@@ -60,6 +54,7 @@ enum RequestType {
 
 pub async fn get(
 	State(ApiState {
+		cl_args,
 		hypixel_api_state,
 		client,
 		..
@@ -82,7 +77,18 @@ pub async fn get(
 					.unwrap();
 				return Err(response)?;
 			}
-			let response = get_request(client, "/player")?
+
+			let api_key = match &cl_args.hypixel.hypixel_api_key {
+				Some(api_key) => &api_key,
+				None => match &cl_args.hypixel.hypixel_api_key_file {
+					Some(file) => &read_to_string(file)?,
+					None => unreachable!("clap should ensure that a url or url file is provided"),
+				},
+			};
+
+			let response = client
+				.get(HYPIXEL_API_URL.to_string() + "/player")
+				.header("API-Key", api_key)
 				.query(&[("uuid", request_data_type.target_player.to_string())])
 				.send()
 				.await?;
@@ -160,12 +166,6 @@ pub async fn get(
 	};
 
 	Ok(Json(val))
-}
-
-fn get_request(client: Client, route: &str) -> Result<RequestBuilder, ApiError> {
-	Ok(client
-		.get(HYPIXEL_API_URL.to_string() + route)
-		.header("API-Key", get_api_key()?))
 }
 
 // Ported to rust from

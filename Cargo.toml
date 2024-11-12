@@ -12,26 +12,31 @@ dashmap = "5"
 env_logger = "0.11"
 log = "0.4"
 rand = "0.8"
+ratelimit = "0.10"
+serde_json = "1.0"
 serde_urlencoded = "0.7"
 thiserror = "1"
 
 chrono = { version = "0.4", features = ["serde"] }
+clap = { version = "4", features = ["derive"] }
 garde = { version = "0.18", features = ["derive", "regex"] }
+mini-moka = { version = "0.10", features = ["dashmap"] }
 reqwest = { version = "0.12", features = ["json"] }
 serde = { version = "1", features = ["derive"] }
 tokio = { version = "1", features = ["net", "rt-multi-thread"] }
 uuid = { version = "1", features = ["serde", "v4"] }
 
-axum = { version = "0.7", default-features = false, features = [
+[dependencies.axum]
+version = "0.7"
+default-features = false
+features = [
     "http1",
+    "http2",
     "json",
     "query",
     "tokio",
     "ws",
-] }
-serde_json = "1.0.132"
-mini-moka = { version = "0.10.3", features = ["dashmap"] }
-ratelimit = "0.10.0"
+]
 
 [dependencies.sqlx]
 version = "0.8.1"

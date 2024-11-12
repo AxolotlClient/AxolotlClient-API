@@ -1,20 +1,17 @@
-use crate::endpoints::{
-	account, brew_coffee, channel, get_authenticate,
-	global_data::{self, GlobalDataContainer},
-	image, not_found,
-	user::{self, Activity},
-};
+use crate::endpoints::global_data::{self, GlobalDataContainer};
+use crate::endpoints::user::{self, Activity};
+use crate::endpoints::{account, brew_coffee, channel, get_authenticate, image, not_found};
 use crate::gateway::gateway;
 use axum::{routing::get, routing::post, serve, Router};
+use clap::{Args, Parser};
 use dashmap::DashMap;
 use endpoints::hypixel::{self, HypixelApiProxyState};
 use env_logger::Env;
 use log::info;
 use reqwest::Client;
-use sqlx::{migrate, PgPool};
-use std::borrow::Cow;
-use std::time::Duration;
-use std::{env::var, sync::Arc};
+use sqlx::{migrate, postgres::PgConnectOptions, PgPool};
+use std::time::{Duration, Instant};
+use std::{borrow::Cow, fs::read_to_string, path::PathBuf, str::FromStr, sync::Arc};
 use tokio::sync::mpsc::UnboundedSender;
 use tokio::time::{interval, MissedTickBehavior};
 use uuid::Uuid;
@@ -25,9 +22,47 @@ mod extractors;
 mod gateway;
 mod id;
 
+#[derive(Parser)]
+#[command(version)]
+pub struct ClArgs {
+	#[group(flatten)]
+	pub postgres: PostgreSQL,
+
+	#[group(flatten)]
+	pub hypixel: Hypixel,
+
+	#[arg(long)]
+	pub notes_file: Option<PathBuf>,
+}
+
+#[derive(Args)]
+#[group(required = true, multiple = false)]
+pub struct PostgreSQL {
+	/// Postgres Connection Url, see: <https://docs.rs/sqlx/latest/sqlx/postgres/struct.PgConnectOptions.html>
+	#[arg(long)]
+	pub postgres_url: Option<PgConnectOptions>,
+
+	/// File containing a Postgres Connection Url, see: <https://docs.rs/sqlx/latest/sqlx/postgres/struct.PgConnectOptions.html>
+	#[arg(long)]
+	pub postgres_url_file: Option<PathBuf>,
+}
+
+#[derive(Args)]
+#[group(required = true, multiple = false)]
+pub struct Hypixel {
+	/// Hypixel API Key
+	#[arg(long)]
+	pub hypixel_api_key: Option<String>,
+
+	/// File containing a Hypixel API Key
+	#[arg(long)]
+	pub hypixel_api_key_file: Option<PathBuf>,
+}
+
 #[derive(Clone)]
 pub struct ApiState {
 	pub database: PgPool,
+	pub cl_args: Arc<ClArgs>,
 	pub client: Client,
 	pub online_users: Arc<DashMap<Uuid, Option<Activity>>>,
 	pub socket_sender: Arc<DashMap<Uuid, UnboundedSender<String>>>,
@@ -37,16 +72,24 @@ pub struct ApiState {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+	let start_time = Instant::now();
+
+	let cl_args = Arc::new(ClArgs::parse());
+
 	env_logger::init_from_env(Env::default().default_filter_or("info"));
 
-	info!("Starting AxolotlClient-Api... ({})", env!("CARGO_PKG_VERSION"));
+	info!("AxolotlClient-Api v{}", env!("CARGO_PKG_VERSION"));
 
 	let database = {
-		let database_url = match var("DATABASE_URL") {
-			Ok(url) => url,
-			Err(e) => panic!("Failed to read database url: {}", e),
+		let postgres_url = match &cl_args.postgres.postgres_url {
+			Some(postgres_url) => postgres_url.clone(),
+			None => match &cl_args.postgres.postgres_url_file {
+				Some(file) => PgConnectOptions::from_str(&read_to_string(file)?)?,
+				None => unreachable!("clap should ensure that a url or url file is provided"),
+			},
 		};
-		PgPool::connect(&database_url).await?
+
+		PgPool::connect_with(postgres_url.application_name("axolotl_client-api")).await?
 	};
 
 	migrate!().run(&database).await?;
@@ -88,6 +131,7 @@ async fn main() -> anyhow::Result<()> {
 		.fallback(not_found)
 		.with_state(ApiState {
 			database,
+			cl_args,
 			client: Client::builder()
 				.user_agent(concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION")))
 				.build()?,
@@ -98,6 +142,9 @@ async fn main() -> anyhow::Result<()> {
 		});
 
 	let listener = tokio::net::TcpListener::bind("[::]:8000").await?;
+
+	info!("Ready {:.0?}", Instant::now() - start_time);
+
 	serve(listener, router).await?;
 	Ok(())
 }
