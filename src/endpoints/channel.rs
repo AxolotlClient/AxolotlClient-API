@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use crate::{errors::ApiError, extractors::Authentication, id::Id, ApiState};
 use axum::{
 	extract::{Path, Query, State},
@@ -11,6 +9,7 @@ use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use sqlx::{query, PgPool};
+use std::str::FromStr;
 use uuid::Uuid;
 
 #[derive(Deserialize, Serialize)]
@@ -221,6 +220,8 @@ pub async fn patch(
 	Path(channel_id): Path<Id>,
 	Json(value): Json<Value>,
 ) -> Result<StatusCode, ApiError> {
+	let mut transaction = database.begin().await?;
+
 	let channel = query!(
 		r#"SELECT id,
 			name,
@@ -231,7 +232,7 @@ pub async fn patch(
 			FROM channels WHERE id = $1"#,
 		channel_id as _
 	)
-	.fetch_optional(&database)
+	.fetch_optional(&mut *transaction)
 	.await?
 	.ok_or(StatusCode::BAD_REQUEST)?;
 
@@ -244,7 +245,7 @@ pub async fn patch(
 			let mut name = channel.name;
 			let mut participants: Vec<Uuid> =
 				query!("SELECT * FROM channel_memberships WHERE $1 = ANY(channels)", channel_id as _)
-					.fetch_all(&database)
+					.fetch_all(&mut *transaction)
 					.await?
 					.iter()
 					.map(|rec| rec.player)
@@ -281,8 +282,22 @@ pub async fn patch(
 				persistence_duration_seconds,
 				channel_id as _
 			)
-			.execute(&database)
+			.execute(&mut *transaction)
 			.await?;
+
+			// Tried to use batch insert via UNNEST here, however Postgres was not cooperating.
+			// Given that this isn't likely to be more then a few players, the cost here is negligible for the time being.
+			for player in participants {
+				query!(
+					"INSERT INTO channel_memberships(player, channels) VALUES ($1, ARRAY [$2::bigint])",
+					player,
+					channel_id as _
+				)
+				.execute(&mut *transaction)
+				.await?;
+			}
+
+			transaction.commit().await?;
 			return Ok(StatusCode::NO_CONTENT);
 		}
 	}
