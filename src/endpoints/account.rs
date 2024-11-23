@@ -5,6 +5,7 @@ use axum::{extract::Path, extract::Query, extract::State, Json};
 use chrono::{DateTime, Utc};
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
+use serde_json::json;
 use sqlx::{query, query_as, PgPool};
 use uuid::Uuid;
 
@@ -262,10 +263,37 @@ pub async fn delete_username(
 }
 
 pub async fn post_activity(
-	State(ApiState { online_users, .. }): State<ApiState>,
+	State(ApiState {
+		online_users,
+		database,
+		socket_sender,
+		..
+	}): State<ApiState>,
 	Authentication(uuid): Authentication,
 	Json(activity): Json<Activity>,
 ) -> Result<StatusCode, ApiError> {
+	let friends = query!("SELECT player_b FROM relations WHERE relation = 'friend' AND player_a = $1", &uuid)
+		.fetch_all(&database)
+		.await?;
+
+	for ele in friends {
+		if socket_sender.contains_key(&ele.player_b) {
+			let socket = socket_sender
+				.get(&ele.player_b)
+				.ok_or(StatusCode::INTERNAL_SERVER_ERROR)?;
+			socket
+				.send(
+					serde_json::to_string(&json!({
+						"target": "activity_update",
+						"user": &uuid,
+						"activity": activity
+					}))
+					.unwrap(),
+				)
+				.unwrap();
+		}
+	}
+
 	online_users.insert(uuid, Some(activity));
 
 	Ok(StatusCode::OK)

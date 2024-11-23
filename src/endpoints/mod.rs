@@ -85,17 +85,19 @@ pub async fn get_authenticate(
 
 	let mut transaction = database.begin().await?;
 
-	let banned = query!("SELECT banned FROM players WHERE uuid = $1", &user.uuid)
-		.fetch_one(&mut *transaction)
+	let banned = query_scalar!("SELECT banned FROM players WHERE uuid = $1", &user.uuid)
+		.fetch_optional(&mut *transaction)
 		.await?;
-	if banned.banned {
-		// User is banned, revoke all tokens
-		query!("UPDATE tokens SET revoked = true WHERE player = $1", user.uuid)
-			.execute(&mut *transaction)
-			.await?;
+	if let Some(val) = banned {
+		if val {
+			// User is banned, revoke all tokens
+			query!("UPDATE tokens SET revoked = true WHERE player = $1", user.uuid)
+				.execute(&mut *transaction)
+				.await?;
 
-		transaction.commit().await?;
-		return Err(StatusCode::FORBIDDEN)?;
+			transaction.commit().await?;
+			return Err(StatusCode::FORBIDDEN)?;
+		}
 	}
 
 	let mut usernames_to_update = vec![user.clone()];

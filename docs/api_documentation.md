@@ -571,6 +571,10 @@ friend requests.
     - `sender`: `uuid` - The uuid of the sender
     - `sender_name`: `string` - The display name of the sender
     - `content`: `string` - The message content
+- `activity_update`
+  - body fields:
+    - `user`: `uuid` - The user whose status has changed
+    - `activity`: `Activity` - The new activity (as defined previously)
 
 ### Closing Reasons
 

@@ -207,9 +207,17 @@ pub async fn post(
 	.await?;
 
 	for uuid in participants {
-		query!("UPDATE channel_memberships SET channels = ARRAY_APPEND(channels, $2) WHERE player = $1", uuid, id as _)
-			.execute(&mut *transaction)
-			.await?;
+		query!(
+			r#"INSERT INTO channel_memberships(player, channels)
+		 	VALUES ($1, ARRAY [$2::bigint]) 
+			ON CONFLICT (player) DO UPDATE 
+		 	SET channels = ARRAY_APPEND(channel_memberships.channels, $2) 
+		 	WHERE channel_memberships.player = $1"#,
+			uuid,
+			id as _
+		)
+		.execute(&mut *transaction)
+		.await?;
 	}
 
 	transaction.commit().await?;
@@ -286,7 +294,11 @@ pub async fn patch(
 			// Given that this isn't likely to be more then a few players, the cost here is negligible for the time being.
 			for player in participants {
 				query!(
-					"UPDATE channel_memberships SET channels = array_append(channels, $2) WHERE player = $1",
+					r#"INSERT INTO channel_memberships(player, channels)
+					 VALUES ($1, ARRAY [$2::bigint]) 
+					 ON CONFLICT (player) DO UPDATE 
+					 SET channels = ARRAY_APPEND(channel_memberships.channels, $2) 
+					 WHERE channel_memberships.player = $1"#,
 					player,
 					channel_id as _
 				)
@@ -417,13 +429,12 @@ pub async fn remove_user(
 	Ok(StatusCode::BAD_REQUEST)
 }
 
-pub async fn report_message(
-	State(ApiState { database, .. }): State<ApiState>,
-	Authentication(uuid): Authentication,
-	Path(message_id): Path<Id>,
+pub async fn report_message(//State(ApiState { database, .. }): State<ApiState>,
+	//Authentication(uuid): Authentication,
+	//Path(message_id): Path<Id>,
 ) -> Result<StatusCode, ApiError> {
 	todo!("Store reports somewhere and notify us of them!");
-	Ok(StatusCode::BAD_REQUEST)
+	//Ok(StatusCode::BAD_REQUEST)
 }
 
 #[derive(Serialize)]
