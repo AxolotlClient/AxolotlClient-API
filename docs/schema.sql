@@ -28,7 +28,10 @@ CREATE TABLE players (
 	                 DEFAULT true,
 	show_activity    BOOLEAN
 	                 NOT NULL
-	                 DEFAULT true
+	                 DEFAULT true,
+	banned			 BOOLEAN
+					 NOT NULL
+					 DEFAULT false
 );
 
 CREATE TABLE previous_usernames (

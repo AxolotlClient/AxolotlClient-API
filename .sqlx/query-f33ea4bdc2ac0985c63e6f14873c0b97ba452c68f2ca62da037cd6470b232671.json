@@ -1,30 +1,35 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT channel_id, sender, sender_name, content, send_time FROM messages WHERE channel_id = $1 AND send_time < $2 LIMIT 50",
+  "query": "SELECT id, channel_id, sender, sender_name, content, send_time FROM messages WHERE channel_id = $1 AND send_time < $2 LIMIT 50",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
-        "name": "channel_id",
+        "name": "id",
         "type_info": "Int8"
       },
       {
         "ordinal": 1,
+        "name": "channel_id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 2,
         "name": "sender",
         "type_info": "Uuid"
       },
       {
-        "ordinal": 2,
+        "ordinal": 3,
         "name": "sender_name",
         "type_info": "Varchar"
       },
       {
-        "ordinal": 3,
+        "ordinal": 4,
         "name": "content",
         "type_info": "Varchar"
       },
       {
-        "ordinal": 4,
+        "ordinal": 5,
         "name": "send_time",
         "type_info": "Timestamp"
       }
@@ -40,8 +45,9 @@
       false,
       false,
       false,
+      false,
       false
     ]
   },
-  "hash": "ed8521787e194e9bf25e543054839ac9fea6ea2133503fcaa7cbd23fdd4b73e1"
+  "hash": "f33ea4bdc2ac0985c63e6f14873c0b97ba452c68f2ca62da037cd6470b232671"
 }

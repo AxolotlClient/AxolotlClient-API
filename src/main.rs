@@ -122,6 +122,7 @@ async fn main() -> anyhow::Result<()> {
 				.delete(channel::delete),
 		)
 		.route("/channel/:id/messages", get(channel::get_messages))
+		.route("/channel/:id/remove", post(channel::remove_user))
 		.route("/account", get(account::get).delete(account::delete))
 		.route("/account/activity", post(account::post_activity))
 		.route("/account/data", get(account::get_data))
@@ -133,6 +134,7 @@ async fn main() -> anyhow::Result<()> {
 		.route("/image/:id", get(image::get).post(image::post))
 		.route("/image/:id/raw", get(image::get_raw))
 		.route("/hypixel", get(hypixel::get))
+		.route("/report/:message", post(channel::report_message))
 		.route("/brew_coffee", get(brew_coffee).post(brew_coffee))
 		.fallback(not_found)
 		.with_state(ApiState {

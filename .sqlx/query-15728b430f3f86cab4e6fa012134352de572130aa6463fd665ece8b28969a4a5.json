@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "DELETE FROM tokens WHERE player = $1 AND expired = true",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "15728b430f3f86cab4e6fa012134352de572130aa6463fd665ece8b28969a4a5"
+}

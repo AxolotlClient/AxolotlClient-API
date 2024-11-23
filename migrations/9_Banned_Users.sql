@@ -1,0 +1,1 @@
+ALTER TABLE players ADD banned BOOLEAN NOT NULL DEFAULT false;

@@ -186,6 +186,7 @@ pub async fn post(
 		.map(|duration| duration.num_seconds());
 	let participants = channel_data.participants;
 
+	let mut transaction = database.begin().await?;
 	query!(
 		r#"INSERT INTO channels(
 			id,
@@ -202,14 +203,16 @@ pub async fn post(
 		persistence_count.map(|c| *c as i32),
 		persistence_duration_seconds
 	)
-	.execute(&database)
+	.execute(&mut *transaction)
 	.await?;
 
 	for uuid in participants {
 		query!("UPDATE channel_memberships SET channels = ARRAY_APPEND(channels, $2) WHERE player = $1", uuid, id as _)
-			.execute(&database)
+			.execute(&mut *transaction)
 			.await?;
 	}
+
+	transaction.commit().await?;
 
 	Ok(id.to_string())
 }
@@ -243,13 +246,7 @@ pub async fn patch(
 			channel.persistence_duration_seconds.map(TimeDelta::seconds),
 		) {
 			let mut name = channel.name;
-			let mut participants: Vec<Uuid> =
-				query!("SELECT * FROM channel_memberships WHERE $1 = ANY(channels)", channel_id as _)
-					.fetch_all(&mut *transaction)
-					.await?
-					.iter()
-					.map(|rec| rec.player)
-					.collect();
+			let mut participants: Vec<Uuid> = Vec::new();
 			if let Some(val) = value.get("name") {
 				name = val.as_str().ok_or(StatusCode::BAD_REQUEST)?.to_string()
 			}
@@ -289,7 +286,7 @@ pub async fn patch(
 			// Given that this isn't likely to be more then a few players, the cost here is negligible for the time being.
 			for player in participants {
 				query!(
-					"INSERT INTO channel_memberships(player, channels) VALUES ($1, ARRAY [$2::bigint])",
+					"UPDATE channel_memberships SET channels = array_append(channels, $2) WHERE player = $1",
 					player,
 					channel_id as _
 				)
@@ -315,14 +312,15 @@ pub async fn post_channel(
 	Authentication(uuid): Authentication,
 	Path(channel_id): Path<Id>,
 	Json(PostMessage { content, display_name }): Json<PostMessage>,
-) -> Result<StatusCode, ApiError> {
+) -> Result<String, ApiError> {
 	let channel = get_channel(&database, &uuid, channel_id).await?;
 
 	let mut transaction = database.begin().await?;
 
+	let id = Id::new();
 	query!(
 		"INSERT INTO messages (id, channel_id, sender, sender_name, content) VALUES ($1, $2, $3, $4, $5)",
-		Id::new() as _,
+		&id as _,
 		&channel.id as _,
 		uuid,
 		display_name,
@@ -339,6 +337,7 @@ pub async fn post_channel(
 	let message = serde_json::to_string(&json!({
 		"target": "chat_message",
 		"channel": &channel.id,
+		"id": &id,
 		"sender": &uuid,
 		"sender_name": display_name,
 		"content": content
@@ -363,7 +362,7 @@ pub async fn post_channel(
 				.unwrap();
 		}
 	}
-	Ok(StatusCode::NO_CONTENT)
+	Ok(id.to_string())
 }
 
 pub async fn get_messages(
@@ -375,7 +374,7 @@ pub async fn get_messages(
 	let channel = get_channel(&database, &uuid, channel_id).await?;
 
 	let records = query!(
-		"SELECT channel_id, sender, sender_name, content, send_time FROM messages WHERE channel_id = $1 AND send_time < $2 LIMIT 50",
+		"SELECT id, channel_id, sender, sender_name, content, send_time FROM messages WHERE channel_id = $1 AND send_time < $2 LIMIT 50",
 		&channel.id as _,
 		before.unwrap_or(Utc::now()) as _
 	)
@@ -385,6 +384,7 @@ pub async fn get_messages(
 	let mut messages: Vec<Message> = records
 		.iter()
 		.map(|m| Message {
+			id: m.id as u64,
 			channel_id: m.channel_id as u64,
 			sender: m.sender,
 			sender_name: m.sender_name.clone(),
@@ -397,8 +397,38 @@ pub async fn get_messages(
 	Ok(Json(messages))
 }
 
+pub async fn remove_user(
+	State(ApiState { database, .. }): State<ApiState>,
+	Authentication(owner): Authentication,
+	Path(channel_id): Path<Id>,
+	Query(uuid): Query<Uuid>,
+) -> Result<StatusCode, ApiError> {
+	let channel = get_channel(&database, &uuid, channel_id).await?;
+	if channel.channel_data.owner == owner {
+		query!(
+			"UPDATE channel_memberships SET channels = ARRAY_REMOVE(channels, $1) WHERE player = $2",
+			&channel.id as _,
+			uuid
+		)
+		.execute(&database)
+		.await?;
+		return Ok(StatusCode::OK);
+	}
+	Ok(StatusCode::BAD_REQUEST)
+}
+
+pub async fn report_message(
+	State(ApiState { database, .. }): State<ApiState>,
+	Authentication(uuid): Authentication,
+	Path(message_id): Path<Id>,
+) -> Result<StatusCode, ApiError> {
+	todo!("Store reports somewhere and notify us of them!");
+	Ok(StatusCode::BAD_REQUEST)
+}
+
 #[derive(Serialize)]
 pub struct Message {
+	id: u64,
 	channel_id: u64,
 	sender: Uuid,
 	sender_name: String,

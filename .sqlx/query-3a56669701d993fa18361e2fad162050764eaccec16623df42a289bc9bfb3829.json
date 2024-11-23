@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "DELETE FROM tokens WHERE player = $1",
+  "query": "UPDATE tokens SET revoked = true WHERE player = $1",
   "describe": {
     "columns": [],
     "parameters": {
@@ -10,5 +10,5 @@
     },
     "nullable": []
   },
-  "hash": "de8e08b67214c65e9201d03c0d7baa289c78813f82dfc978ab9b80617eb25a71"
+  "hash": "3a56669701d993fa18361e2fad162050764eaccec16623df42a289bc9bfb3829"
 }

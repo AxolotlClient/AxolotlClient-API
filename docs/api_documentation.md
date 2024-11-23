@@ -244,7 +244,7 @@ Send a message to a channel
 
 #### Response
 
-`204` No Content
+The id of the new message, in plain text
 
 #### Errors
 
@@ -289,6 +289,7 @@ Get up to 50 messages from a channel.
 
 ##### Message
 
+- `id`: `number` - The message id
 - `channel_id`: `number` - The channel id
 - `sender`: `uuid` - The sender's uuid
 - `sender_name`: `string` - The sender's display name
@@ -300,6 +301,28 @@ Get up to 50 messages from a channel.
 - `400` Bad request:
   - The channel does not exist
   - The authenticated user does not participate in or own the given channel
+
+### `POST` `/channel/<id>/remove?<user>` [Authenticated](#Errors)
+
+Remove (kick) a user from a channel.
+
+#### Path Fields
+
+- `id` - channel id
+
+#### Query Fields
+
+- `user` - the uuid of the user to remove
+
+#### Response
+
+`200` Ok
+
+#### Errors
+
+- `400` Bad request:
+  - The channel does not exists
+  - The authenticated user does not own the specified channel
 
 ### `GET` `/account` [Authenticated](#Errors)
 
@@ -489,6 +512,18 @@ Response varies for each `request_type`:
 - `wins_bedwars`: `number`
 - `winstreak`: `number`
 
+### `POST` `/report/<message>` [Authenticated](#Errors)
+
+Report a message.
+
+#### Path Fields
+
+- `message` - The id of the message to report
+
+#### Response
+
+`200` Ok
+
 ### `GET` `POST` `/brew_coffee`
 
 RFC 2324 joke. Serves no purpose.
@@ -532,6 +567,7 @@ friend requests.
 - `chat_message`
   - body fields:
     - `channel`: `number` - channel id
+    - `id`: `number` - message id
     - `sender`: `uuid` - The uuid of the sender
     - `sender_name`: `string` - The display name of the sender
     - `content`: `string` - The message content
