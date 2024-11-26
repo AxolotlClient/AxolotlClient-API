@@ -244,7 +244,8 @@ pub async fn post(
 					serde_json::to_string(&json!({
 						"target": "channel_invite",
 						"channel": &id,
-						"name": &channel_data.name
+						"channel_name": &channel_data.name,
+						"from": &channel_data.owner
 					}))
 					.unwrap(),
 				);
@@ -357,12 +358,13 @@ pub async fn patch(
 					)
 					.execute(&mut *transaction)
 					.await?;
-					if let Some(socket) = socket_sender.get(&uuid) {
+					if let Some(socket) = socket_sender.get(&player) {
 						let _ = socket.send(
 							serde_json::to_string(&json!({
 								"target": "channel_invite",
 								"channel": &channel_id,
-								"name": name.clone()
+								"channel_name": name.clone(),
+								"from": &channel.owner
 							}))
 							.unwrap(),
 						);

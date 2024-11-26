@@ -1,12 +1,17 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT channel FROM channel_invites WHERE player = $1",
+  "query": "SELECT channel, sender FROM channel_invites WHERE player = $1",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
         "name": "channel",
         "type_info": "Int8"
+      },
+      {
+        "ordinal": 1,
+        "name": "sender",
+        "type_info": "Uuid"
       }
     ],
     "parameters": {
@@ -15,8 +20,9 @@
       ]
     },
     "nullable": [
+      false,
       false
     ]
   },
-  "hash": "1b07355a3e2574fe1107d3e27e645cc411277bb96a7930527970e59ec492e942"
+  "hash": "c55a6bb09dcdc4011669aaf90126adc2e37e756ea1e15af873a2dea244d4e86e"
 }

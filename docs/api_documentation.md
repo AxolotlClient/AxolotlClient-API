@@ -336,7 +336,8 @@ Get channel invites for the current user
 ##### Invite
 
 - `id`: `number` - The channel id
-- `name`: `string` - The name of the channel
+- `channel_name`: `string` - The name of the channel
+- `from`: `uuid` - The user who sent the invite
 
 ### `POST` `/channels/invites?<id>&<accept>` [Authenticated](#Errors)
 
@@ -605,11 +606,13 @@ friend requests.
 - `channel_invite`
   - body fields:
     - `channel`: `number` - channel id
-    - `name`: `string` - channel name
+    - `channel_name`: `string` - channel name
+    - `from`: `uuid` - The sender of the invite
 - `channel_invite_reaction`
   - body fields:
     - `channel`: `number` - channel id
-    - `player`: `string` - The player who accepted or denied the channel invite
+    - `channel_name`: `string` - The channel name
+    - `player`: `uuid` - The player who accepted or denied the channel invite
     - `accepted`: `boolean` - Whether the invite was accepted
 
 ### Closing Reasons

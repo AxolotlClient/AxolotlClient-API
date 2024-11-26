@@ -302,7 +302,8 @@ pub async fn post_activity(
 #[derive(Serialize)]
 pub struct ChannelInvite {
 	id: u64,
-	name: String,
+	channel_name: String,
+	from: Uuid,
 }
 
 pub async fn get_channel_invites(
@@ -310,7 +311,7 @@ pub async fn get_channel_invites(
 	Authentication(uuid): Authentication,
 ) -> Result<Json<Vec<ChannelInvite>>, ApiError> {
 	let mut transaction = database.begin().await?;
-	let channels = query!("SELECT channel FROM channel_invites WHERE player = $1", uuid)
+	let channels = query!("SELECT channel, sender FROM channel_invites WHERE player = $1", uuid)
 		.fetch_all(&mut *transaction)
 		.await?;
 
@@ -321,13 +322,20 @@ pub async fn get_channel_invites(
 			.await?;
 		invites.push(ChannelInvite {
 			id: r.channel as u64,
-			name: c_name.name,
+			channel_name: c_name.name,
+			from: r.sender,
 		})
 	}
 
 	transaction.commit().await?;
 
 	Ok(Json(invites))
+}
+
+#[derive(Deserialize)]
+pub struct QueryChannelInvite {
+	id: Id,
+	accept: bool,
 }
 
 pub async fn post_channel_invite(
@@ -337,12 +345,14 @@ pub async fn post_channel_invite(
 		..
 	}): State<ApiState>,
 	Authentication(uuid): Authentication,
-	Query(id): Query<Id>,
-	Query(accept): Query<bool>,
+	Query(QueryChannelInvite { id, accept }): Query<QueryChannelInvite>,
 ) -> Result<StatusCode, ApiError> {
 	let mut transaction = database.begin().await?;
 
 	let sender = query!("SELECT sender FROM channel_invites WHERE player = $1 AND channel = $2", &uuid, &id as _)
+		.fetch_one(&mut *transaction)
+		.await?;
+	let name = query!("SELECT name FROM channels WHERE id = $1", &id as _)
 		.fetch_one(&mut *transaction)
 		.await?;
 	query!("DELETE FROM channel_invites WHERE player = $1 AND channel = $2", &uuid, &id as _)
@@ -363,19 +373,20 @@ pub async fn post_channel_invite(
 		.await?;
 	}
 
+	transaction.commit().await?;
+
 	if let Some(socket) = socket_sender.get(&sender.sender) {
 		let _ = socket.send(
 			serde_json::to_string(&json!({
 				"target": "channel_invite_reaction",
 				"channel": &id,
+				"channel_name": name.name,
 				"player": &uuid,
 				"accepted": &accept
 			}))
 			.unwrap(),
 		);
 	}
-
-	transaction.commit().await?;
 
 	Ok(StatusCode::OK)
 }
