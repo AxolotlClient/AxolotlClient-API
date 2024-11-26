@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{errors::ApiError, extractors::Authentication, ApiState};
+use crate::{errors::ApiError, extractors::Authentication, id::Id, ApiState};
 use axum::{extract::Path, extract::Query, extract::State, Json};
 use chrono::{DateTime, Utc};
 use reqwest::StatusCode;
@@ -295,6 +295,87 @@ pub async fn post_activity(
 	}
 
 	online_users.insert(uuid, Some(activity));
+
+	Ok(StatusCode::OK)
+}
+
+#[derive(Serialize)]
+pub struct ChannelInvite {
+	id: u64,
+	name: String,
+}
+
+pub async fn get_channel_invites(
+	State(ApiState { database, .. }): State<ApiState>,
+	Authentication(uuid): Authentication,
+) -> Result<Json<Vec<ChannelInvite>>, ApiError> {
+	let mut transaction = database.begin().await?;
+	let channels = query!("SELECT channel FROM channel_invites WHERE player = $1", uuid)
+		.fetch_all(&mut *transaction)
+		.await?;
+
+	let mut invites = Vec::new();
+	for r in channels {
+		let c_name = query!("SELECT name FROM channels WHERE id = $1", r.channel as _)
+			.fetch_one(&mut *transaction)
+			.await?;
+		invites.push(ChannelInvite {
+			id: r.channel as u64,
+			name: c_name.name,
+		})
+	}
+
+	transaction.commit().await?;
+
+	Ok(Json(invites))
+}
+
+pub async fn post_channel_invite(
+	State(ApiState {
+		database,
+		socket_sender,
+		..
+	}): State<ApiState>,
+	Authentication(uuid): Authentication,
+	Query(id): Query<Id>,
+	Query(accept): Query<bool>,
+) -> Result<StatusCode, ApiError> {
+	let mut transaction = database.begin().await?;
+
+	let sender = query!("SELECT sender FROM channel_invites WHERE player = $1 AND channel = $2", &uuid, &id as _)
+		.fetch_one(&mut *transaction)
+		.await?;
+	query!("DELETE FROM channel_invites WHERE player = $1 AND channel = $2", &uuid, &id as _)
+		.execute(&mut *transaction)
+		.await?;
+
+	if accept {
+		query!(
+			r#"INSERT INTO channel_memberships(player, channels)
+			 VALUES ($1, ARRAY [$2::bigint]) 
+			 ON CONFLICT (player) DO UPDATE 
+			 SET channels = ARRAY_APPEND(channel_memberships.channels, $2) 
+			 WHERE channel_memberships.player = $1"#,
+			uuid,
+			&id as _
+		)
+		.execute(&mut *transaction)
+		.await?;
+	}
+
+	if let Some(socket) = socket_sender.get(&sender.sender) {
+		let _ = socket.send(
+			serde_json::to_string(&json!({
+				"target": "channel_invite_reaction",
+				"channel": &id,
+				"player": &uuid,
+				"accepted": &accept
+			}))
+			.unwrap(),
+		);
+	}
+
+	transaction.commit().await?;
 
 	Ok(StatusCode::OK)
 }

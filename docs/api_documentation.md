@@ -181,7 +181,7 @@ Get a list of all channel ids the authenticated user participates in (owner + pa
 
 - `name`: `string` - length between 1 and 32, not unique
 - `persistence`: `Persistence`
-- `participants`: `[uuid]` - List of UUIDs of other users that should participate in the newly created channel
+- `participants`: `[uuid]` - List of UUIDs of other users that should participate in the newly created channel. Friends of the authenticated user are added immediately, otherwise a channel invite is sent.
 
 ##### Persistence
 
@@ -216,7 +216,8 @@ Update channel settings. Fields that shouldn't be changed can be left out.
 
 - `name`: `string?` - length between 1 and 32, not unique. Updated value, if desired to be changed
 - `persistence`: `Persistence?` - Updated persistence of the channel
-- `participants`: `[uuid]?` - List of UUIDs of other users that should be added to the channel
+- `participants`: `[uuid]?` - List of UUIDs of other users that should be added to the channel.
+  Friends of the authenticated user are added immediately, otherwise a channel invite is sent.
 
 #### Response
 
@@ -323,6 +324,32 @@ Remove (kick) a user from a channel.
 - `400` Bad request:
   - The channel does not exists
   - The authenticated user does not own the specified channel
+
+### `GET` `/channels/invites` [Authenticated](#Errors)
+
+Get channel invites for the current user
+
+#### Response
+
+`[Invite]` - The list of channel invites
+
+##### Invite
+
+- `id`: `number` - The channel id
+- `name`: `string` - The name of the channel
+
+### `POST` `/channels/invites?<id>&<accept>` [Authenticated](#Errors)
+
+Accept/Ignore a channel invite
+
+#### Query Fields
+
+- `id` - The channel id
+- `accept` - Whether to accept the channel invite, if false it is just ignored instead
+
+#### Response
+
+`200` Ok
 
 ### `GET` `/account` [Authenticated](#Errors)
 
@@ -575,6 +602,15 @@ friend requests.
   - body fields:
     - `user`: `uuid` - The user whose status has changed
     - `activity`: `Activity` - The new activity (as defined previously)
+- `channel_invite`
+  - body fields:
+    - `channel`: `number` - channel id
+    - `name`: `string` - channel name
+- `channel_invite_reaction`
+  - body fields:
+    - `channel`: `number` - channel id
+    - `player`: `string` - The player who accepted or denied the channel invite
+    - `accepted`: `boolean` - Whether the invite was accepted
 
 ### Closing Reasons
 

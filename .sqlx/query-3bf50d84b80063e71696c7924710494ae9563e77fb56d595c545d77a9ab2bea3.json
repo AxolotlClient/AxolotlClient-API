@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO channel_memberships(player, channels)\n\t\t\t VALUES ($1, ARRAY [$2::bigint]) \n\t\t\t ON CONFLICT (player) DO UPDATE \n\t\t\t SET channels = ARRAY_APPEND(channel_memberships.channels, $2) \n\t\t\t WHERE channel_memberships.player = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "3bf50d84b80063e71696c7924710494ae9563e77fb56d595c545d77a9ab2bea3"
+}
