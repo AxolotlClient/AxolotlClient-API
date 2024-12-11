@@ -96,8 +96,7 @@ CREATE TABLE channels (
 	id                           BIGINT
 	                             PRIMARY KEY,
 	name                         VARCHAR(32)
-	                             NOT NULL
-	                             UNIQUE,
+	                             NOT NULL,
 	owner                        UUID
 	                             NOT NULL,
 
