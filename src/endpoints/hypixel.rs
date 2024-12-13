@@ -1,10 +1,13 @@
+use crate::ClArgs;
 use crate::{errors::ApiError, extractors::Authentication, ApiState};
 use axum::{body::Body, extract::State, response::Response, Json};
+use chrono::Utc;
 use mini_moka::sync::{Cache, CacheBuilder};
-use reqwest::StatusCode;
+use reqwest::{Client, StatusCode};
 use serde::Deserialize;
 use serde_json::{json, Value};
 use std::fs::read_to_string;
+use std::sync::Arc;
 use std::time::Duration;
 use tokio::sync::RwLock;
 use uuid::Uuid;
@@ -66,66 +69,11 @@ pub async fn get(
 	let player_data = match hypixel_api_cache.get(&request_data_type.target_player) {
 		Some(value) => value,
 		None => {
-			let limits = &hypixel_api_state.ratelimits;
-			let mut guard = limits.try_write().map_err(|_| StatusCode::TOO_MANY_REQUESTS)?;
-
-			if guard.remaining < 2 {
-				let response: Response = Response::builder()
-					.header("RateLimit-Reset", guard.reset)
-					.status(StatusCode::TOO_MANY_REQUESTS)
-					.body(Body::empty())
-					.unwrap();
-				return Err(response)?;
-			}
-
-			let api_key = match &cl_args.hypixel.hypixel_api_key {
-				Some(api_key) => &api_key,
-				None => match &cl_args.hypixel.hypixel_api_key_file {
-					Some(file) => &read_to_string(file)?,
-					None => unreachable!("clap should ensure that a url or url file is provided"),
-				},
-			};
-
-			let response = client
-				.get(HYPIXEL_API_URL.to_string() + "/player")
-				.header("API-Key", api_key)
-				.query(&[("uuid", request_data_type.target_player.to_string())])
-				.send()
-				.await?;
-			let limit = response
-				.headers()
-				.get("RateLimit-Limit")
-				.unwrap()
-				.to_str()
-				.unwrap()
-				.parse::<u64>()
-				.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-			let remaining = response
-				.headers()
-				.get("RateLimit-Remaining")
-				.unwrap()
-				.to_str()
-				.unwrap()
-				.parse::<u64>()
-				.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-			let reset = response
-				.headers()
-				.get("RateLimit-Reset")
-				.unwrap()
-				.to_str()
-				.unwrap()
-				.parse::<u64>()
-				.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-			guard.limit = limit;
-			guard.remaining = remaining;
-			guard.reset = reset;
-
-			drop(guard);
-			response.json::<Value>().await?["player"].clone()
+			let value = fetch_data(cl_args.clone(), &hypixel_api_state.clone(), &client, &request_data_type).await?;
+			hypixel_api_cache.insert(request_data_type.target_player, value.clone());
+			value
 		}
 	};
-	hypixel_api_cache.insert(request_data_type.target_player, player_data.clone());
 	let val = match request_data_type.request_type {
 		RequestType::NetworkLevel => {
 			let mut exp = player_data["networkExp"].as_f64().unwrap_or(0f64);
@@ -166,6 +114,81 @@ pub async fn get(
 	};
 
 	Ok(Json(val))
+}
+
+async fn fetch_data(
+	cl_args: Arc<ClArgs>,
+	hypixel_api_state: &Arc<HypixelApiProxyState>,
+	client: &Client,
+	request_data_type: &RequestDataType,
+) -> Result<Value, ApiError> {
+	let limits = &hypixel_api_state.ratelimits;
+	let mut guard = limits.write().await;
+
+	if let Some(value) = hypixel_api_state.cache.get(&request_data_type.target_player) {
+		drop(guard);
+		return Ok(value);
+	}
+
+	if guard.remaining <= 2 && Utc::now().timestamp() as u64 - guard.reset > 0 {
+		guard.remaining = guard.limit;
+	}
+	if guard.remaining < 2 {
+		let response: Response = Response::builder()
+			.header("RateLimit-Reset", guard.reset)
+			.status(StatusCode::TOO_MANY_REQUESTS)
+			.body(Body::empty())
+			.unwrap();
+		drop(guard);
+		return Err(response)?;
+	}
+
+	let api_key = match &cl_args.hypixel.hypixel_api_key {
+		Some(api_key) => &api_key,
+		None => match &cl_args.hypixel.hypixel_api_key_file {
+			Some(file) => &read_to_string(file)?,
+			None => unreachable!("clap should ensure that a url or url file is provided"),
+		},
+	};
+
+	let response = client
+		.get(HYPIXEL_API_URL.to_string() + "/player")
+		.header("API-Key", api_key)
+		.query(&[("uuid", request_data_type.target_player.to_string())])
+		.send()
+		.await?;
+	let limit = response
+		.headers()
+		.get("RateLimit-Limit")
+		.unwrap()
+		.to_str()
+		.unwrap()
+		.parse::<u64>()
+		.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+	let remaining = response
+		.headers()
+		.get("RateLimit-Remaining")
+		.unwrap()
+		.to_str()
+		.unwrap()
+		.parse::<u64>()
+		.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+	let reset = response
+		.headers()
+		.get("RateLimit-Reset")
+		.unwrap()
+		.to_str()
+		.unwrap()
+		.parse::<u64>()
+		.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+	guard.limit = limit;
+	guard.remaining = remaining;
+	guard.reset = reset;
+
+	drop(guard);
+	let data = response.json::<Value>().await?["player"].clone();
+	Ok(data)
 }
 
 // Ported to rust from
