@@ -84,25 +84,27 @@ pub async fn get(
 	}): State<ApiState>,
 ) -> Result<Json<GlobalData>, ApiError> {
 	let delta = Utc::now().signed_duration_since(global_data.0);
-	if delta.num_days() < 1 {
-		let data = &global_data.1;
-		if delta.num_minutes() % 2 == 0 {
-			return Ok(Json(data.with_players(get_total_players(&database).await?, online_users.len() as u32)));
+	let container = global_data.to_mut();
+	let data = if delta.num_days() < 1 {
+		if delta.num_minutes() % 2 != 0 {
+			return Ok(Json(container.1.clone()));
 		}
-		return Ok(Json(data.clone()));
-	}
-
-	let data = GlobalData {
-		total_players: get_total_players(&database).await?,
-		online_players: online_users.len() as u32,
-		modrinth_data: fetch_modrinth_data(client).await?,
-		notes: (cl_args.notes_file.as_ref())
-			.map(|file| read_to_string(file).unwrap_or_else(|_| String::new()))
-			.unwrap_or_else(String::new),
+		container
+			.1
+			.with_players(get_total_players(&database).await?, online_users.len() as u32)
+	} else {
+		let new_data = GlobalData {
+			total_players: get_total_players(&database).await?,
+			online_players: online_users.len() as u32,
+			modrinth_data: fetch_modrinth_data(client).await?,
+			notes: (cl_args.notes_file.as_ref())
+				.map(|file| read_to_string(file).unwrap_or_else(|_| String::new()))
+				.unwrap_or_else(String::new),
+		};
+		container.0 = Utc::now();
+		new_data
 	};
 
-	let container = global_data.to_mut();
-	container.0 = Utc::now();
 	container.1 = data.clone();
 
 	Ok(Json(data))
