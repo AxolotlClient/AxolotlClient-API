@@ -11,8 +11,9 @@ use log::info;
 use reqwest::Client;
 use sqlx::{migrate, postgres::PgConnectOptions, PgPool};
 use std::time::{Duration, Instant};
-use std::{borrow::Cow, fs::read_to_string, path::PathBuf, str::FromStr, sync::Arc};
+use std::{fs::read_to_string, path::PathBuf, str::FromStr, sync::Arc};
 use tokio::sync::mpsc::UnboundedSender;
+use tokio::sync::RwLock;
 use tokio::time::{interval, MissedTickBehavior};
 use uuid::Uuid;
 
@@ -66,7 +67,7 @@ pub struct ApiState {
 	pub client: Client,
 	pub online_users: Arc<DashMap<Uuid, Option<Activity>>>,
 	pub socket_sender: Arc<DashMap<Uuid, UnboundedSender<String>>>,
-	pub global_data: Cow<'static, GlobalDataContainer>,
+	pub global_data: Arc<RwLock<GlobalDataContainer>>,
 	pub hypixel_api_state: Arc<HypixelApiProxyState>,
 }
 

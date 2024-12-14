@@ -10,13 +10,18 @@ use std::fs::read_to_string;
 const PROJECT_ID: &str = "p2rxzX0q";
 
 #[derive(Clone)]
-pub struct GlobalDataContainer(DateTime<Utc>, GlobalData);
+pub struct GlobalDataContainer {
+	last_full_refresh: DateTime<Utc>,
+	last_player_refresh: DateTime<Utc>,
+	data: GlobalData,
+}
 
 impl Default for GlobalDataContainer {
 	fn default() -> Self {
-		GlobalDataContainer(
-			DateTime::from_timestamp_millis(0).unwrap(),
-			GlobalData {
+		GlobalDataContainer {
+			last_full_refresh: DateTime::from_timestamp_millis(0).unwrap(),
+			last_player_refresh: DateTime::from_timestamp_millis(0).unwrap(),
+			data: GlobalData {
 				total_players: 0,
 				online_players: 0,
 				modrinth_data: ModrinthData {
@@ -24,7 +29,7 @@ impl Default for GlobalDataContainer {
 				},
 				notes: String::new(),
 			},
-		)
+		}
 	}
 }
 
@@ -79,33 +84,46 @@ pub async fn get(
 		cl_args,
 		online_users,
 		client,
-		mut global_data,
+		global_data,
 		..
 	}): State<ApiState>,
 ) -> Result<Json<GlobalData>, ApiError> {
-	let delta = Utc::now().signed_duration_since(global_data.0);
-	let container = global_data.to_mut();
-	let data = if delta.num_days() < 1 {
-		if delta.num_minutes() % 2 != 0 {
-			return Ok(Json(container.1.clone()));
-		}
-		container
-			.1
-			.with_players(get_total_players(&database).await?, online_users.len() as u32)
-	} else {
-		let new_data = GlobalData {
+	let now = Utc::now();
+	let data_container = global_data.read().await;
+	let full_refresh = now.signed_duration_since(data_container.last_full_refresh).num_days() >= 1;
+	if !full_refresh
+		&& now
+			.signed_duration_since(data_container.last_player_refresh)
+			.num_minutes()
+			< 2
+	{
+		let cloned = data_container.data.clone();
+		drop(data_container);
+		return Ok(Json(cloned));
+	}
+	let data = if full_refresh {
+		GlobalData {
 			total_players: get_total_players(&database).await?,
 			online_players: online_users.len() as u32,
 			modrinth_data: fetch_modrinth_data(client).await?,
 			notes: (cl_args.notes_file.as_ref())
 				.map(|file| read_to_string(file).unwrap_or_else(|_| String::new()))
 				.unwrap_or_else(String::new),
-		};
-		container.0 = Utc::now();
-		new_data
+		}
+	} else {
+		data_container
+			.data
+			.with_players(get_total_players(&database).await?, online_users.len() as u32)
 	};
+	drop(data_container);
 
-	container.1 = data.clone();
+	let mut container = global_data.write().await;
+	if full_refresh {
+		container.last_full_refresh = now;
+	}
+	container.last_player_refresh = now;
+	container.data = data.clone();
+	drop(container);
 
 	Ok(Json(data))
 }
