@@ -2,14 +2,15 @@ use std::collections::HashMap;
 
 use crate::{errors::ApiError, extractors::Authentication, id::Id, ApiState};
 use axum::{extract::Path, extract::Query, extract::State, Json};
-use chrono::{DateTime, Utc};
+use base64::{engine::general_purpose::STANDARD_NO_PAD, Engine};
+use chrono::{DateTime, TimeDelta, Utc};
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::{query, query_as, PgPool};
 use uuid::Uuid;
 
-use super::user::Activity;
+use super::{channel::Persistence, user::Activity};
 
 #[derive(Serialize)]
 pub struct User {
@@ -149,6 +150,10 @@ pub async fn get_requests(
 pub struct UserData {
 	user: User,
 	settings: Settings,
+	relations: HashMap<Uuid, String>,
+	channels: Vec<ChannelExport>,
+	channel_invites: Vec<ChannelInvitesExport>,
+	images: Vec<ImageExport>,
 }
 
 pub async fn get_data(
@@ -158,7 +163,26 @@ pub async fn get_data(
 	Ok(Json(UserData {
 		user: User::get(&database, &uuid).await?,
 		settings: Settings::get(&database, &uuid).await?,
+		relations: UserData::get_relations(&database, &uuid).await?,
+		channels: ChannelExport::get(&database, &uuid).await?,
+		channel_invites: ChannelInvitesExport::get(&database, &uuid).await?,
+		images: ImageExport::get(&database, &uuid).await?,
 	}))
+}
+
+impl UserData {
+	pub async fn get_relations(database: &PgPool, uuid: &Uuid) -> Result<HashMap<Uuid, String>, ApiError> {
+		let relations =
+			query!(r#"SELECT player_b, relation as "relation: String" FROM relations WHERE player_a = $1"#, uuid)
+				.fetch_all(database)
+				.await?;
+
+		let mut map: HashMap<Uuid, String> = HashMap::new();
+		for en in relations {
+			map.insert(en.player_b, en.relation);
+		}
+		return Ok(map);
+	}
 }
 
 #[derive(Serialize)]
@@ -178,6 +202,149 @@ impl Settings {
 		)
 		.fetch_one(database)
 		.await?)
+	}
+}
+
+#[derive(Serialize)]
+pub struct ChannelExport {
+	id: u64,
+	name: String,
+	settings: Option<ChannelSettingsExport>,
+	participants: Option<Vec<Uuid>>,
+	messages: Vec<MessageExport>,
+}
+
+#[derive(Serialize)]
+pub struct ChannelSettingsExport {
+	created: DateTime<Utc>,
+	last_updated: DateTime<Utc>,
+	last_message: DateTime<Utc>,
+	persistence: Persistence,
+}
+
+#[derive(Serialize)]
+pub struct MessageExport {
+	id: u64,
+	sender_name: String,
+	content: String,
+	send_time: DateTime<Utc>,
+}
+
+impl ChannelExport {
+	pub async fn get(database: &PgPool, uuid: &Uuid) -> Result<Vec<ChannelExport>, ApiError> {
+		let mut response = Vec::new();
+
+		let owned = query!("SELECT * FROM channels WHERE owner = $1", uuid)
+			.fetch_all(database)
+			.await?;
+		let participating = query!("SELECT channels FROM channel_memberships WHERE player = $1", uuid)
+			.fetch_optional(database)
+			.await?;
+
+		for en in owned {
+			response.push(ChannelExport {
+				id: en.id as u64,
+				name: en.name,
+				settings: Some(ChannelSettingsExport {
+					created: en.created.and_utc(),
+					last_updated: en.last_updated.and_utc(),
+					last_message: en.last_message.and_utc(),
+					persistence: Persistence::from(
+						en.persistence,
+						en.persistence_count.map(|i| i as u32),
+						en.persistence_duration_seconds.map(TimeDelta::seconds),
+					)
+					.unwrap(),
+				}),
+				participants: Some(
+					query!("SELECT * FROM channel_memberships WHERE $1 = ANY(channels)", &en.id)
+						.fetch_all(database)
+						.await?
+						.iter()
+						.map(|rec| rec.player)
+						.collect(),
+				),
+				messages: ChannelExport::get_messages(database, uuid, en.id).await?,
+			});
+		}
+
+		if let Some(rec) = participating {
+			for en in rec.channels {
+				response.push(ChannelExport {
+					id: en as u64,
+					settings: None,
+					participants: None,
+					name: query!("SELECT name FROM channels WHERE id = $1", en)
+						.fetch_one(database)
+						.await?
+						.name,
+					messages: ChannelExport::get_messages(database, uuid, en).await?,
+				});
+			}
+		}
+		return Ok(response);
+	}
+
+	async fn get_messages(database: &PgPool, uuid: &Uuid, channel_id: i64) -> Result<Vec<MessageExport>, ApiError> {
+		Ok(query!(
+			"SELECT id, sender_name, content, send_time FROM messages WHERE channel_id = $1 AND sender = $2",
+			channel_id,
+			uuid
+		)
+		.fetch_all(database)
+		.await?
+		.iter()
+		.map(|rec| MessageExport {
+			id: rec.id as u64,
+			sender_name: rec.sender_name.clone(),
+			content: rec.content.clone(),
+			send_time: rec.send_time.and_utc(),
+		})
+		.collect())
+	}
+}
+
+#[derive(Serialize)]
+pub struct ChannelInvitesExport {
+	channel: u64,
+	from: Uuid,
+}
+
+impl ChannelInvitesExport {
+	pub async fn get(database: &PgPool, uuid: &Uuid) -> Result<Vec<ChannelInvitesExport>, ApiError> {
+		Ok(query!("SELECT channel, sender AS from FROM channel_invites WHERE player = $1", uuid)
+			.fetch_all(database)
+			.await?
+			.iter()
+			.map(|r| ChannelInvitesExport {
+				channel: r.channel as u64,
+				from: r.from,
+			})
+			.collect())
+	}
+}
+
+#[derive(Serialize)]
+pub struct ImageExport {
+	id: u64,
+	filename: String,
+	file: String,
+	timestamp: DateTime<Utc>,
+}
+
+impl ImageExport {
+	pub async fn get(database: &PgPool, uuid: &Uuid) -> Result<Vec<ImageExport>, ApiError> {
+		Ok(query!("SELECT id, filename, file, timestamp FROM images WHERE player = $1", uuid)
+			.fetch_all(database)
+			.await?
+			.iter()
+			.map(|rec| ImageExport {
+				id: rec.id as u64,
+				filename: String::from_utf8(rec.filename.clone()).unwrap(),
+				file: STANDARD_NO_PAD.encode(rec.file.clone()),
+				timestamp: rec.timestamp.and_utc(),
+			})
+			.collect())
 	}
 }
 

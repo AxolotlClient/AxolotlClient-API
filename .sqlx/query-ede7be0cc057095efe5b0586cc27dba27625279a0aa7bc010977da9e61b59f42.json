@@ -1,0 +1,70 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT * FROM channels WHERE owner = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "owner",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 3,
+        "name": "created",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 4,
+        "name": "last_updated",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 5,
+        "name": "last_message",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 6,
+        "name": "persistence",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 7,
+        "name": "persistence_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 8,
+        "name": "persistence_duration_seconds",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true
+    ]
+  },
+  "hash": "ede7be0cc057095efe5b0586cc27dba27625279a0aa7bc010977da9e61b59f42"
+}

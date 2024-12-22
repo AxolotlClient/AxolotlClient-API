@@ -32,7 +32,7 @@ pub struct ChannelData {
 
 #[derive(Deserialize, Serialize)]
 #[serde(rename_all = "snake_case", tag = "type")]
-enum Persistence {
+pub enum Persistence {
 	/// Delete messages when the channel is deleted
 	Channel,
 	/// Delete messages X time after they are sent
@@ -75,7 +75,7 @@ impl Persistence {
 		}
 	}
 
-	fn from(id: i16, count: Option<u32>, duration: Option<Duration>) -> Option<Persistence> {
+	pub fn from(id: i16, count: Option<u32>, duration: Option<Duration>) -> Option<Persistence> {
 		match id {
 			0 => Some(Self::Channel),
 			1 => duration.map(|duration| Self::Duration { duration }),

@@ -1,0 +1,40 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT player_b, relation as \"relation: String\" FROM relations WHERE player_a = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "player_b",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "relation: String",
+        "type_info": {
+          "Custom": {
+            "name": "relation",
+            "kind": {
+              "Enum": [
+                "blocked",
+                "none",
+                "request",
+                "friend"
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "ff14da73cbdeb354526fa36462f91ce6ae88c690e1590e798172aa4d0ec0ff6c"
+}

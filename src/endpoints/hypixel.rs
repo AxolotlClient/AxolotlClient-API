@@ -1,5 +1,6 @@
 use crate::ClArgs;
 use crate::{errors::ApiError, extractors::Authentication, ApiState};
+use axum::response::IntoResponse;
 use axum::{body::Body, extract::State, response::Response, Json};
 use chrono::Utc;
 use mini_moka::sync::{Cache, CacheBuilder};
@@ -121,7 +122,7 @@ async fn fetch_data(
 	hypixel_api_state: &Arc<HypixelApiProxyState>,
 	client: &Client,
 	request_data_type: &RequestDataType,
-) -> Result<Value, ApiError> {
+) -> Result<Value, Response> {
 	let limits = &hypixel_api_state.ratelimits;
 	let mut guard = limits.write().await;
 
@@ -130,7 +131,7 @@ async fn fetch_data(
 		return Ok(value);
 	}
 
-	if guard.remaining <= 2 && Utc::now().timestamp() as u64 - guard.reset > 0 {
+	if guard.remaining <= 2 && Utc::now().timestamp() - guard.reset as i64 > 0 {
 		guard.remaining = guard.limit;
 	}
 	if guard.remaining < 2 {
@@ -140,13 +141,13 @@ async fn fetch_data(
 			.body(Body::empty())
 			.unwrap();
 		drop(guard);
-		return Err(response)?;
+		return Err(response);
 	}
 
 	let api_key = match &cl_args.hypixel.hypixel_api_key {
 		Some(api_key) => &api_key,
 		None => match &cl_args.hypixel.hypixel_api_key_file {
-			Some(file) => &read_to_string(file)?,
+			Some(file) => &read_to_string(file).map_err(|e| ApiError::from(e).into_response())?,
 			None => unreachable!("clap should ensure that a url or url file is provided"),
 		},
 	};
@@ -156,7 +157,8 @@ async fn fetch_data(
 		.header("API-Key", api_key)
 		.query(&[("uuid", request_data_type.target_player.to_string())])
 		.send()
-		.await?;
+		.await
+		.map_err(|e| ApiError::from(e).into_response())?;
 	let limit = response
 		.headers()
 		.get("RateLimit-Limit")
@@ -164,7 +166,7 @@ async fn fetch_data(
 		.to_str()
 		.unwrap()
 		.parse::<u64>()
-		.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+		.map_err(|_| ApiError::from(StatusCode::INTERNAL_SERVER_ERROR).into_response())?;
 	let remaining = response
 		.headers()
 		.get("RateLimit-Remaining")
@@ -172,7 +174,7 @@ async fn fetch_data(
 		.to_str()
 		.unwrap()
 		.parse::<u64>()
-		.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+		.map_err(|_| ApiError::from(StatusCode::INTERNAL_SERVER_ERROR).into_response())?;
 	let reset = response
 		.headers()
 		.get("RateLimit-Reset")
@@ -180,14 +182,18 @@ async fn fetch_data(
 		.to_str()
 		.unwrap()
 		.parse::<u64>()
-		.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+		.map_err(|_| ApiError::from(StatusCode::INTERNAL_SERVER_ERROR).into_response())?;
 
 	guard.limit = limit;
 	guard.remaining = remaining;
-	guard.reset = reset;
+	guard.reset = Utc::now().timestamp() as u64 + reset;
 
 	drop(guard);
-	let data = response.json::<Value>().await?["player"].clone();
+	let data = response
+		.json::<Value>()
+		.await
+		.map_err(|e| ApiError::from(e).into_response())?["player"]
+		.clone();
 	Ok(data)
 }
 

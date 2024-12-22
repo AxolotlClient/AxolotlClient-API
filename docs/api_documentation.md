@@ -375,11 +375,69 @@ Immediately and irrecoverably deletes the users account and associated data.
 
 ### `GET` `/account/data` [Authenticated](#Errors)
 
-Returns user data in a Json format. Access tokens are not included.
+Returns user data in Json format. Access tokens are not included.
 
 #### Response
 
-`204` No Content
+`200` Ok
+
+- `user`:
+  - `uuid`: `uuid`
+  - `username`: `string`
+  - `registered`: `Timestamp`
+  - `last_online`: `Timestamp?`
+  - `previous_usernames`: `[OldUsername]`
+- `settings`:
+  - `show_registered`: `boolean`
+  - `retain_usernames`: `boolean`
+  - `show_last_online`: `boolean`
+  - `show_activity`: `boolean`
+- `relations` - Map of Minecraft UUID to relation status
+- `channels`: `[Channel]`
+- `channel_invites`: `[ChannelInvite]`
+- `images`: `[Image]`
+
+##### OldUsername
+
+- `username`: `string`
+- `public`: `boolean`
+
+##### Channel
+
+- `id`: `number`
+- `name`: `string`
+- `settings`: `ChannelSettings?` - The settings of this channel, only present if this user owns this channel
+- `participants`: `[Uuid]?`, - The participants of this channel, only present if this user owns this channel
+- `messages`: `[Message]` - The messages the authenticated user has sent in this channel
+
+##### ChannelSettings
+
+- `created`: `Timestamp`
+- `last_updated`: `Timestamp`
+- `last_message`: `Timestamp`
+- `persistence` - The channel persistence (c.f. above)
+  - `type`: `string` - either: `channel`, `duration`, `count`, or `count_and_duration`
+  - `count`: `number?` - only present if type is `count` or `count_and_duration`
+  - `duration`: `number?` - seconds, only present if type is `duration` or `count_and_duration`
+
+##### Message
+
+- `id`: `number`
+- `sender_name`: `string`
+- `content`: `string`
+- `send_time`: `Timestamp`
+
+##### ChannelInvite
+
+- `channel`: `number`
+- `from`: `uuid`
+
+##### Image
+
+- `id`: `number`
+- `filename`: `string` - The original file name of the image
+- `file`: `string` - The image file, encoded with base64
+- `timestamp`: `Timestamp` - The upload timestamp
 
 ### `POST` `/account/activity` [Authenticated](#Errors)
 
