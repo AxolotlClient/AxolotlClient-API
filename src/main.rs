@@ -113,6 +113,7 @@ async fn main() -> anyhow::Result<()> {
 		.route("/authenticate", get(get_authenticate))
 		.route("/gateway", get(gateway))
 		.route("/user/:uuid", get(user::get).post(user::post))
+		.route("/user/:uuid/images", get(user::get_images))
 		.route("/channels", get(account::get_channels))
 		.route("/channels/invites", get(account::get_channel_invites).post(account::post_channel_invite))
 		.route("/channel", post(channel::post))

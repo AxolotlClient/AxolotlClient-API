@@ -139,6 +139,23 @@ Additionally, the relation will be set to friend if the authenticated user is tr
   - If the authenticated user is trying to send a friend request to a user who has blocked them
 - `404` Not Found - If the queried user isn't known to the database
 
+### `GET` `/user/<uuid>/images` [Authenticated](#Errors)
+
+Get the ids of images a user has uploaded.
+
+#### Path Fields
+
+- `uuid`: `Uuid`
+
+#### Response
+
+- `[number]` - image ids
+
+#### Errors
+
+- `403` Forbidden:
+  - The authenticated user isn't friends with the queried user
+
 ### `GET` `/channels` [Authenticated](#Errors)
 
 Get a list of all channel ids the authenticated user participates in (owner + participant)

@@ -340,3 +340,37 @@ pub async fn post(
 
 	Ok(StatusCode::NO_CONTENT)
 }
+
+pub async fn get_images(
+	State(ApiState { database, .. }): State<ApiState>,
+	Authentication(uuid): Authentication,
+	Path(other_uuid): Path<Uuid>,
+) -> Result<Json<Vec<u64>>, ApiError> {
+	let mut transaction = database.begin().await?;
+	let other_relation = query_scalar!(
+		r#"SELECT relation as "relation: Relation" FROM relations WHERE player_a = $1 AND player_b = $2"#,
+		other_uuid,
+		uuid
+	)
+	.fetch_optional(&mut *transaction)
+	.await?
+	.unwrap_or(Relation::None);
+
+	let result = if let Relation::Friend = other_relation {
+		let mut images = Vec::new();
+
+		let ids = query!("SELECT id FROM images WHERE player = $1", other_uuid)
+			.fetch_all(&mut *transaction)
+			.await?;
+		for rec in ids {
+			images.push(rec.id as u64);
+		}
+
+		Ok(Json(images))
+	} else {
+		Err(StatusCode::FORBIDDEN)?
+	};
+
+	transaction.commit().await?;
+	result
+}
