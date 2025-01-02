@@ -99,18 +99,20 @@ pub async fn get(
 			})
 		}
 		RequestType::BedwarsData => {
-			let bedwars = player_data["stats"]["Bedwars"].as_object().unwrap();
-
-			json!({
-			"final_kills_bedwars": bedwars.get("final_kills_bedwars").map(|v| v.as_u64().unwrap()).unwrap_or(0),
-			"final_deaths_bedwars": bedwars.get("final_deaths_bedwars").map(|v| v.as_u64().unwrap()).unwrap_or(0),
-			"beds_broken_bedwars": bedwars.get("beds_broken_bedwars").map(|v| v.as_u64().unwrap()).unwrap_or(0),
-			"deaths_bedwars": bedwars.get("deaths_bedwars").map(|v| v.as_u64().unwrap()).unwrap_or(0),
-			"kills_bedwars": bedwars.get("kills_bedwars").map(|v| v.as_u64().unwrap()).unwrap_or(0),
-			"losses_bedwars": bedwars.get("losses_bedwars").map(|v| v.as_u64().unwrap()).unwrap_or(0),
-			"wins_bedwars": bedwars.get("wins_bedwars").map(|v| v.as_u64().unwrap()).unwrap_or(0),
-			"winstreak": bedwars.get("winstreak").map(|v| v.as_u64().unwrap()).unwrap_or(0)
-			})
+			if let Some(bedwars) = player_data["stats"]["Bedwars"].as_object() {
+				json!({
+				"final_kills_bedwars": bedwars.get("final_kills_bedwars").map(|v| v.as_u64().unwrap()).unwrap_or(0),
+				"final_deaths_bedwars": bedwars.get("final_deaths_bedwars").map(|v| v.as_u64().unwrap()).unwrap_or(0),
+				"beds_broken_bedwars": bedwars.get("beds_broken_bedwars").map(|v| v.as_u64().unwrap()).unwrap_or(0),
+				"deaths_bedwars": bedwars.get("deaths_bedwars").map(|v| v.as_u64().unwrap()).unwrap_or(0),
+				"kills_bedwars": bedwars.get("kills_bedwars").map(|v| v.as_u64().unwrap()).unwrap_or(0),
+				"losses_bedwars": bedwars.get("losses_bedwars").map(|v| v.as_u64().unwrap()).unwrap_or(0),
+				"wins_bedwars": bedwars.get("wins_bedwars").map(|v| v.as_u64().unwrap()).unwrap_or(0),
+				"winstreak": bedwars.get("winstreak").map(|v| v.as_u64().unwrap()).unwrap_or(0)
+				})
+			} else {
+				return Err(StatusCode::NOT_FOUND)?;
+			}
 		}
 	};
 
