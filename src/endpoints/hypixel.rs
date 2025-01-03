@@ -3,6 +3,7 @@ use crate::{errors::ApiError, extractors::Authentication, ApiState};
 use axum::response::IntoResponse;
 use axum::{body::Body, extract::State, response::Response, Json};
 use chrono::Utc;
+use log::warn;
 use mini_moka::sync::{Cache, CacheBuilder};
 use reqwest::{Client, StatusCode};
 use serde::Deserialize;
@@ -149,7 +150,10 @@ async fn fetch_data(
 	let api_key = match &cl_args.hypixel.hypixel_api_key {
 		Some(api_key) => &api_key,
 		None => match &cl_args.hypixel.hypixel_api_key_file {
-			Some(file) => &read_to_string(file).map_err(|e| ApiError::from(e).into_response())?,
+			Some(file) => &read_to_string(file).map_err(|e| -> axum::http::Response<Body> {
+				warn!("Failed to read hypixel API key file!");
+				ApiError::from(e).into_response()
+			})?,
 			None => unreachable!("clap should ensure that a url or url file is provided"),
 		},
 	};
@@ -160,7 +164,10 @@ async fn fetch_data(
 		.query(&[("uuid", request_data_type.target_player.to_string())])
 		.send()
 		.await
-		.map_err(|e| ApiError::from(e).into_response())?;
+		.map_err(|e| {
+			warn!("Failed to request player data from hypixel!");
+			ApiError::from(e).into_response()
+		})?;
 	let limit = response
 		.headers()
 		.get("RateLimit-Limit")
@@ -168,7 +175,10 @@ async fn fetch_data(
 		.to_str()
 		.unwrap()
 		.parse::<u64>()
-		.map_err(|_| ApiError::from(StatusCode::INTERNAL_SERVER_ERROR).into_response())?;
+		.map_err(|_| {
+			warn!("Failed to read 'RateLimit-Limit' header from hypixel's response!");
+			ApiError::from(StatusCode::INTERNAL_SERVER_ERROR).into_response()
+		})?;
 	let remaining = response
 		.headers()
 		.get("RateLimit-Remaining")
@@ -176,7 +186,10 @@ async fn fetch_data(
 		.to_str()
 		.unwrap()
 		.parse::<u64>()
-		.map_err(|_| ApiError::from(StatusCode::INTERNAL_SERVER_ERROR).into_response())?;
+		.map_err(|_| {
+			warn!("Failed to read 'RateLimit-Remaining' header from hypixel's response!");
+			ApiError::from(StatusCode::INTERNAL_SERVER_ERROR).into_response()
+		})?;
 	let reset = response
 		.headers()
 		.get("RateLimit-Reset")
@@ -184,17 +197,20 @@ async fn fetch_data(
 		.to_str()
 		.unwrap()
 		.parse::<u64>()
-		.map_err(|_| ApiError::from(StatusCode::INTERNAL_SERVER_ERROR).into_response())?;
+		.map_err(|_| {
+			warn!("Failed to read 'RateLimit-Reset' header from hypixel's response!");
+			ApiError::from(StatusCode::INTERNAL_SERVER_ERROR).into_response()
+		})?;
 
 	guard.limit = limit;
 	guard.remaining = remaining;
 	guard.reset = Utc::now().timestamp() as u64 + reset;
 
 	drop(guard);
-	let data = response
-		.json::<Value>()
-		.await
-		.map_err(|e| ApiError::from(e).into_response())?["player"]
+	let data = response.json::<Value>().await.map_err(|e| {
+		warn!("Failed to extract player data from hypixel's response");
+		ApiError::from(e).into_response()
+	})?["player"]
 		.clone();
 	Ok(data)
 }
