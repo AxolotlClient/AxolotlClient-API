@@ -159,15 +159,15 @@ async fn fetch_data(
 	};
 
 	let response = client
-		.get(HYPIXEL_API_URL.to_string() + "/player")
+		.get(HYPIXEL_API_URL.to_string() + "/player?uuid=" + request_data_type.target_player.to_string().as_str())
 		.header("API-Key", api_key)
-		.query(&[("uuid", request_data_type.target_player.to_string())])
 		.send()
 		.await
 		.map_err(|e| {
 			warn!("Failed to request player data from hypixel!");
 			ApiError::from(e).into_response()
 		})?;
+
 	let limit = response
 		.headers()
 		.get("RateLimit-Limit")
