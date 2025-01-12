@@ -21,6 +21,7 @@
 					buildInputs = [ pkgs.openssl ];
 
 					SQLX_OFFLINE = true;
+					RUST_BACKTRACE = true;
 
 					cargoLock.lockFile = ./Cargo.lock;
 				}
