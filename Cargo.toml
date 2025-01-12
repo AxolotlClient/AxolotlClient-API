@@ -21,7 +21,7 @@ chrono = { version = "0.4", features = ["serde"] }
 clap = { version = "4", features = ["derive"] }
 garde = { version = "0.18", features = ["derive", "regex"] }
 mini-moka = { version = "0.10", features = ["dashmap"] }
-reqwest = { version = "0.12", features = ["json"] }
+reqwest = { version = "0.12.11", features = ["json"] }
 serde = { version = "1", features = ["derive"] }
 tokio = { version = "1", features = ["net", "rt-multi-thread"] }
 uuid = { version = "1", features = ["serde", "v4"] }
