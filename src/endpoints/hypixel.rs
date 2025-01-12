@@ -158,15 +158,20 @@ async fn fetch_data(
 		},
 	};
 
-	let response = client
-		.get(HYPIXEL_API_URL.to_string() + "/player?uuid=" + request_data_type.target_player.to_string().as_str())
-		.header("API-Key", api_key)
-		.send()
-		.await
-		.map_err(|e| {
-			warn!("Failed to request player data from hypixel!");
-			ApiError::from(e).into_response()
-		})?;
+	let mut request_builder = client
+		.get(HYPIXEL_API_URL.to_string() + "/player?uuid=" + request_data_type.target_player.to_string().as_str());
+
+	if let Err(e) = request_builder.try_clone().unwrap().build() {
+		warn!("Error while constructing request builder!, {e}")
+	}
+	request_builder = request_builder.header("API-Key", api_key);
+	if let Err(e) = request_builder.try_clone().unwrap().build() {
+		warn!("Error while setting API-Key header!, {e}")
+	}
+	let response = request_builder.send().await.map_err(|e| {
+		warn!("Failed to request player data from hypixel!");
+		ApiError::from(e).into_response()
+	})?;
 
 	let limit = response
 		.headers()
