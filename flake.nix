@@ -91,7 +91,7 @@
 						'';
 
 						environment = {
-							RUST_BACKTRACE = true;
+							RUST_BACKTRACE = "true";
 						};
 
 						# Why can't this shit just be the default?
