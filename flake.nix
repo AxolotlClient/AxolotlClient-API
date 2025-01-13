@@ -74,6 +74,8 @@
 
 					upheldBy = [ "multi-user.target" ];
 
+					environment.RUST_BACKTRACE = "true";
+
 					serviceConfig = with config.age.secrets; {
 						User = "axolotl_client-api";
 						Group = "axolotl_client-api";
@@ -89,8 +91,6 @@
 								${optionalString (cfg.hypixelApiKeyFile != null) "--hypixel-api-key-file ${cfg.hypixelApiKeyFile}"} \
 								${optionalString (cfg.notesFile != null) "--notes-file ${cfg.notesFile}"}
 						'';
-
-						environment.RUST_BACKTRACE = "true";
 
 						# Why can't this shit just be the default?
 						CapabilityBoundingSet = "";
