@@ -159,7 +159,7 @@ async fn fetch_data(
 	let mut request_builder = client
 		.get(HYPIXEL_API_URL.to_string() + "/player?uuid=" + request_data_type.target_player.to_string().as_str());
 	let mut headers: HeaderMap = HeaderMap::new();
-	headers.insert(HeaderName::from_static("API-Key"), HeaderValue::from_str(api_key).expect("Header value invalid"));
+	headers.insert(HeaderName::from_static("api-key"), HeaderValue::from_str(api_key).expect("Header value invalid"));
 	request_builder = request_builder.headers(headers);
 	let response = request_builder.send().await.map_err(|e| {
 		warn!("Failed to request player data from hypixel!");
