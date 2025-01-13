@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT show_registered, retain_usernames, show_last_online, show_activity FROM players WHERE uuid = $1",
+  "query": "SELECT show_registered, retain_usernames, show_last_online, show_activity, allow_friends_image_access FROM players WHERE uuid = $1",
   "describe": {
     "columns": [
       {
@@ -22,6 +22,11 @@
         "ordinal": 3,
         "name": "show_activity",
         "type_info": "Bool"
+      },
+      {
+        "ordinal": 4,
+        "name": "allow_friends_image_access",
+        "type_info": "Bool"
       }
     ],
     "parameters": {
@@ -33,8 +38,9 @@
       false,
       false,
       false,
+      false,
       false
     ]
   },
-  "hash": "3960edf2ef7f8e518cb81e4f64b490a54ad3512c3b7f99d76f729f78a8a34873"
+  "hash": "d1f0dc8dc1927c3361426459e27ec1792eaaa5e766a80660e04bbb3c8b41a43e"
 }

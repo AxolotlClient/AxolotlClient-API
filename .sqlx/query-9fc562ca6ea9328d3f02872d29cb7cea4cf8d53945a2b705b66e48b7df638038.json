@@ -1,0 +1,19 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n\t\t\tUPDATE players SET\n\t\t\t\tshow_registered = coalesce($1, show_registered),\n\t\t\t\tretain_usernames = coalesce($2, retain_usernames),\n\t\t\t\tshow_last_online = coalesce($3, show_last_online),\n\t\t\t\tshow_activity = coalesce($4, show_activity),\n\t\t\t\tallow_friends_image_access = coalesce($5, allow_friends_image_access)\n\t\t\tWHERE uuid = $6\n\t\t",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Bool",
+        "Bool",
+        "Bool",
+        "Bool",
+        "Bool",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "9fc562ca6ea9328d3f02872d29cb7cea4cf8d53945a2b705b66e48b7df638038"
+}

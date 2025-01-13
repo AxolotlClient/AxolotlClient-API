@@ -409,6 +409,7 @@ Returns user data in Json format. Access tokens are not included.
   - `retain_usernames`: `boolean`
   - `show_last_online`: `boolean`
   - `show_activity`: `boolean`
+  - `allow_friends_image_access`: `boolean`
 - `relations` - Map of Minecraft UUID to relation status
 - `channels`: `[Channel]`
 - `channel_invites`: `[ChannelInvite]`
@@ -478,15 +479,17 @@ Returns user data in Json format. Access tokens are not included.
 - `retain_usernames`: `boolean`
 - `show_last_online`: `boolean`
 - `show_activity`: `boolean`
+- `allow_friends_image_access`: `boolean`
 
 ### `PATCH` `/account/settings` [Authenticated](#Errors)
 
 #### Body Fields
 
-- `show_registered`: `boolean`
-- `retain_usernames`: `boolean`
-- `show_last_online`: `boolean`
-- `show_activity`: `boolean`
+- `show_registered`: `boolean?`
+- `retain_usernames`: `boolean?`
+- `show_last_online`: `boolean?`
+- `show_activity`: `boolean?`
+- `allow_friends_image_access`: `boolean?`
 
 #### Response
 

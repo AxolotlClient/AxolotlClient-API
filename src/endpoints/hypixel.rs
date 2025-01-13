@@ -158,7 +158,8 @@ async fn fetch_data(
 	};
 
 	let response = client
-		.get(HYPIXEL_API_URL.to_string() + "/player?uuid=" + request_data_type.target_player.to_string().as_str())
+		.get(HYPIXEL_API_URL.to_string() + "/player")
+		.query(&[("uuid", request_data_type.target_player)])
 		.header("api-key", api_key)
 		.send()
 		.await

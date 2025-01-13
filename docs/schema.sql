@@ -17,21 +17,24 @@ CREATE TABLE players (
 	last_online TIMESTAMP
 	            DEFAULT LOCALTIMESTAMP,
 
-	show_registered  BOOLEAN
-	                 NOT NULL
-	                 DEFAULT true,
-	retain_usernames BOOLEAN
-	                 NOT NULL
-	                 DEFAULT true,
-	show_last_online BOOLEAN
-	                 NOT NULL
-	                 DEFAULT true,
-	show_activity    BOOLEAN
-	                 NOT NULL
-	                 DEFAULT true,
-	banned			 BOOLEAN
-					 NOT NULL
-					 DEFAULT false
+	show_registered  			BOOLEAN
+	                 			NOT NULL
+	                 			DEFAULT true,
+	retain_usernames 			BOOLEAN
+	                 			NOT NULL
+	                 			DEFAULT true,
+	show_last_online 			BOOLEAN
+	                 			NOT NULL
+	                 			DEFAULT true,
+	show_activity    			BOOLEAN
+	                 			NOT NULL
+	                 			DEFAULT true,
+	banned			 			BOOLEAN
+					 			NOT NULL
+					 			DEFAULT false,
+	allow_friends_image_access	BOOLEAN
+								NOT NULL
+								DEFAULT true
 );
 
 CREATE TABLE previous_usernames (

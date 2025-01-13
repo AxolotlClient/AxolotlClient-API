@@ -191,13 +191,14 @@ pub struct Settings {
 	retain_usernames: bool,
 	show_last_online: bool,
 	show_activity: bool,
+	allow_friends_image_access: bool,
 }
 
 impl Settings {
 	pub async fn get(database: &PgPool, uuid: &Uuid) -> Result<Settings, ApiError> {
 		Ok(query_as!(
 			Settings,
-			"SELECT show_registered, retain_usernames, show_last_online, show_activity FROM players WHERE uuid = $1",
+			"SELECT show_registered, retain_usernames, show_last_online, show_activity, allow_friends_image_access FROM players WHERE uuid = $1",
 			uuid
 		)
 		.fetch_one(database)
@@ -361,6 +362,7 @@ pub struct SettingsPatch {
 	retain_usernames: Option<bool>,
 	show_last_online: Option<bool>,
 	show_activity: Option<bool>,
+	allow_friends_image_access: Option<bool>,
 }
 
 pub async fn patch_settings(
@@ -376,13 +378,15 @@ pub async fn patch_settings(
 				show_registered = coalesce($1, show_registered),
 				retain_usernames = coalesce($2, retain_usernames),
 				show_last_online = coalesce($3, show_last_online),
-				show_activity = coalesce($4, show_activity)
-			WHERE uuid = $5
+				show_activity = coalesce($4, show_activity),
+				allow_friends_image_access = coalesce($5, allow_friends_image_access)
+			WHERE uuid = $6
 		"#,
 		user_settings_patch.show_registered,
 		user_settings_patch.retain_usernames,
 		user_settings_patch.show_last_online,
 		user_settings_patch.show_activity,
+		user_settings_patch.allow_friends_image_access,
 		uuid
 	)
 	.execute(&database)
