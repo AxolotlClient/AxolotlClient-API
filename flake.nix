@@ -82,7 +82,6 @@
 						
 						# Would be nice if we validated this to ensure that we aren't passing a set of invalid options, but oh well.
 						ExecStart = ''
-							RUST_BACKTRACE = true \
 							${self.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/axolotl_client-api \
 								${optionalString (cfg.postgresUrl != null) "--postgres-url ${cfg.postgresUrl}"} \
 								${optionalString (cfg.postgresUrlFile != null) "--postgres-url-file ${cfg.postgresUrlFile}"} \
@@ -90,6 +89,8 @@
 								${optionalString (cfg.hypixelApiKeyFile != null) "--hypixel-api-key-file ${cfg.hypixelApiKeyFile}"} \
 								${optionalString (cfg.notesFile != null) "--notes-file ${cfg.notesFile}"}
 						'';
+
+						environment.RUST_BACKTRACE = true;
 
 						# Why can't this shit just be the default?
 						CapabilityBoundingSet = "";
