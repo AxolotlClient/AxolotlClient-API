@@ -90,7 +90,9 @@
 								${optionalString (cfg.notesFile != null) "--notes-file ${cfg.notesFile}"}
 						'';
 
-						environment.RUST_BACKTRACE = true;
+						environment = {
+							RUST_BACKTRACE = true;
+						};
 
 						# Why can't this shit just be the default?
 						CapabilityBoundingSet = "";
