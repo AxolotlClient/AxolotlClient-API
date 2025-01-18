@@ -136,6 +136,8 @@ async fn main() -> anyhow::Result<()> {
 		.route("/account/relations/requests", get(account::get_requests))
 		.route("/image/:id", get(image::get).post(image::post))
 		.route("/image/:id/raw", get(image::get_raw))
+		.route("/image/:id/view", get(image::get_view))
+		.route("/image/:id/oembed", get(image::get_oembed))
 		.route("/hypixel", get(hypixel::get))
 		//.route("/report/:message", post(channel::report_message))
 		.route("/brew_coffee", get(brew_coffee).post(brew_coffee))

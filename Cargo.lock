@@ -155,6 +155,7 @@ dependencies = [
  "axum_garde",
  "base64",
  "blake2",
+ "bytes",
  "chrono",
  "clap",
  "dashmap",
