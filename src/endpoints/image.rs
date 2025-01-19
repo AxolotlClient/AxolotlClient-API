@@ -49,7 +49,7 @@ pub async fn get_raw(
 	State(ApiState { database, .. }): State<ApiState>,
 	Path(id): Path<Id>,
 ) -> Result<Vec<u8>, ApiError> {
-	let image = query!("SELECT player, filename, file, timestamp FROM images WHERE id = $1", id as _)
+	let image = query!("SELECT file FROM images WHERE id = $1", id as _)
 		.fetch_optional(&database)
 		.await?
 		.ok_or(StatusCode::NOT_FOUND)?;
@@ -91,43 +91,37 @@ pub async fn get_view(
 	State(ApiState { database, .. }): State<ApiState>,
 	Path(id): Path<Id>,
 ) -> Result<Html<String>, ApiError> {
-	let image = query!("SELECT player, filename, file, timestamp FROM images WHERE id = $1", id as _)
+	let image = query!("SELECT filename, player, timestamp, file FROM images WHERE id = $1", id as _)
 		.fetch_optional(&database)
 		.await?
 		.ok_or(StatusCode::NOT_FOUND)?;
 
 	let filename = String::from_utf8(image.filename).unwrap();
 	let base_url = "https://api.axolotlclient.com/v1/";
-	let image_url = base_url.to_string() + "image/" + &id.to_string() + "/";
+	let image_url = base_url.to_string() + "image/" + &id.to_string();
 
-	Ok(Html(format!(
-		r#"
-		<html>
-		<head>
-		<title>{filename}</title>
-		<link rel="alternate" type="application/json+oembed"
-  href="{}oembed?format=json"
-  title="{filename}" />
-		<style>
-			.title {{
-				text-align: center;
-			}}
-			img {{
-				width: 100%;
-				max-height: 85%;
-			}}
-		</style>
-		</head>
-		<body>
-		<div class="title">
-	<h2>{filename}</h2>
-		</div>
-		<img src="{}raw">
-		</body>
-		</html>
-	"#,
-		&image_url, &image_url
-	)))
+	let username = query!("SELECT username FROM players WHERE uuid = $1", image.player)
+		.fetch_one(&database)
+		.await?
+		.username;
+
+	let time = image.timestamp.and_utc().format("%Y/%m/%d %H:%M").to_string();
+
+	Ok(Html(
+		include_str!("image_view.html")
+			.replace("{filename}", &filename)
+			.replace("{image_data}", &("data:image/png;base64,".to_string() + &STANDARD_NO_PAD.encode(image.file)))
+			.replace("{image_url}", &image_url)
+			.replace("{username}", &username)
+			.replace(
+				"{time}",
+				&image
+					.timestamp
+					.and_utc()
+					.to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
+			)
+			.replace("{time_formatted}", &time),
+	))
 }
 
 #[derive(Serialize)]
