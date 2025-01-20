@@ -1,0 +1,28 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT filename, file FROM images WHERE id = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "filename",
+        "type_info": "Bytea"
+      },
+      {
+        "ordinal": 1,
+        "name": "file",
+        "type_info": "Bytea"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "4f447e7e7d21098ce672cdd2cfe3638d192eb68aba5028f6241efa49fccfdf70"
+}
