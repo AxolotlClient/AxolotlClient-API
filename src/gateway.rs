@@ -1,6 +1,6 @@
 use crate::{errors::ApiError, extractors::Authentication, ApiState};
 use axum::extract::{ws::close_code, ws::CloseFrame, ws::Message, ws::WebSocket, State, WebSocketUpgrade};
-use axum::{body::Body, http::StatusCode, response::Response};
+use axum::{body::Body, response::Response};
 use log::warn;
 use sqlx::query;
 use std::{convert::Infallible, fmt::Display, fmt::Formatter, time::Duration};
@@ -124,7 +124,6 @@ enum DisconnectReason {
 	Error = close_code::ERROR,
 	InvalidData = close_code::INVALID,
 	TimedOut = 1014, // There is no pre-defined code for timeouts
-	Conflict = 1015,
 }
 
 impl Display for DisconnectReason {
@@ -134,7 +133,6 @@ impl Display for DisconnectReason {
 			Error => write!(f, "Error"),
 			InvalidData => write!(f, "Invalid Data"),
 			TimedOut => write!(f, "Timed Out"),
-			Conflict => write!(f, "Conflict"),
 		}
 	}
 }
