@@ -567,6 +567,41 @@ Fetch a raw image
 
 The raw bytes of the image
 
+### `GET` `/image/<id>/view`
+
+View an image in a browser.
+
+#### Path Fields
+
+`id` - The id of the image
+
+#### Response
+
+Html page in the style of the AxolotlClient website to display an image, with embedding support.
+
+### `GET` `/image/<id>/oembed?<format>`
+
+Get oEmbed information for an image. See https://oembed.com.
+
+#### Path Fields
+
+`id` - The id of the image
+
+#### Query Fields
+
+`format` - The oEmbed format. Only `json` is supported currently.
+
+#### Response
+
+- `version`: `string` - The oEmbed version, `1.0`
+- `type`: `string` - The oEmbed type, `photo`
+- `title`: `string` - The name of the image file
+- `url`: `string` - The raw url of the image
+- `width`: `number` - The image width, in pixels
+- `height`: `number` - The image height, in pixels
+- `provider_name`: `string` - The oEmbed provider name, `AxolotlClient`
+- `provider_url`: `string` - The oEmbed provider url, `https://axolotlclient.com`
+
 ### `POST` `/image/<filename>` [Authenticated](#Errors)
 
 Share an image
