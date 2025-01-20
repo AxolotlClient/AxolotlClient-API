@@ -465,7 +465,9 @@ pub async fn post_activity(
 		}
 	}
 
-	online_users.insert(uuid, Some(activity));
+	if online_users.contains_key(&uuid) {
+		online_users.insert(uuid, Some(activity));
+	}
 
 	Ok(StatusCode::OK)
 }

@@ -14,8 +14,10 @@ pub async fn gateway(
 	Authentication(uuid): Authentication,
 	socket: WebSocketUpgrade,
 ) -> Result<Response<Body>, ApiError> {
-	if state.online_users.contains_key(&uuid) {
-		Err(StatusCode::CONFLICT)?;
+	if let Some(socket) = state.socket_sender.remove(&uuid) {
+		// in case someone connects from another device we drop the previous sender so it doesn't annoy us later,
+		// however it doesn't close the websocket (this might be something to fix later)
+		drop(socket);
 	}
 
 	Ok(socket.on_upgrade(move |socket| gateway_accept_handler(state, uuid, socket)))
@@ -122,6 +124,7 @@ enum DisconnectReason {
 	Error = close_code::ERROR,
 	InvalidData = close_code::INVALID,
 	TimedOut = 1014, // There is no pre-defined code for timeouts
+	Conflict = 1015,
 }
 
 impl Display for DisconnectReason {
@@ -131,6 +134,7 @@ impl Display for DisconnectReason {
 			Error => write!(f, "Error"),
 			InvalidData => write!(f, "Invalid Data"),
 			TimedOut => write!(f, "Timed Out"),
+			Conflict => write!(f, "Conflict"),
 		}
 	}
 }
