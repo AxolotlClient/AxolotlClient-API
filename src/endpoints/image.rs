@@ -178,7 +178,7 @@ pub async fn get_oembed(
 
 	let embed = OEmbed::create(
 		filename,
-		"https://api.axolotlclient.com/v1/images/".to_owned() + &id.to_string() + "/raw",
+		"https://api.axolotlclient.com/v1/image/".to_owned() + &id.to_string() + "/raw",
 		png.unwrap(),
 	);
 	Ok(if format == "json" {
