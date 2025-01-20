@@ -106,12 +106,14 @@ pub async fn get_view(
 		.username;
 
 	let time = image.timestamp.and_utc().format("%Y/%m/%d %H:%M").to_string();
-
+	let png = PngInfo::create(&Bytes::from(image.file.clone())).await.unwrap();
 	Ok(Html(
 		include_str!("image_view.html")
 			.replace("{filename}", &filename)
 			.replace("{image_data}", &("data:image/png;base64,".to_string() + &STANDARD_NO_PAD.encode(image.file)))
 			.replace("{image_url}", &image_url)
+			.replace("{image_width}", &png.width.to_string())
+			.replace("{image_height}", &png.height.to_string())
 			.replace("{username}", &username)
 			.replace(
 				"{time}",
