@@ -117,7 +117,7 @@
 						RestrictRealtime = true;
 						RestrictSUIDSGID = true;
 						SystemCallArchitectures = "native";
-						SystemCallFilter = "@basic-io @file-system @io-event @network-io @process @signal ioctl madvise";
+						SystemCallFilter = "@basic-io @file-system @io-event @network-io @process @signal ioctl madvise mremap";
 						UMask = "777";
 					};
 				};
