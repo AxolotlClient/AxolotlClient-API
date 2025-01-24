@@ -1,208 +1,232 @@
 <!doctype html>
-		<html lang="en" data-theme="light">
-			<head>
-				<title>{filename} | AxolotlClient</title>
-                <meta property="og:type" content="website" />
-				<meta property="og:title" content="{filename} | AxolotlClient" />
-                <meta property="og:image" content="{image_url}/raw" />
-                <meta property="og:locale" content="en_US" />
-                <meta property="og:url" content="{image_url}/view" />
-                <meta property="og:description" content="{image_name} shared with AxolotlClient" />
-                <meta property="og:image:height" content="{image_height}" />
-                <meta property="og:image:width" content="{image_width}" />
+<html lang="en" data-theme="dark">
+  <head>
+    <title>{filename} | AxolotlClient</title>
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="{filename} | AxolotlClient" />
+    <meta property="og:image" content="{image_url}/raw" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="{image_url}/view" />
+    <meta
+      property="og:description"
+      content="{image_name} shared with AxolotlClient"
+    />
+    <meta property="og:image:height" content="{image_height}" />
+    <meta property="og:image:width" content="{image_width}" />
 
-                <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:img:src" content="{image_url}/raw" />
-                <meta name="twitter:img:alt" content="{image_name} shared with AxolotlClient" />
-                <meta name="twitter:image:width" content="{image_width}" />
-                <meta name="twitter:image:height" content="{image_height}" />
-                <link rel="icon" href="https://axolotlclient.com/images/icon.png" />
-				<link rel="alternate" type="application/json+oembed"
-					href="{image_url}/oembed?format=json"
-					title="{filename}" />
-                <link href="https://fonts.bunny.net/css2?family=Fira+Sans&display=swap"
-                        rel="stylesheet"/>
-                <meta charset="UTF-8" />
-                <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-				<style>
-                    :root[data-theme="dark"] {
-                        --main-bg: #121212;
-                        --navbar-text: #ffffff;
-                        --main-text: #f2f2f2;
-                        --navbar-bg: #0000005e;
-                        --navbar-hover-bg: #ffffff90;
-                        --navbar-hover-text: #000;
-                        --about-text: var(--main-text);
-                        --switcher-color: invert(100%) sepia(2%) saturate(122%) hue-rotate(243deg)
-                            brightness(113%) contrast(90%);
-                        --bg-brightness: 0.5;
-                    }
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:img:src" content="{image_url}/raw" />
+    <meta
+      name="twitter:img:alt"
+      content="{image_name} shared with AxolotlClient"
+    />
+    <meta name="twitter:image:width" content="{image_width}" />
+    <meta name="twitter:image:height" content="{image_height}" />
+    <link rel="icon" href="https://axolotlclient.com/images/icon.png" />
+    <link
+      rel="alternate"
+      type="application/json+oembed"
+      href="{image_url}/oembed?format=json"
+      title="{filename}"
+    />
+    <link
+      href="https://fonts.bunny.net/css2?family=Fira+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      :root[data-theme="dark"] {
+        --main-bg: #121212;
+        --navbar-text: #ffffff;
+        --main-text: #f2f2f2;
+        --navbar-bg: #0000005e;
+        --navbar-hover-bg: #ffffff90;
+        --navbar-hover-text: #000;
+        --about-text: var(--main-text);
+        --switcher-color: invert(100%) sepia(2%) saturate(122%)
+          hue-rotate(243deg) brightness(113%) contrast(90%);
+        --bg-brightness: 0.5;
+      }
 
-                    :root[data-theme="light"] {
-                        --main-bg: #fff;
-                        --navbar-text: #303030;
-                        --navbar-bg: #f5f5f75e;
-                        --navbar-hover-bg: #00000090;
-                        --navbar-hover-text: #fff;
-                        --about-text: #2a2a2a;
-                        --switcher-color: invert(6%) sepia(1%) saturate(751%) hue-rotate(314deg)
-                            brightness(101%) contrast(71%);
-                        --bg-brightness: 0.8;
-                    }
-                    :root {
-                        --default-transition: color 0.3s ease-in-out,
-                            background-color 0.4s ease-in-out, border-color 0.3s ease-in-out,
-                            fill 0.3s ease-in-out, transform 0.3s ease-in-out;
-                    }
+      :root[data-theme="light"] {
+        --main-bg: #fff;
+        --navbar-text: #303030;
+        --navbar-bg: #f5f5f75e;
+        --navbar-hover-bg: #00000090;
+        --navbar-hover-text: #fff;
+        --about-text: #2a2a2a;
+        --switcher-color: invert(6%) sepia(1%) saturate(751%) hue-rotate(314deg)
+          brightness(101%) contrast(71%);
+        --bg-brightness: 0.8;
+      }
+      :root {
+        --default-transition: color 0.3s ease-in-out,
+          background-color 0.4s ease-in-out, border-color 0.3s ease-in-out,
+          fill 0.3s ease-in-out, transform 0.3s ease-in-out;
+      }
 
-					.navbar-left,
-                    .navbar-right {
-                        display: flex;
-                        align-items: center;
-                        justify-content: space-between;
-                    }
+      .navbar-left,
+      .navbar-right {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
 
-                    .navbar {
-                        transition: var(--default-transition);
-                        justify-content: space-between;
-                        display: flex;
-                        align-items: center;
-                        display: flex;
-                        align-items: center;
-                        backdrop-filter: blur(5px);
-                        z-index: 1;
-                        overflow: hidden;
-                        background-color: var(--navbar-bg);
-                        position: fixed;
-                        top: 0;
-                        width: 100%;
-                        left: 0;
-                    }
+      .navbar {
+        transition: var(--default-transition);
+        justify-content: space-between;
+        display: flex;
+        align-items: center;
+        display: flex;
+        align-items: center;
+        backdrop-filter: blur(5px);
+        z-index: 1;
+        overflow: hidden;
+        background-color: var(--navbar-bg);
+        position: fixed;
+        top: 0;
+        width: 100%;
+        left: 0;
+      }
 
-                    .navbar a {
-                        transition: 1s 5ms;
-                        float: left;
-                        display: block;
-                        color: var(--navbar-text);
-                        text-align: center;
-                        text-decoration: none;
-                    }
+      .navbar a {
+        transition: 1s 5ms;
+        float: left;
+        display: block;
+        color: var(--navbar-text);
+        text-align: center;
+        text-decoration: none;
+      }
 
-                    .navbar .text {
-                        padding: 20px;
-                    }
+      .navbar .text {
+        padding: 20px;
+      }
 
-                    .navbar img {
-                        padding: 8px 10px 8px 10px;
-                        height: 40px;
-                        width: 40px;
-                    }
+      .navbar img {
+        padding: 8px 10px 8px 10px;
+        height: 40px;
+        width: 40px;
+      }
 
-                    .navbar a:hover {
-                        background: var(--navbar-hover-bg);
-                        color: var(--navbar-hover-text);
-                    }
-                    #switcher {
-                        transition: 0.3s 5ms;
-                        filter: var(--switcher-color);
-                        float: right;
-                        width: 25px;
-                        margin: 2px;
-                        cursor: pointer;
-                    }
-					.title {
-                        padding-top: 45px;
-						text-align: center;
-                        color: var(--about-text);
-					}
-					.content {
-                        height: calc(100vh - 170px);
-						max-width: 100%;
-                        padding: 0;
-                        margin: 0;
-					}
-                    .content img {
-                        max-width: 100%;
-                        max-height: 100%;
-                        box-shadow: rgba(0, 0, 0, 0.5) 0 4px 8px;
-                    }
-					body {
-                        overflow: hidden;
-                        background-color: var(--main-bg);
-                        height: 100%;
-                        font-family: "Fira Sans";
-                        text-align: center;
-					}
-                    html {
-                        height: 100%;
-                    }
-                    .bg {
-                        background-image: url({image_data});
-                        backdrop-filter: blur(5px);
-                        filter: blur(8px) contrast(0.9) brightness(var(--bg-brightness));
-						background-repeat: no-repeat;
-  						background-position: center;
-                        background-size: cover;
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        height: 100%;
-                        min-width: 100%;
-                        z-index: -2;
-                        align-items: center;
-                    }
-				</style>
-			</head>
-			<body>
-                <div class="bg"></div>
-				<div class="navbar">
-                    <div class="navbar-left">
-                        <a href="https://axolotlclient.com">
-                            <img src="https://axolotlclient.com/images/icon.png" alt="Logo"/>
-                        </a>
-                        <a class="text" href="https://modrinth.com/mod/axolotlclient">Modrinth</a>
-                        <a class="text" href="https://github.com/AxolotlClient/">GitHub</a>
-                        <a class="text" href="https://discord.gg/WyMjeX3vka">Discord</a>
-                    </div>
-                    <div class="navbar-right">
-                        <img src="https://axolotlclient.com/images/moon.svg" alt="" id="switcher" />
-                    </div>                    
-				</div>
-				<div class="title">
-					<h2>{filename}</h2>
-					<h3>Shared by {username} at <span id="upload_date">{time_formatted} (UTC)</span></h3>
-				</div>
-                <div class="content">
-				    <img src="{image_data}" alt="Screenshot {filename}" width="">
-                </div>
-			</body>
-            <script>
-                const rootElem = document.documentElement;
-                const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
-                if (darkThemeMq.matches) {
-                    rootElem.setAttribute("data-theme", "dark");
-                    document.getElementById("switcher").src = "https://axolotlclient.com/images/sun.svg";
-                } else {
-                    rootElem.setAttribute("data-theme", "light");
-                    document.getElementById("switcher").src = "https://axolotlclient.com/images/moon.svg";
-                }
+      .navbar a:hover {
+        background: var(--navbar-hover-bg);
+        color: var(--navbar-hover-text);
+      }
+      #switcher {
+        transition: 0.3s 5ms;
+        filter: var(--switcher-color);
+        float: right;
+        width: 25px;
+        margin: 2px;
+        cursor: pointer;
+      }
+      .title {
+        padding-top: 45px;
+        text-align: center;
+        color: var(--about-text);
+      }
+      .content {
+        height: calc(100vh - 170px);
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+      }
+      .content img {
+        max-width: 100%;
+        max-height: 100%;
+        box-shadow: rgba(0, 0, 0, 0.5) 0 4px 8px;
+      }
+      body {
+        overflow: hidden;
+        background-color: var(--main-bg);
+        height: 100%;
+        font-family: "Fira Sans";
+        text-align: center;
+      }
+      html {
+        height: 100%;
+      }
+      .bg {
+        background-image: url({image_data});
+        backdrop-filter: blur(5px);
+        filter: blur(8px) contrast(0.9) brightness(var(--bg-brightness));
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        min-width: 100%;
+        z-index: -2;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg"></div>
+    <div class="navbar">
+      <div class="navbar-left">
+        <a href="https://axolotlclient.com">
+          <img src="https://axolotlclient.com/images/icon.png" alt="Logo" />
+        </a>
+        <a class="text" href="https://modrinth.com/mod/axolotlclient">
+          Modrinth
+        </a>
+        <a class="text" href="https://github.com/AxolotlClient/">GitHub</a>
+        <a class="text" href="https://discord.gg/WyMjeX3vka">Discord</a>
+      </div>
+      <div class="navbar-right">
+        <img
+          src="https://axolotlclient.com/images/moon.svg"
+          alt=""
+          id="switcher"
+        />
+      </div>
+    </div>
+    <div class="title">
+      <h2>{filename}</h2>
+      <h3>
+        Shared by {username} at
+        <span id="upload_date">{time_formatted} (UTC)</span>
+      </h3>
+    </div>
+    <div class="content">
+      <img src="{image_data}" alt="Screenshot {filename}" width="" />
+    </div>
+  </body>
+  <script>
+    const rootElem = document.documentElement;
+    const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)");
+    if (darkThemeMq.matches) {
+      rootElem.setAttribute("data-theme", "dark");
+      document.getElementById("switcher").src =
+        "https://axolotlclient.com/images/sun.svg";
+    } else {
+      rootElem.setAttribute("data-theme", "light");
+      document.getElementById("switcher").src =
+        "https://axolotlclient.com/images/moon.svg";
+    }
 
-                const switchTheme = () => {
-                    let dataTheme = rootElem.getAttribute("data-theme"),
-                        newtheme;
-                    newTheme = dataTheme === "dark" ? "light" : "dark";
-                    switchIcon = document.getElementById("switcher");
-                    rootElem.setAttribute("data-theme", newTheme);
-                    if (dataTheme === "dark") {
-                        switcher.src = "https://axolotlclient.com/images/moon.svg";
-                    } else {
-                        switcher.src = "https://axolotlclient.com/images/sun.svg";
-                    }
-                };
+    const switchTheme = () => {
+      let dataTheme = rootElem.getAttribute("data-theme"),
+        newtheme;
+      newTheme = dataTheme === "dark" ? "light" : "dark";
+      switchIcon = document.getElementById("switcher");
+      rootElem.setAttribute("data-theme", newTheme);
+      if (dataTheme === "dark") {
+        switcher.src = "https://axolotlclient.com/images/moon.svg";
+      } else {
+        switcher.src = "https://axolotlclient.com/images/sun.svg";
+      }
+    };
 
-                document.querySelector("#switcher").addEventListener("click", switchTheme);
+    document.querySelector("#switcher").addEventListener("click", switchTheme);
 
-                document.getElementById("upload_date").innerHTML = new Date("{time}").toLocaleString()
-            </script>
-		</html>
+    document.getElementById("upload_date").innerHTML = new Date(
+      "{time}",
+    ).toLocaleString();
+  </script>
+</html>

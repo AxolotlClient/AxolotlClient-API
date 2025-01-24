@@ -2,6 +2,7 @@ use crate::endpoints::global_data::{self, GlobalDataContainer};
 use crate::endpoints::user::{self, Activity};
 use crate::endpoints::{account, brew_coffee, channel, get_authenticate, image, not_found};
 use crate::gateway::gateway;
+use axum::extract::DefaultBodyLimit;
 use axum::{routing::get, routing::post, serve, Router};
 use clap::{Args, Parser};
 use dashmap::DashMap;
@@ -134,7 +135,12 @@ async fn main() -> anyhow::Result<()> {
 		.route("/account/relations/friends", get(account::get_friends))
 		.route("/account/relations/blocked", get(account::get_blocked))
 		.route("/account/relations/requests", get(account::get_requests))
-		.route("/image/:id", get(image::get).post(image::post))
+		.route(
+			"/image/:id",
+			get(image::get)
+				.post(image::post)
+				.layer(DefaultBodyLimit::max(1024 * 1024 * 8)),
+		)
 		.route("/image/:id/raw", get(image::get_raw))
 		.route("/image/:id/view", get(image::get_view))
 		.route("/image/:id/oembed", get(image::get_oembed))
