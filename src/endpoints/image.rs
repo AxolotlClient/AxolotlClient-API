@@ -87,8 +87,10 @@ pub async fn evict_expired(database: &PgPool) -> Result<(), TaskError> {
 	Ok(())
 }
 
+const PAGE_TEMPLATE: &str = include_str!("image_view.html");
+
 pub async fn get_view(
-	State(ApiState { database, .. }): State<ApiState>,
+	State(ApiState { database, cl_args, .. }): State<ApiState>,
 	Path(id): Path<Id>,
 ) -> Result<Html<String>, ApiError> {
 	let image = query!("SELECT filename, player, timestamp, file FROM images WHERE id = $1", id as _)
@@ -97,7 +99,17 @@ pub async fn get_view(
 		.ok_or(StatusCode::NOT_FOUND)?;
 
 	let filename = String::from_utf8(image.filename).unwrap();
-	let base_url = "https://api.axolotlclient.com/v1/";
+	let base_url = match &cl_args.domain_name {
+		Some(name) => {
+			let n = name.to_owned();
+			if !n.ends_with("/") {
+				n + "/"
+			} else {
+				n
+			}
+		}
+		None => "https://api.axolotlclient.com/v1/".to_owned(),
+	};
 	let image_url = base_url.to_string() + "image/" + &id.to_string();
 
 	let username = query!("SELECT username FROM players WHERE uuid = $1", image.player)
@@ -108,9 +120,9 @@ pub async fn get_view(
 	let time = image.timestamp.and_utc().format("%Y/%m/%d %H:%M").to_string();
 	let png = PngInfo::create(&Bytes::from(image.file.clone())).await.unwrap();
 	Ok(Html(
-		include_str!("image_view.html")
+		PAGE_TEMPLATE
 			.replace("{filename}", &filename)
-			.replace("{image_data}", &("data:image/png;base64,".to_string() + &STANDARD_NO_PAD.encode(image.file)))
+			.replace("{image_data}", (image_url.clone() + "/raw").as_str())
 			.replace("{image_url}", &image_url)
 			.replace("{image_width}", &png.width.to_string())
 			.replace("{image_height}", &png.height.to_string())
@@ -144,7 +156,7 @@ impl OEmbed {
 		OEmbed {
 			version: "1.0",
 			_type: "photo",
-			title,
+			title: title + " | AxolotlClient",
 			url,
 			width: png.width,
 			height: png.height,
@@ -160,7 +172,7 @@ pub struct OEmbedQuery {
 }
 
 pub async fn get_oembed(
-	State(ApiState { database, .. }): State<ApiState>,
+	State(ApiState { database, cl_args, .. }): State<ApiState>,
 	Path(id): Path<Id>,
 	Query(OEmbedQuery { format }): Query<OEmbedQuery>,
 ) -> Result<Json<OEmbed>, ApiError> {
@@ -176,11 +188,19 @@ pub async fn get_oembed(
 
 	let filename = String::from_utf8(image.filename).unwrap();
 
-	let embed = OEmbed::create(
-		filename,
-		"https://api.axolotlclient.com/v1/image/".to_owned() + &id.to_string() + "/raw",
-		png.unwrap(),
-	);
+	let base_url = match &cl_args.domain_name {
+		Some(name) => {
+			let n = name.to_owned();
+			if !n.ends_with("/") {
+				n + "/"
+			} else {
+				n
+			}
+		}
+		None => "https://api.axolotlclient.com/v1/".to_owned(),
+	};
+
+	let embed = OEmbed::create(filename, base_url + &id.to_string() + "/raw", png.unwrap());
 	Ok(if format == "json" {
 		Json(embed)
 	} else {

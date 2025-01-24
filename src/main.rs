@@ -3,6 +3,7 @@ use crate::endpoints::user::{self, Activity};
 use crate::endpoints::{account, brew_coffee, channel, get_authenticate, image, not_found};
 use crate::gateway::gateway;
 use axum::extract::DefaultBodyLimit;
+use axum::routing::any;
 use axum::{routing::get, routing::post, serve, Router};
 use clap::{Args, Parser};
 use dashmap::DashMap;
@@ -35,6 +36,9 @@ pub struct ClArgs {
 
 	#[arg(long)]
 	pub notes_file: Option<PathBuf>,
+
+	#[arg(long)]
+	pub domain_name: Option<String>,
 }
 
 #[derive(Args)]
@@ -112,7 +116,7 @@ async fn main() -> anyhow::Result<()> {
 	let router = Router::new()
 		.route("/global_data", get(global_data::get))
 		.route("/authenticate", get(get_authenticate))
-		.route("/gateway", get(gateway))
+		.route("/gateway", any(gateway))
 		.route("/user/:uuid", get(user::get).post(user::post))
 		.route("/user/:uuid/images", get(user::get_images))
 		.route("/channels", get(account::get_channels))

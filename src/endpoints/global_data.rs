@@ -62,8 +62,8 @@ impl GlobalData {
 impl Clone for GlobalData {
 	fn clone(&self) -> Self {
 		Self {
-			total_players: self.total_players.clone(),
-			online_players: self.online_players.clone(),
+			total_players: self.total_players,
+			online_players: self.online_players,
 			modrinth_data: self.modrinth_data.clone(),
 			notes: self.notes.clone(),
 		}

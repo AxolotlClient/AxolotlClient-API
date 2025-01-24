@@ -555,6 +555,10 @@ Fetch a shared image (usually screenshots) with metadata.
 - `file`: `string` - The file content, encoded with standard base64
 - `shared_at`: `Timestamp`
 
+#### Errors
+
+- `404` - The provided image does not exist or has expired
+
 ### `GET` `/image/<id>/raw`
 
 Fetch a raw image
@@ -567,6 +571,10 @@ Fetch a raw image
 
 The raw bytes of the image
 
+#### Errors
+
+- `404` - The provided image does not exist or has expired
+
 ### `GET` `/image/<id>/view`
 
 View an image in a browser.
@@ -578,6 +586,10 @@ View an image in a browser.
 #### Response
 
 Html page in the style of the AxolotlClient website to display an image, with embedding support.
+
+#### Errors
+
+- `404` - The provided image does not exist or has expired
 
 ### `GET` `/image/<id>/oembed?<format>`
 
@@ -602,9 +614,13 @@ Get oEmbed information for an image. See https://oembed.com.
 - `provider_name`: `string` - The oEmbed provider name, `AxolotlClient`
 - `provider_url`: `string` - The oEmbed provider url, `https://axolotlclient.com`
 
+#### Errors
+
+- `404` - The provided image does not exist or has expired
+
 ### `POST` `/image/<filename>` [Authenticated](#Errors)
 
-Share an image
+Share an image in PNG format
 
 #### Path Fields
 
@@ -617,6 +633,11 @@ The image data, in raw bytes
 #### Response
 
 The image id, in plain text.
+
+#### Errors
+
+- `400` - The png file is malformed
+- `413` - The image is over 8MiB in size
 
 ### `GET` `/hypixel` [Authenticated](#Errors)
 
