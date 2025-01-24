@@ -156,7 +156,7 @@ impl OEmbed {
 		OEmbed {
 			version: "1.0",
 			_type: "photo",
-			title: title + " | AxolotlClient",
+			title,
 			url,
 			width: png.width,
 			height: png.height,
