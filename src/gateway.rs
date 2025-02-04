@@ -84,7 +84,7 @@ async fn gateway_accept(
 						match pending_pong {
 							None => return Err(InvalidData),
 							Some(inner_pending_pong) => {
-								if pong != inner_pending_pong {
+								if *pong != inner_pending_pong {
 									return Err(InvalidData);
 								}
 							}
@@ -98,7 +98,7 @@ async fn gateway_accept(
 			}
 			socket_message = receiver.recv() => {
 				if let Some(socket_message) = socket_message {
-					socket.send(Message::Text(socket_message)).await?;
+					socket.send(Message::Text(socket_message.into())).await?;
 
 				}
 			}
@@ -106,7 +106,7 @@ async fn gateway_accept(
 				match pending_pong {
 					None => {
 						let ping = rand::random();
-						socket.send(Message::Ping(Vec::from(&ping))).await?;
+						socket.send(Message::Ping(Vec::from(&ping).into())).await?;
 						pending_pong = Some(ping);
 						keep_alive.as_mut().reset(Instant::now() + Duration::from_secs(10));
 					}

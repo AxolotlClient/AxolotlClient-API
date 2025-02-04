@@ -60,7 +60,7 @@ pub async fn get_authenticate(
 	State(ApiState { database, client, .. }): State<ApiState>,
 	Query(authenticate): Query<Authenticate>,
 ) -> Result<Json<AuthenticateResponse>, ApiError> {
-	authenticate.validate(&())?;
+	authenticate.validate()?;
 	let Authenticate { username, server_id } = authenticate;
 
 	#[derive(Clone, Deserialize)]

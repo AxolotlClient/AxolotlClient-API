@@ -179,7 +179,7 @@ pub async fn post(
 	Authentication(owner): Authentication,
 	Json(channel_data): Json<ChannelData>,
 ) -> Result<String, ApiError> {
-	channel_data.validate(&())?;
+	channel_data.validate()?;
 
 	let id = Id::new();
 	let persistence = channel_data.persistence.id();

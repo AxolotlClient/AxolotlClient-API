@@ -1,5 +1,8 @@
 use crate::{errors::ApiError, ApiState};
-use axum::{async_trait, extract::FromRequestParts, http::request::Parts, http::StatusCode};
+use axum::{
+	extract::{FromRequestParts, OptionalFromRequestParts},
+	http::{request::Parts, StatusCode},
+};
 use base64::{engine::general_purpose::STANDARD_NO_PAD, Engine};
 use sqlx::query;
 use uuid::Uuid;
@@ -7,7 +10,6 @@ use uuid::Uuid;
 #[derive(Clone, Copy)]
 pub struct Authentication(pub Uuid);
 
-#[async_trait]
 impl FromRequestParts<ApiState> for Authentication {
 	type Rejection = ApiError;
 
@@ -49,5 +51,15 @@ impl FromRequestParts<ApiState> for Authentication {
 		transaction.commit().await?;
 
 		Ok(Self(uuid))
+	}
+}
+
+impl OptionalFromRequestParts<ApiState> for Authentication {
+	type Rejection = ();
+
+	async fn from_request_parts(parts: &mut Parts, state: &ApiState) -> Result<Option<Self>, Self::Rejection> {
+		Ok(<Self as FromRequestParts<ApiState>>::from_request_parts(parts, state)
+			.await
+			.ok())
 	}
 }
