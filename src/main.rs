@@ -117,37 +117,37 @@ async fn main() -> anyhow::Result<()> {
 		.route("/global_data", get(global_data::get))
 		.route("/authenticate", get(get_authenticate))
 		.route("/gateway", any(gateway))
-		.route("/user/:uuid", get(user::get).post(user::post))
-		.route("/user/:uuid/images", get(user::get_images))
+		.route("/user/{uuid}", get(user::get).post(user::post))
+		.route("/user/{uuid}/images", get(user::get_images))
 		.route("/channels", get(account::get_channels))
 		.route("/channels/invites", get(account::get_channel_invites).post(account::post_channel_invite))
 		.route("/channel", post(channel::post))
 		.route(
-			"/channel/:id",
+			"/channel/{id}",
 			get(channel::get)
 				.post(channel::post_channel)
 				.patch(channel::patch)
 				.delete(channel::delete),
 		)
-		.route("/channel/:id/messages", get(channel::get_messages))
-		.route("/channel/:id/remove", post(channel::remove_user))
+		.route("/channel/{id}/messages", get(channel::get_messages))
+		.route("/channel/{id}/remove", post(channel::remove_user))
 		.route("/account", get(account::get).delete(account::delete))
 		.route("/account/activity", post(account::post_activity))
 		.route("/account/data", get(account::get_data))
 		.route("/account/settings", get(account::get_settings).patch(account::patch_settings))
-		.route("/account/username/:username", post(account::post_username).delete(account::delete_username))
+		.route("/account/username/{username}", post(account::post_username).delete(account::delete_username))
 		.route("/account/relations/friends", get(account::get_friends))
 		.route("/account/relations/blocked", get(account::get_blocked))
 		.route("/account/relations/requests", get(account::get_requests))
 		.route(
-			"/image/:id",
+			"/image/{id}",
 			get(image::get)
 				.post(image::post)
 				.layer(DefaultBodyLimit::max(1024 * 1024 * 8)),
 		)
-		.route("/image/:id/raw", get(image::get_raw))
-		.route("/image/:id/view", get(image::get_view))
-		.route("/image/:id/oembed", get(image::get_oembed))
+		.route("/image/{id}/raw", get(image::get_raw))
+		.route("/image/{id}/view", get(image::get_view))
+		.route("/image/{id}/oembed", get(image::get_oembed))
 		.route("/hypixel", get(hypixel::get))
 		//.route("/report/:message", post(channel::report_message))
 		.route("/brew_coffee", get(brew_coffee).post(brew_coffee))
