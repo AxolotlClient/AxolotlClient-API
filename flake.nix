@@ -60,6 +60,18 @@
 					description = "File containing notes to be returned by the Api.";
 					default = null;
 				};
+
+				domainName = mkOption {
+					type = types.nullOr types.str;
+					description = "Domain Name the API is hosted on";
+					default = null;
+				};
+
+				cacheLimitBytes = mkOption {
+					type = types.nullOr types.ints.unsigned;
+					description = "Cache Size Limits in Bytes";
+					default = null;
+				};
 			};
 
 			config = mkIf cfg.enable {
@@ -89,7 +101,9 @@
 								${optionalString (cfg.postgresUrlFile != null) "--postgres-url-file ${cfg.postgresUrlFile}"} \
 								${optionalString (cfg.hypixelApiKey != null) "--hypixel-api-key ${cfg.hypixelApiKey}"} \
 								${optionalString (cfg.hypixelApiKeyFile != null) "--hypixel-api-key-file ${cfg.hypixelApiKeyFile}"} \
-								${optionalString (cfg.notesFile != null) "--notes-file ${cfg.notesFile}"}
+								${optionalString (cfg.notesFile != null) "--notes-file ${cfg.notesFile}"} \
+								${optionalString (cfg.domainName != null) "--domain-name ${cfg.domainName}"} \
+								${optionalString (cfg.cacheLimitBytes != null) "--cache-limit-bytes ${cfg.cacheLimitBytes}"}
 						'';
 
 						# Why can't this shit just be the default?

@@ -39,6 +39,9 @@ pub struct ClArgs {
 
 	#[arg(long)]
 	pub domain_name: Option<String>,
+
+	#[arg(long, default_value = "1073741824")]
+	pub cache_limit_bytes: u64,
 }
 
 #[derive(Args)]
@@ -154,6 +157,7 @@ async fn main() -> anyhow::Result<()> {
 		.fallback(not_found)
 		.with_state(ApiState {
 			database,
+			hypixel_api_state: Arc::new(HypixelApiProxyState::new(cl_args.cache_limit_bytes)),
 			cl_args,
 			client: Client::builder()
 				.user_agent(concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION")))
@@ -161,7 +165,6 @@ async fn main() -> anyhow::Result<()> {
 			online_users: Default::default(),
 			socket_sender: Default::default(),
 			global_data: Default::default(),
-			hypixel_api_state: Default::default(),
 		});
 
 	let listener = tokio::net::TcpListener::bind("[::]:8000").await?;

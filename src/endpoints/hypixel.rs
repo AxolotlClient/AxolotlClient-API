@@ -1,16 +1,12 @@
-use crate::ClArgs;
-use crate::{errors::ApiError, extractors::Authentication, ApiState};
-use axum::response::IntoResponse;
-use axum::{body::Body, extract::State, response::Response, Json};
+use crate::{errors::ApiError, extractors::Authentication, ApiState, ClArgs};
+use axum::{body::Body, extract::State, response::IntoResponse, response::Response, Json};
 use chrono::Utc;
 use log::warn;
 use mini_moka::sync::{Cache, CacheBuilder};
 use reqwest::{Client, StatusCode};
 use serde::Deserialize;
 use serde_json::{json, Value};
-use std::fs::read_to_string;
-use std::sync::Arc;
-use std::time::Duration;
+use std::{collections::VecDeque, fs::read_to_string, sync::Arc};
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
@@ -27,11 +23,32 @@ struct Ratelimits {
 	reset: u64,
 }
 
-impl Default for HypixelApiProxyState {
-	fn default() -> Self {
+impl HypixelApiProxyState {
+	pub fn new(cache_limit_bytes: u64) -> Self {
 		Self {
-			cache: CacheBuilder::new(10_000)
-				.time_to_live(Duration::from_secs(2 * 24 * 60 * 60))
+			cache: CacheBuilder::new(cache_limit_bytes)
+				.weigher(|_, value| {
+					let mut size = size_of::<Uuid>() as u32 + size_of::<Value>() as u32;
+					let mut recursive_search = VecDeque::from([value]);
+					while let Some(value) = recursive_search.pop_front() {
+						match value {
+							Value::String(string) => size += string.capacity() as u32,
+							Value::Array(vec) => {
+								size += (vec.capacity() * size_of::<Value>()) as u32;
+								recursive_search.extend(vec);
+							}
+							Value::Object(map) => {
+								size += map.keys().map(String::len).sum::<usize>() as u32;
+								size += ((size_of::<String>() + size_of::<Value>()) * map.len()) as u32; // Capacity isn't available?
+								recursive_search.extend(map.values());
+							}
+							_ => {}
+						};
+					}
+					size
+				})
+				// Disable Time to Live for now
+				// .time_to_live(Duration::from_secs(2 * 24 * 60 * 60))
 				.build(),
 			ratelimits: RwLock::new(Ratelimits {
 				limit: 10,
