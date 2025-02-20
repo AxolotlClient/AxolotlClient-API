@@ -118,6 +118,7 @@ async fn main() -> anyhow::Result<()> {
 
 	let router = Router::new()
 		.route("/global_data", get(global_data::get))
+		.route("/metrics", get(global_data::metrics))
 		.route("/authenticate", get(get_authenticate))
 		.route("/gateway", any(gateway))
 		.route("/user/{uuid}", get(user::get).post(user::post))

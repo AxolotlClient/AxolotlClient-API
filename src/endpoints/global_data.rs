@@ -5,7 +5,7 @@ use reqwest::{Client, StatusCode};
 use serde::Serialize;
 use serde_json::Value;
 use sqlx::{query, PgPool};
-use std::fs::read_to_string;
+use std::{fmt::Write, fs::read_to_string};
 
 const PROJECT_ID: &str = "p2rxzX0q";
 
@@ -126,6 +126,30 @@ pub async fn get(
 	drop(container);
 
 	Ok(Json(data))
+}
+
+pub async fn metrics(
+	State(ApiState {
+		database, online_users, ..
+	}): State<ApiState>,
+) -> Result<String, ApiError> {
+	let lifetime_players = get_total_players(&database).await?;
+	let online_players = online_users.len();
+
+	let mut response = String::new();
+
+	#[rustfmt::skip]
+	#[expect(unused)]
+	{
+		writeln!(response, "# This endpoint is intended for internal use with Prometheus. It is not part of the documented stable API and may be");
+		writeln!(response, "# removed without notice. The `/v1/global_data` endpoint should be preferred, see the following:");
+		writeln!(response, "# https://github.com/AxolotlClient/AxolotlClient-API/blob/main/docs/api_documentation.md#get-global_data");
+		writeln!(response, "");
+		writeln!(response, "lifetime_players {lifetime_players}");
+		writeln!(response, "online_players {online_players}");
+	};
+
+	Ok(response)
 }
 
 async fn get_total_players(database: &PgPool) -> Result<u32, ApiError> {
