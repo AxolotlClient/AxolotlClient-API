@@ -674,6 +674,92 @@ Response varies for each `request_type`:
 - `wins_bedwars`: `number`
 - `winstreak`: `number`
 
+`player_data`
+
+- `bedwars`: `BedwarsData`
+- `skywars`: `SkywarsData`
+- `duels`: `DuelsData`
+- `rank`: `string`
+- `rank_formatted`: `string`
+- `level`: `number`
+- `karma`: `number`
+
+##### BedwarsData
+
+- `level`: `number`
+- `all`: `BedwarsGameData` - data of all modes summed up
+- `core`: `BedwarsGameData` - data of solo, doubles, trios and fours
+- `solo`: `BedwarsGameData`
+- `doubles`: `BedwarsGameData`
+- `trios`: `BedwarsGameData`
+- `fours`: `BedwarsGameData`
+- `four_v_four`: `BedwarsGameData`
+- `dreams`: `BedwarsGameData` - data of all dream modes (below) summed up
+- `castle`: `BedwarsGameData`
+- `doubles_lucky`: `BedwarsGameData`
+- `fours_lucky`: `BedwarsGameData`
+- `doubles_ultimate`: `BedwarsGameData`
+- `fours_ultimate`: `BedwarsGameData`
+- `doubles_armed`: `BedwarsGameData`
+- `fours_armed`: `BedwarsGameData`
+- `doubles_rush`: `BedwarsGameData`
+- `fours_rush`: `BedwarsGameData`
+- `doubles_swap`: `BedwarsGameData`
+- `fours_swap`: `BedwarsGameData`
+
+##### BedwarsGameData
+
+- `kills`: `number`
+- `deaths`: `number`
+- `wins`: `number`
+- `losses`: `number`
+- `winstreak`: `number`
+- `final_kills`: `number`
+- `final_deaths`: `number`
+- `beds_broken`: `number`
+- `beds_lost`: `number`
+
+##### SkywarsData
+
+- `level`: `string` - formatted level as provided by hypixel
+- `exp`: `number`
+- `all`: `SkywarsGameData` - data of all modes summed up
+- `core`: `SkywarsGameData` - data of all solo + team modes summed up (there are no 'official' core modes in skywars)
+- `solo`: `SkywarsModeData`
+- `team`: `SkywarsModeData`
+- `mega`: `SkywarsMegaModeData`
+- `ranked`: `SkywarsGameData`
+- `winstreak`: `number`
+
+##### SkywarsModeData
+
+- `normal`: `SkywarsGameData`
+- `insane`: `SkywarsGameData`
+
+##### SkywarsMegaModeData
+
+- `normal`: `SkywarsGameData`
+- `doubles`: `SkywarsGameData`
+
+##### SkywarsGameData
+
+- `kills`: `number`
+- `deaths`: `number`
+- `wins`: `number`
+- `losses`: `number`
+
+##### DuelsData
+
+- `modes` - `Map<String, DuelsGameData>`
+
+##### DuelsGameData
+
+- `kills`: `number`
+- `deaths`: `number`
+- `wins`: `number`
+- `losses`: `number`
+- `winstreak`: `number`
+
 ### `POST` `/report/<message>` [Authenticated](#Errors)
 
 Report a message.
