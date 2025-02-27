@@ -258,12 +258,11 @@ impl BedwarsData {
 		BedwarsData {
 			level: val["achievements"]["bedwars_level"].as_i64().unwrap_or(-1),
 			all: BedwarsGameData::of("", &bedwars_stats),
-			core: BedwarsGameData {
+			core: CombinedBedwarsGameData {
 				kills: solo.kills + doubles.kills + trios.kills + fours.kills,
 				deaths: solo.deaths + doubles.deaths + trios.deaths + fours.deaths,
 				wins: solo.wins + doubles.wins + trios.wins + fours.wins,
 				losses: solo.losses + doubles.losses + trios.losses + fours.losses,
-				winstreak: solo.winstreak + doubles.winstreak + trios.winstreak + fours.winstreak,
 				final_kills: solo.final_kills + doubles.final_kills + trios.final_kills + fours.final_kills,
 				final_deaths: solo.final_deaths + doubles.final_deaths + trios.final_deaths + fours.final_deaths,
 				beds_broken: solo.beds_broken + doubles.beds_broken + trios.beds_broken + fours.beds_broken,
@@ -274,7 +273,7 @@ impl BedwarsData {
 			trios,
 			fours,
 			four_v_four,
-			dreams: BedwarsGameData {
+			dreams: CombinedBedwarsGameData {
 				kills: castle.kills
 					+ doubles_lucky.kills
 					+ fours_lucky.kills
@@ -319,17 +318,6 @@ impl BedwarsData {
 					+ fours_rush.losses
 					+ doubles_swap.losses
 					+ fours_swap.losses,
-				winstreak: castle.winstreak
-					+ doubles_lucky.winstreak
-					+ fours_lucky.winstreak
-					+ doubles_ultimate.winstreak
-					+ fours_ultimate.winstreak
-					+ doubles_armed.winstreak
-					+ fours_armed.winstreak
-					+ doubles_rush.winstreak
-					+ fours_rush.winstreak
-					+ doubles_swap.winstreak
-					+ fours_swap.winstreak,
 				final_kills: castle.final_kills
 					+ doubles_lucky.final_kills
 					+ fours_lucky.final_kills
@@ -397,6 +385,18 @@ struct BedwarsGameData {
 	wins: u64,
 	losses: u64,
 	winstreak: u64,
+	final_kills: u64,
+	final_deaths: u64,
+	beds_broken: u64,
+	beds_lost: u64,
+}
+
+#[derive(Serialize)]
+struct CombinedBedwarsGameData {
+	kills: u64,
+	deaths: u64,
+	wins: u64,
+	losses: u64,
 	final_kills: u64,
 	final_deaths: u64,
 	beds_broken: u64,

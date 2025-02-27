@@ -688,13 +688,13 @@ Response varies for each `request_type`:
 
 - `level`: `number`
 - `all`: `BedwarsGameData` - data of all modes summed up
-- `core`: `BedwarsGameData` - data of solo, doubles, trios and fours
+- `core`: `CombinedBedwarsGameData` - data of solo, doubles, trios and fours
 - `solo`: `BedwarsGameData`
 - `doubles`: `BedwarsGameData`
 - `trios`: `BedwarsGameData`
 - `fours`: `BedwarsGameData`
 - `four_v_four`: `BedwarsGameData`
-- `dreams`: `BedwarsGameData` - data of all dream modes (below) summed up
+- `dreams`: `CombinedBedwarsGameData` - data of all dream modes (below) summed up
 - `castle`: `BedwarsGameData`
 - `doubles_lucky`: `BedwarsGameData`
 - `fours_lucky`: `BedwarsGameData`
@@ -714,6 +714,19 @@ Response varies for each `request_type`:
 - `wins`: `number`
 - `losses`: `number`
 - `winstreak`: `number`
+- `final_kills`: `number`
+- `final_deaths`: `number`
+- `beds_broken`: `number`
+- `beds_lost`: `number`
+
+##### CombinedBedwarsGameData
+
+_BedwarsGameData without winstreak_
+
+- `kills`: `number`
+- `deaths`: `number`
+- `wins`: `number`
+- `losses`: `number`
 - `final_kills`: `number`
 - `final_deaths`: `number`
 - `beds_broken`: `number`
