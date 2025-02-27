@@ -676,6 +676,7 @@ Response varies for each `request_type`:
 
 `player_data`
 
+- `name`: `string` - The player's name, as stored by Hypixel
 - `bedwars`: `BedwarsData`
 - `skywars`: `SkywarsData`
 - `duels`: `DuelsData`

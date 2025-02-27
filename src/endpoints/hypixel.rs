@@ -81,6 +81,7 @@ enum RequestType {
 
 #[derive(Serialize)]
 struct PlayerData {
+	name: String,
 	bedwars: BedwarsData,
 	skywars: SkywarsData,
 	duels: DuelsData,
@@ -100,6 +101,7 @@ impl PlayerData {
 		network_exp += leveling::get_total_exp_to_full_level(player["networkLevel"].as_f64().unwrap_or(0f64) + 1f64);
 		let network_level = leveling::get_exact_level(network_exp);
 		PlayerData {
+			name: player["displayname"].as_str().unwrap_or_default().to_owned(),
 			bedwars,
 			skywars,
 			duels,
@@ -185,7 +187,7 @@ impl Rank {
 
 	fn to_string_formatted(&self, plus_color: Option<&str>, superstar_color: Option<&str>) -> String {
 		match self {
-			Rank::Normal => "".to_owned(),
+			Rank::Normal => "§7".to_owned(),
 			Rank::Vip => "§a[VIP]".to_owned(),
 			Rank::VipPlus => "§a[VIP§6+§a]".to_owned(),
 			Rank::Mvp => "§b[MVP]".to_owned(),
