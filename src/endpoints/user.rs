@@ -7,6 +7,7 @@ use chrono::{DateTime, Utc};
 use log::warn;
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use sqlx::{query, query_scalar, Type};
 use uuid::Uuid;
 
@@ -46,6 +47,8 @@ pub struct Activity {
 	title: String,
 	description: String,
 	started: DateTime<Utc>,
+	#[serde(skip_serializing_if = "Value::is_null", default)]
+	metadata: Value,
 }
 
 #[derive(Deserialize, Serialize, Type)]

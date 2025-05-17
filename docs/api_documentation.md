@@ -105,6 +105,12 @@ See [Gateway](#gateway)
 - `title`: `string`
 - `description`: `string`
 - `started`: `Timestamp`
+- `metadata`: `Metadata?`
+
+##### Metadata
+
+- `type`: `string`
+- `attributes`: opaque json object with additional attributes for this activity
 
 #### Errors
 
