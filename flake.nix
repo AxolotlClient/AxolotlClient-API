@@ -81,9 +81,6 @@
 				systemd.services.axolotl_client-api = {
 					description = "AxolotlClient API Service";
 
-					after = [ "postgresql.service" ];
-					requires = [ "postgresql.service" ];
-
 					upheldBy = [ "multi-user.target" ];
 
 					environment.RUST_BACKTRACE = "true";
