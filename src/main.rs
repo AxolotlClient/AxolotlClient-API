@@ -1,4 +1,4 @@
-use crate::endpoints::global_data::{self, GlobalDataContainer, UserAgent};
+use crate::endpoints::global_data::{self, GlobalDataContainer, RequestUserAgentCounter};
 use crate::endpoints::user::{self, Activity};
 use crate::endpoints::{account, brew_coffee, channel, get_authenticate, image, not_found};
 use crate::gateway::gateway;
@@ -167,7 +167,7 @@ async fn main() -> anyhow::Result<()> {
 		.route("/hypixel", get(hypixel::get))
 		//.route("/report/:message", post(channel::report_message))
 		.route("/brew_coffee", get(brew_coffee).post(brew_coffee))
-		.layer(axum::middleware::from_extractor_with_state::<UserAgent, ApiState>(state.clone()))
+		.layer(axum::middleware::from_extractor_with_state::<RequestUserAgentCounter, ApiState>(state.clone()))
 		.fallback(not_found)
 		.with_state(state);
 

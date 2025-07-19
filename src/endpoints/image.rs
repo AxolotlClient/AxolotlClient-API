@@ -9,7 +9,7 @@ use bytes::Buf;
 use chrono::{DateTime, Utc};
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
-use sqlx::{query, PgPool};
+use sqlx::query;
 use uuid::Uuid;
 
 use crate::{

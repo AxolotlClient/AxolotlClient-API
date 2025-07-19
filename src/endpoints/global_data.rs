@@ -18,7 +18,7 @@ const PROJECT_ID: &str = "p2rxzX0q";
 pub struct GlobalDataContainer {
 	last_full_refresh: DateTime<Utc>,
 	last_player_refresh: DateTime<Utc>,
-	data: GlobalData,
+	pub data: GlobalData,
 }
 
 impl Default for GlobalDataContainer {
@@ -33,7 +33,8 @@ impl Default for GlobalDataContainer {
 					latest_version: String::new(),
 				},
 				notes: String::new(),
-				user_agents: DashMap::new(),
+				request_user_agents: DashMap::new(),
+				gateway_user_agents: DashMap::new(),
 			},
 		}
 	}
@@ -48,7 +49,9 @@ pub struct GlobalData {
 	#[serde(skip_serializing_if = "String::is_empty")]
 	notes: String,
 	#[serde(skip)]
-	pub user_agents: DashMap<String, u32>,
+	pub request_user_agents: DashMap<String, u32>,
+	#[serde(skip)]
+	pub gateway_user_agents: DashMap<String, u32>,
 }
 
 #[derive(Serialize)]
@@ -63,7 +66,8 @@ impl GlobalData {
 			online_players: online,
 			modrinth_data: self.modrinth_data.clone(),
 			notes: self.notes.clone(),
-			user_agents: self.user_agents.clone(),
+			request_user_agents: self.request_user_agents.clone(),
+			gateway_user_agents: self.gateway_user_agents.clone(),
 		}
 	}
 }
@@ -75,7 +79,8 @@ impl Clone for GlobalData {
 			online_players: self.online_players,
 			modrinth_data: self.modrinth_data.clone(),
 			notes: self.notes.clone(),
-			user_agents: self.user_agents.clone(),
+			request_user_agents: self.request_user_agents.clone(),
+			gateway_user_agents: self.gateway_user_agents.clone(),
 		}
 	}
 }
@@ -112,7 +117,8 @@ pub async fn get(
 		return Ok(Json(cloned));
 	}
 	let data = if full_refresh {
-		let agents = data_container.data.user_agents.clone();
+		let request_user_agents = data_container.data.request_user_agents.clone();
+		let gateway_user_agents = data_container.data.gateway_user_agents.clone();
 		GlobalData {
 			total_players: get_total_players(&database).await?,
 			online_players: online_users.len() as u32,
@@ -120,7 +126,8 @@ pub async fn get(
 			notes: (cl_args.notes_file.as_ref())
 				.map(|file| read_to_string(file).unwrap_or_else(|_| String::new()))
 				.unwrap_or_else(String::new),
-			user_agents: agents,
+			request_user_agents,
+			gateway_user_agents,
 		}
 	} else {
 		data_container
@@ -163,11 +170,15 @@ pub async fn metrics(
 		writeln!(response, "lifetime_players {lifetime_players}");
 		writeln!(response, "online_players {online_players}");
 		let data_container = global_data.read().await;
-		let agents = data_container.data.user_agents.clone();
-		for (agent, count) in agents {
+		let request_agents = data_container.data.request_user_agents.clone();
+		for (agent, count) in request_agents {
 			writeln!(response, "request_count{{user_agent=\"{agent}\"}} {count}");
 		}
-		data_container.data.user_agents.clear();
+		data_container.data.request_user_agents.clear();
+		let gateway_agents = data_container.data.gateway_user_agents.clone();
+		for (agent, count) in gateway_agents {
+			writeln!(response, "connections{{user_agent=\"{agent}\"}} {count}");
+		}
 	};
 
 	Ok(response)
@@ -205,11 +216,14 @@ async fn fetch_modrinth_data(client: Client) -> Result<ModrinthData, ApiError> {
 	})
 }
 
-pub struct UserAgent;
+pub struct RequestUserAgentCounter;
 
-impl FromRequestParts<ApiState> for UserAgent {
+impl FromRequestParts<ApiState> for RequestUserAgentCounter {
 	type Rejection = ApiError;
-	async fn from_request_parts(parts: &mut Parts, state: &ApiState) -> Result<UserAgent, Self::Rejection> {
+	async fn from_request_parts(
+		parts: &mut Parts,
+		state: &ApiState,
+	) -> Result<RequestUserAgentCounter, Self::Rejection> {
 		if parts.uri.path().ends_with("metrics") {
 			return Ok(Self);
 		}
@@ -222,8 +236,8 @@ impl FromRequestParts<ApiState> for UserAgent {
 			.replace("\\", "")
 			.replace("\"", "");
 
-		let a = state.global_data.read().await;
-		let agents = &a.data.user_agents;
+		let container = state.global_data.read().await;
+		let agents = &container.data.request_user_agents;
 		if agents.contains_key(&agent) {
 			let prev = agents.get(&agent).map(|v| *v.value()).unwrap_or(0);
 			agents.insert(agent, prev + 1);

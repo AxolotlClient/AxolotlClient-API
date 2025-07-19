@@ -1,7 +1,7 @@
 use crate::{errors::ApiError, ApiState};
 use axum::{
 	extract::{FromRequestParts, OptionalFromRequestParts},
-	http::{request::Parts, StatusCode},
+	http::{self, request::Parts, StatusCode},
 };
 use base64::{engine::general_purpose::STANDARD_NO_PAD, Engine};
 use sqlx::query;
@@ -61,5 +61,23 @@ impl OptionalFromRequestParts<ApiState> for Authentication {
 		Ok(<Self as FromRequestParts<ApiState>>::from_request_parts(parts, state)
 			.await
 			.ok())
+	}
+}
+
+pub struct UserAgent(pub String);
+
+impl FromRequestParts<ApiState> for UserAgent {
+	type Rejection = ApiError;
+	async fn from_request_parts(parts: &mut Parts, _state: &ApiState) -> Result<UserAgent, Self::Rejection> {
+		let agent = parts
+			.headers
+			.get(http::header::USER_AGENT)
+			.map(|v| v.to_str())
+			.ok_or(StatusCode::BAD_REQUEST)?
+			.map_err(|_| StatusCode::BAD_REQUEST)?
+			.replace("\\", "")
+			.replace("\"", "");
+
+		Ok(Self(agent))
 	}
 }

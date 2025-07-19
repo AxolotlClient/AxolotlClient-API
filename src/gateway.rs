@@ -1,3 +1,4 @@
+use crate::extractors::UserAgent;
 use crate::{errors::ApiError, extractors::Authentication, ApiState};
 use axum::extract::{ws::close_code, ws::CloseFrame, ws::Message, ws::WebSocket, State, WebSocketUpgrade};
 use axum::{body::Body, response::Response};
@@ -12,6 +13,7 @@ use DisconnectReason::*;
 pub async fn gateway(
 	state: State<ApiState>,
 	Authentication(uuid): Authentication,
+	UserAgent(agent): UserAgent,
 	socket: WebSocketUpgrade,
 ) -> Result<Response<Body>, ApiError> {
 	if let Some(socket) = state.socket_sender.remove(&uuid) {
@@ -20,7 +22,7 @@ pub async fn gateway(
 		drop(socket);
 	}
 
-	Ok(socket.on_upgrade(move |socket| gateway_accept_handler(state, uuid, socket)))
+	Ok(socket.on_upgrade(move |socket| gateway_accept_handler(state, uuid, socket, agent)))
 }
 
 async fn gateway_accept_handler(
@@ -28,14 +30,28 @@ async fn gateway_accept_handler(
 		database,
 		online_users,
 		socket_sender,
+		global_data,
 		..
 	}): State<ApiState>,
 	uuid: Uuid,
 	mut socket: WebSocket,
+	user_agent: String,
 ) {
 	online_users.insert(uuid, None);
 	let (sender, mut receiver) = unbounded_channel();
 	socket_sender.insert(uuid, sender);
+	{
+		let container = global_data.read().await;
+		let agents = &container.data.gateway_user_agents;
+		let user_agent = user_agent.clone();
+		if agents.contains_key(&user_agent) {
+			let prev = agents.get(&user_agent).map(|v| *v.value()).unwrap_or(0);
+			agents.insert(user_agent, prev + 1);
+		} else {
+			agents.insert(user_agent, 1);
+		}
+		drop(container);
+	}
 
 	let disconnect_reason = gateway_accept(&mut socket, &mut receiver).await.unwrap_err();
 	let _ = socket
@@ -50,6 +66,17 @@ async fn gateway_accept_handler(
 	}
 	receiver.close();
 	online_users.remove(&uuid);
+	{
+		let container = global_data.read().await;
+		let agents = &container.data.gateway_user_agents;
+		let prev = agents.get(&user_agent).map(|v| *v.value()).unwrap_or(0);
+		if prev > 1 {
+			agents.insert(user_agent, prev - 1);
+		} else {
+			agents.remove(&user_agent);
+		}
+		drop(container);
+	};
 
 	let _ = query!("UPDATE players SET last_online = 'now' WHERE uuid = $1 AND show_last_online = true", uuid)
 		.execute(&database)
