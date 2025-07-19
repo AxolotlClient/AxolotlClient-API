@@ -1,6 +1,11 @@
 use crate::{errors::ApiError, ApiState};
-use axum::{extract::State, Json};
+use axum::{
+	extract::{FromRequestParts, State},
+	http::{self, request::Parts},
+	Json,
+};
 use chrono::{DateTime, Utc};
+use dashmap::DashMap;
 use reqwest::{Client, StatusCode};
 use serde::Serialize;
 use serde_json::Value;
@@ -28,6 +33,7 @@ impl Default for GlobalDataContainer {
 					latest_version: String::new(),
 				},
 				notes: String::new(),
+				user_agents: DashMap::new(),
 			},
 		}
 	}
@@ -41,6 +47,8 @@ pub struct GlobalData {
 	modrinth_data: ModrinthData,
 	#[serde(skip_serializing_if = "String::is_empty")]
 	notes: String,
+	#[serde(skip)]
+	pub user_agents: DashMap<String, u32>,
 }
 
 #[derive(Serialize)]
@@ -55,6 +63,7 @@ impl GlobalData {
 			online_players: online,
 			modrinth_data: self.modrinth_data.clone(),
 			notes: self.notes.clone(),
+			user_agents: self.user_agents.clone(),
 		}
 	}
 }
@@ -66,6 +75,7 @@ impl Clone for GlobalData {
 			online_players: self.online_players,
 			modrinth_data: self.modrinth_data.clone(),
 			notes: self.notes.clone(),
+			user_agents: self.user_agents.clone(),
 		}
 	}
 }
@@ -102,6 +112,7 @@ pub async fn get(
 		return Ok(Json(cloned));
 	}
 	let data = if full_refresh {
+		let agents = data_container.data.user_agents.clone();
 		GlobalData {
 			total_players: get_total_players(&database).await?,
 			online_players: online_users.len() as u32,
@@ -109,6 +120,7 @@ pub async fn get(
 			notes: (cl_args.notes_file.as_ref())
 				.map(|file| read_to_string(file).unwrap_or_else(|_| String::new()))
 				.unwrap_or_else(String::new),
+			user_agents: agents,
 		}
 	} else {
 		data_container
@@ -130,7 +142,10 @@ pub async fn get(
 
 pub async fn metrics(
 	State(ApiState {
-		database, online_users, ..
+		database,
+		online_users,
+		global_data,
+		..
 	}): State<ApiState>,
 ) -> Result<String, ApiError> {
 	let lifetime_players = get_total_players(&database).await?;
@@ -147,6 +162,12 @@ pub async fn metrics(
 		writeln!(response, "");
 		writeln!(response, "lifetime_players {lifetime_players}");
 		writeln!(response, "online_players {online_players}");
+		let data_container = global_data.read().await;
+		let agents = data_container.data.user_agents.clone();
+		for (agent, count) in agents {
+			writeln!(response, "request_count{{user_agent=\"{agent}\"}} {count}");
+		}
+		data_container.data.user_agents.clear();
 	};
 
 	Ok(response)
@@ -182,4 +203,33 @@ async fn fetch_modrinth_data(client: Client) -> Result<ModrinthData, ApiError> {
 			.unwrap()
 			.to_string(),
 	})
+}
+
+pub struct UserAgent;
+
+impl FromRequestParts<ApiState> for UserAgent {
+	type Rejection = ApiError;
+	async fn from_request_parts(parts: &mut Parts, state: &ApiState) -> Result<UserAgent, Self::Rejection> {
+		if parts.uri.path().ends_with("metrics") {
+			return Ok(Self);
+		}
+		let agent = parts
+			.headers
+			.get(http::header::USER_AGENT)
+			.map(|v| v.to_str())
+			.ok_or(StatusCode::BAD_REQUEST)?
+			.map_err(|_| StatusCode::BAD_REQUEST)?
+			.replace("\\", "")
+			.replace("\"", "");
+
+		let a = state.global_data.read().await;
+		let agents = &a.data.user_agents;
+		if agents.contains_key(&agent) {
+			let prev = agents.get(&agent).map(|v| *v.value()).unwrap_or(0);
+			agents.insert(agent, prev + 1);
+		} else {
+			agents.insert(agent, 1);
+		}
+		Ok(Self)
+	}
 }

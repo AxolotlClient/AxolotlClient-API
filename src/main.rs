@@ -1,4 +1,4 @@
-use crate::endpoints::global_data::{self, GlobalDataContainer};
+use crate::endpoints::global_data::{self, GlobalDataContainer, UserAgent};
 use crate::endpoints::user::{self, Activity};
 use crate::endpoints::{account, brew_coffee, channel, get_authenticate, image, not_found};
 use crate::gateway::gateway;
@@ -103,7 +103,19 @@ async fn main() -> anyhow::Result<()> {
 
 	migrate!().run(&database).await?;
 
-	let db = database.clone();
+	let state = ApiState {
+		database,
+		hypixel_api_state: Arc::new(HypixelApiProxyState::new(cl_args.cache_limit_bytes)),
+		cl_args,
+		client: Client::builder()
+			.user_agent(concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION")))
+			.build()?,
+		online_users: Default::default(),
+		socket_sender: Default::default(),
+		global_data: Default::default(),
+	};
+
+	let task_state = state.clone();
 	tokio::spawn(async move {
 		let mut interval = interval(Duration::from_secs(1 * 24 * 60 * 60));
 		interval.set_missed_tick_behavior(MissedTickBehavior::Skip);
@@ -111,7 +123,7 @@ async fn main() -> anyhow::Result<()> {
 		loop {
 			let _ = interval.tick().await;
 			for task in tasks {
-				let _ = task(&db).await;
+				let _ = task(&task_state).await;
 			}
 		}
 	});
@@ -155,18 +167,9 @@ async fn main() -> anyhow::Result<()> {
 		.route("/hypixel", get(hypixel::get))
 		//.route("/report/:message", post(channel::report_message))
 		.route("/brew_coffee", get(brew_coffee).post(brew_coffee))
+		.layer(axum::middleware::from_extractor_with_state::<UserAgent, ApiState>(state.clone()))
 		.fallback(not_found)
-		.with_state(ApiState {
-			database,
-			hypixel_api_state: Arc::new(HypixelApiProxyState::new(cl_args.cache_limit_bytes)),
-			cl_args,
-			client: Client::builder()
-				.user_agent(concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION")))
-				.build()?,
-			online_users: Default::default(),
-			socket_sender: Default::default(),
-			global_data: Default::default(),
-		});
+		.with_state(state);
 
 	let listener = tokio::net::TcpListener::bind("[::]:8000").await?;
 

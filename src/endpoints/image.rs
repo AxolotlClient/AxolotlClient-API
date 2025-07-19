@@ -80,7 +80,7 @@ pub async fn post(
 	Ok(id.to_string())
 }
 
-pub async fn evict_expired(database: &PgPool) -> Result<(), TaskError> {
+pub async fn evict_expired(ApiState { database, .. }: &ApiState) -> Result<(), TaskError> {
 	query!("DELETE FROM images WHERE (LOCALTIMESTAMP - timestamp) > '1 week'")
 		.execute(database)
 		.await?;
