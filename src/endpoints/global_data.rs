@@ -6,11 +6,12 @@ use axum::{
 };
 use chrono::{DateTime, Utc};
 use dashmap::DashMap;
+use regex::Regex;
 use reqwest::{Client, StatusCode};
 use serde::Serialize;
 use serde_json::Value;
 use sqlx::{query, PgPool};
-use std::{fmt::Write, fs::read_to_string};
+use std::{fmt::Write, fs::read_to_string, sync::LazyLock};
 
 const PROJECT_ID: &str = "p2rxzX0q";
 
@@ -172,16 +173,64 @@ pub async fn metrics(
 		let data_container = global_data.read().await;
 		let request_agents = data_container.data.request_user_agents.clone();
 		for (agent, count) in request_agents {
-			writeln!(response, "request_count{{user_agent=\"{agent}\"}} {count}");
+			if let Some((mod_ver, minecraft_ver, note)) = parse_user_agent(agent) {
+				writeln!(response, "request_count{{mod_version=\"{mod_ver}\", minecraft_version=\"{minecraft_ver}\", mod=\"{note}\"}} {count}");
+			}
 		}
 		data_container.data.request_user_agents.clear();
 		let gateway_agents = data_container.data.gateway_user_agents.clone();
 		for (agent, count) in gateway_agents {
-			writeln!(response, "connections{{user_agent=\"{agent}\"}} {count}");
+			if let Some((mod_ver, minecraft_ver, note)) = parse_user_agent(agent) {
+				writeln!(response, "connections{{mod_version=\"{mod_ver}\", minecraft_version=\"{minecraft_ver}\", mod=\"{note}\"}} {count}");
+			}
 		}
 	};
 
 	Ok(response)
+}
+
+static SEMVER_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+	Regex::new(
+		r#"(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?"#,
+	)
+	.unwrap()
+});
+static MCVER_REGEX: LazyLock<Regex> = LazyLock::new(|| {
+	Regex::new(
+		"0\\.\\d+(\\.\\d+)?a?(_\\d+)?|\\d+\\.\\d+(\\.\\d+)?(-pre\\d+|Pre-[Rr]elease \\d+)?|\\d+\\.\\d+(\\.\\d+)?(-rc\\d+| [Rr]elease Candidate \\d+)?|\\d+w\\d+[a-z]|[a-c]\\d\\.\\d+(\\.\\d+)?[a-z]?(_\\d+)?[a-z]?|(Alpha|Beta) v?\\d+\\.\\d+(\\.\\d+)?[a-z]?(_\\d+)?[a-z]?|Inf?dev (0\\.31 )?\\d+(-\\d+)?|(rd|inf?)-\\d+|1\\.RV-Pre1|3D Shareware v1\\.34|23w13a_or_b|24w14potato|25w14craftmine|(.*[Ee]xperimental [Ss]napshot )(\\d+)",
+	)
+	.unwrap()
+});
+static OLD_1_UA: LazyLock<Regex> =
+	LazyLock::new(|| Regex::new(r".*\((?:(AxolotlClient)/)(.+)(?:\+mc)?(.+)\) .*").unwrap());
+static OLD_2_UA: LazyLock<Regex> =
+	LazyLock::new(|| Regex::new(r".*\((?:(AxolotlClient)/)(.+) \(Minecraft .+\).*").unwrap());
+static CURRENT_UA: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(AxolotlClient)/(.+) Minecraft/(.+)").unwrap());
+static SNAPPER_UA: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(Snapper)/(.+)\+(.+)").unwrap());
+
+fn parse_user_agent(agent: String) -> Option<(String, String, String)> {
+	if agent.starts_with("Java-http-client") {
+		return None;
+	}
+	for regex in [&OLD_1_UA, &OLD_2_UA, &CURRENT_UA, &SNAPPER_UA] {
+		if regex.is_match(&agent) {
+			let captures = regex.captures(&agent).unwrap();
+			let mod_name_capture = captures.get(1);
+			let mod_ver_capture = captures.get(2);
+			let mc_ver_capture = captures.get(3);
+			if mod_name_capture.is_none() || mod_ver_capture.is_none() || mc_ver_capture.is_none() {
+				return None;
+			}
+			let mod_name = mod_name_capture.unwrap().as_str().to_string();
+			let mod_ver = mod_ver_capture.unwrap().as_str();
+			let mc_ver = mc_ver_capture.unwrap().as_str();
+			if !SEMVER_REGEX.is_match(mod_ver) || !MCVER_REGEX.is_match(mc_ver) {
+				return None;
+			}
+			return Some((mod_ver.to_string(), mc_ver.to_string(), mod_name));
+		}
+	}
+	return None;
 }
 
 async fn get_total_players(database: &PgPool) -> Result<u32, ApiError> {
