@@ -87,7 +87,7 @@ async fn main() -> anyhow::Result<()> {
 
 	env_logger::init_from_env(Env::default().default_filter_or("info"));
 
-	info!("AxolotlClient-Api v{}", env!("CARGO_PKG_VERSION"));
+	info!("AxolotlClient-Api v{} ({})", env!("CARGO_PKG_VERSION"), env!("GIT_HASH"));
 
 	let database = {
 		let postgres_url = match &cl_args.postgres.postgres_url {
