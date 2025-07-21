@@ -17,7 +17,7 @@
 						path = lib.cleanSource ./.;
 					};
 
-					nativeBuildInputs = [ pkgs.pkg-config ];
+					nativeBuildInputs = [ pkgs.git pkgs.pkg-config ];
 					buildInputs = [ pkgs.openssl ];
 
 					SQLX_OFFLINE = true;
