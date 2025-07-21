@@ -172,6 +172,8 @@ pub async fn metrics(
 		writeln!(response, "online_players {online_players}");
 		let data_container = global_data.read().await;
 		let request_agents = data_container.data.request_user_agents.clone();
+		let request_agents_count = request_agents.len();
+		writeln!(response, "request_agents_count {request_agents_count}");
 		for (agent, count) in request_agents {
 			if let Some((mod_ver, minecraft_ver, note)) = parse_user_agent(agent) {
 				writeln!(response, "request_count{{mod_version=\"{mod_ver}\", minecraft_version=\"{minecraft_ver}\", mod=\"{note}\"}} {count}");
