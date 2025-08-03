@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 
-use crate::{errors::ApiError, extractors::Authentication, id::Id, ApiState};
-use axum::{extract::Path, extract::Query, extract::State, Json};
-use base64::{engine::general_purpose::STANDARD_NO_PAD, Engine};
+use crate::{ApiState, errors::ApiError, extractors::Authentication, id::Id};
+use axum::{Json, extract::Path, extract::Query, extract::State};
+use base64::{Engine, engine::general_purpose::STANDARD_NO_PAD};
 use chrono::{DateTime, TimeDelta, Utc};
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use sqlx::{query, query_as, PgPool};
+use sqlx::{PgPool, query, query_as};
 use uuid::Uuid;
 
 use super::{channel::Persistence, user::Activity};

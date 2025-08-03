@@ -1,8 +1,8 @@
-use crate::{errors::ApiError, ApiState};
+use crate::{ApiState, errors::ApiError};
 use axum::{
+	Json,
 	extract::{FromRequestParts, State},
 	http::{self, request::Parts},
-	Json,
 };
 use chrono::{DateTime, Utc};
 use dashmap::DashMap;
@@ -10,7 +10,7 @@ use regex::Regex;
 use reqwest::{Client, StatusCode};
 use serde::Serialize;
 use serde_json::Value;
-use sqlx::{query, PgPool};
+use sqlx::{PgPool, query};
 use std::{fmt::Write, fs::read_to_string, sync::LazyLock};
 
 const PROJECT_ID: &str = "p2rxzX0q";

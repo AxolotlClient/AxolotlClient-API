@@ -4,19 +4,19 @@ use crate::endpoints::{account, brew_coffee, channel, get_authenticate, image, n
 use crate::gateway::gateway;
 use axum::extract::DefaultBodyLimit;
 use axum::routing::any;
-use axum::{routing::get, routing::post, serve, Router};
+use axum::{Router, routing::get, routing::post, serve};
 use clap::{Args, Parser};
 use dashmap::DashMap;
 use endpoints::hypixel::{self, HypixelApiProxyState};
 use env_logger::Env;
 use log::info;
 use reqwest::Client;
-use sqlx::{migrate, postgres::PgConnectOptions, PgPool};
+use sqlx::{PgPool, migrate, postgres::PgConnectOptions};
 use std::time::{Duration, Instant};
 use std::{fs::read_to_string, path::PathBuf, str::FromStr, sync::Arc};
-use tokio::sync::mpsc::UnboundedSender;
 use tokio::sync::RwLock;
-use tokio::time::{interval, MissedTickBehavior};
+use tokio::sync::mpsc::UnboundedSender;
+use tokio::time::{MissedTickBehavior, interval};
 use uuid::Uuid;
 
 mod endpoints;

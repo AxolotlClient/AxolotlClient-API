@@ -1,10 +1,10 @@
 use axum::{
+	Json,
 	body::Bytes,
 	extract::{Path, Query, State},
 	response::Html,
-	Json,
 };
-use base64::{engine::general_purpose::STANDARD_NO_PAD, Engine};
+use base64::{Engine, engine::general_purpose::STANDARD_NO_PAD};
 use bytes::Buf;
 use chrono::{DateTime, Utc};
 use reqwest::StatusCode;
@@ -13,10 +13,10 @@ use sqlx::query;
 use uuid::Uuid;
 
 use crate::{
+	ApiState,
 	errors::{ApiError, TaskError},
 	extractors::Authentication,
 	id::Id,
-	ApiState,
 };
 
 #[derive(Serialize)]
@@ -102,11 +102,7 @@ pub async fn get_view(
 	let base_url = match &cl_args.domain_name {
 		Some(name) => {
 			let n = name.to_owned();
-			if !n.ends_with("/") {
-				n + "/"
-			} else {
-				n
-			}
+			if !n.ends_with("/") { n + "/" } else { n }
 		}
 		None => "https://api.axolotlclient.com/v1/".to_owned(),
 	};
@@ -191,11 +187,7 @@ pub async fn get_oembed(
 	let base_url = match &cl_args.domain_name {
 		Some(name) => {
 			let n = name.to_owned();
-			if !n.ends_with("/") {
-				n + "/"
-			} else {
-				n
-			}
+			if !n.ends_with("/") { n + "/" } else { n }
 		}
 		None => "https://api.axolotlclient.com/v1/".to_owned(),
 	};

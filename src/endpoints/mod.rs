@@ -1,10 +1,10 @@
-use crate::{errors::ApiError, ApiState};
-use axum::{extract::Query, extract::State, http::StatusCode, response::IntoResponse, Json};
-use base64::{engine::general_purpose::STANDARD_NO_PAD, Engine};
+use crate::{ApiState, errors::ApiError};
+use axum::{Json, extract::Query, extract::State, http::StatusCode, response::IntoResponse};
+use base64::{Engine, engine::general_purpose::STANDARD_NO_PAD};
 use blake2::{Blake2b512, Digest};
 use garde::Validate;
 use serde::{Deserialize, Serialize};
-use sqlx::{error::ErrorKind::UniqueViolation, query, query_as, query_scalar, Type};
+use sqlx::{Type, error::ErrorKind::UniqueViolation, query, query_as, query_scalar};
 use std::ops::Deref;
 use uuid::Uuid;
 

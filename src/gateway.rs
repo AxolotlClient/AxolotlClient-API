@@ -1,14 +1,14 @@
 use crate::extractors::UserAgent;
-use crate::{errors::ApiError, extractors::Authentication, ApiState};
-use axum::extract::{ws::close_code, ws::CloseFrame, ws::Message, ws::WebSocket, State, WebSocketUpgrade};
+use crate::{ApiState, errors::ApiError, extractors::Authentication};
+use DisconnectReason::*;
+use axum::extract::{State, WebSocketUpgrade, ws::CloseFrame, ws::Message, ws::WebSocket, ws::close_code};
 use axum::{body::Body, response::Response};
 use log::warn;
 use sqlx::query;
 use std::{convert::Infallible, fmt::Display, fmt::Formatter, time::Duration};
-use tokio::sync::mpsc::{unbounded_channel, UnboundedReceiver};
-use tokio::{pin, select, time::sleep, time::Instant};
+use tokio::sync::mpsc::{UnboundedReceiver, unbounded_channel};
+use tokio::{pin, select, time::Instant, time::sleep};
 use uuid::Uuid;
-use DisconnectReason::*;
 
 pub async fn gateway(
 	state: State<ApiState>,

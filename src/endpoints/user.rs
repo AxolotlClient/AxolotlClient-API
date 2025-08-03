@@ -1,14 +1,14 @@
-use crate::{errors::ApiError, extractors::Authentication, ApiState};
+use crate::{ApiState, errors::ApiError, extractors::Authentication};
 use axum::{
-	extract::{Path, Query, State},
 	Json,
+	extract::{Path, Query, State},
 };
 use chrono::{DateTime, Utc};
 use log::warn;
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use sqlx::{query, query_scalar, Type};
+use sqlx::{Type, query, query_scalar};
 use uuid::Uuid;
 
 #[derive(Serialize)]

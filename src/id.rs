@@ -1,6 +1,6 @@
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
-use sqlx::{encode::IsNull, error::BoxDynError, Database, Decode, Encode, Type};
+use sqlx::{Database, Decode, Encode, Type, encode::IsNull, error::BoxDynError};
 use std::{cell::Cell, cell::RefCell, ops::Deref, sync::atomic::AtomicU8, sync::atomic::Ordering::Relaxed};
 
 #[derive(Deserialize, Serialize)]

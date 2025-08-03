@@ -1,14 +1,14 @@
-use crate::{errors::ApiError, extractors::Authentication, id::Id, ApiState};
+use crate::{ApiState, errors::ApiError, extractors::Authentication, id::Id};
 use axum::{
-	extract::{Path, Query, State},
 	Json,
+	extract::{Path, Query, State},
 };
 use chrono::{DateTime, Duration, TimeDelta, Utc};
 use garde::Validate;
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
-use sqlx::{query, PgPool};
+use serde_json::{Value, json};
+use sqlx::{PgPool, query};
 use std::str::FromStr;
 use uuid::Uuid;
 
@@ -163,8 +163,13 @@ pub async fn delete(
 		.execute(&database)
 		.await?;
 	} else {
-		query!("UPDATE channel_memberships SET channels = array_remove(channels, $2) WHERE player = $1 AND $2 = ANY(channels)", &uuid, &channel.id as _)
-		.execute(&database).await?;
+		query!(
+			"UPDATE channel_memberships SET channels = array_remove(channels, $2) WHERE player = $1 AND $2 = ANY(channels)",
+			&uuid,
+			&channel.id as _
+		)
+		.execute(&database)
+		.await?;
 	}
 
 	Ok(StatusCode::OK)

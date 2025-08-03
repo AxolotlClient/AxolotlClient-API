@@ -1,9 +1,9 @@
-use crate::{errors::ApiError, ApiState};
+use crate::{ApiState, errors::ApiError};
 use axum::{
 	extract::{FromRequestParts, OptionalFromRequestParts},
-	http::{self, request::Parts, StatusCode},
+	http::{self, StatusCode, request::Parts},
 };
-use base64::{engine::general_purpose::STANDARD_NO_PAD, Engine};
+use base64::{Engine, engine::general_purpose::STANDARD_NO_PAD};
 use sqlx::query;
 use uuid::Uuid;
 
