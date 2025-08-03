@@ -173,6 +173,8 @@ async fn main() -> anyhow::Result<()> {
 
 	let listener = tokio::net::TcpListener::bind("[::]:8000").await?;
 
+	console_subscriber::init();
+
 	info!("Ready {:.0?}", Instant::now() - start_time);
 
 	serve(listener, router).await?;
