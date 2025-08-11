@@ -85,7 +85,7 @@ async fn main() -> anyhow::Result<()> {
 
 	let cl_args = Arc::new(ClArgs::parse());
 
-	env_logger::init_from_env(Env::default().default_filter_or("info"));
+	env_logger::init_from_env(Env::default().default_filter_or("info,tokio=trace,runtime=trace"));
 
 	info!("AxolotlClient-Api v{} ({})", env!("CARGO_PKG_VERSION"), env!("GIT_HASH"));
 
