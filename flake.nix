@@ -21,6 +21,7 @@
 					buildInputs = [ pkgs.openssl ];
 
 					SQLX_OFFLINE = true;
+					RUSTFLAGS = "--cfg tokio_unstable";
 
 					cargoLock.lockFile = ./Cargo.lock;
 				}
