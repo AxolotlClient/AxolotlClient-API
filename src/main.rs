@@ -83,6 +83,8 @@ pub struct ApiState {
 async fn main() -> anyhow::Result<()> {
 	let start_time = Instant::now();
 
+	console_subscriber::init();
+
 	let cl_args = Arc::new(ClArgs::parse());
 
 	env_logger::init_from_env(Env::default().default_filter_or("info,tokio=trace,runtime=trace"));
@@ -172,8 +174,6 @@ async fn main() -> anyhow::Result<()> {
 		.with_state(state);
 
 	let listener = tokio::net::TcpListener::bind("[::]:8000").await?;
-
-	console_subscriber::init();
 
 	info!("Ready {:.0?}", Instant::now() - start_time);
 
