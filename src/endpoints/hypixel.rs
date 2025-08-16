@@ -719,8 +719,8 @@ pub async fn get(
 		}
 		RequestType::SkywarsExperience => {
 			let level = player_data["stats"]["SkyWars"]["skywars_experience"]
-				.as_i64()
-				.unwrap_or(-1);
+				.as_f64()
+				.unwrap_or(-1.0);
 			json!({
 				"skywars_experience": level
 			})
