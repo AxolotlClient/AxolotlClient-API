@@ -124,9 +124,9 @@ async fn gateway_accept(
 				pending_pong = None;
 			}
 			socket_message = receiver.recv() => {
-				if let Some(socket_message) = socket_message {
-					socket.send(Message::Text(socket_message.into())).await?;
-
+				match socket_message {
+					Some(socket_message) => socket.send(Message::Text(socket_message.into())).await?,
+					None => return Err(Closed),
 				}
 			}
 			_ = &mut keep_alive => {
