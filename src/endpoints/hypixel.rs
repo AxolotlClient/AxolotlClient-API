@@ -52,8 +52,7 @@ impl HypixelApiProxyState {
 					}
 					size
 				})
-				// Disable Time to Live for now
-				.time_to_live(Duration::from_secs(2 * 24 * 60 * 60))
+				.time_to_live(Duration::from_secs(1 * 24 * 60 * 60))
 				.build(),
 			ratelimits: RwLock::new(Ratelimits {
 				limit: 10,
